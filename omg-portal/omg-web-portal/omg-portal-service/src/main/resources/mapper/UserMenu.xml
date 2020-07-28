@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IUserMenuDao">
+
+	<insert id="addUserMenu" parameterType="cn.uce.omg.portal.entity.PortalUserMenu">
+		INSERT INFO OMG_PORTAL_USER_MENU (emp_code, org_code, permission_id, version, create_emp, create_org, create_time, update_emp, update_org) 
+		VALUES (#{empCode}, #{orgCode}, #{permissionId}, 1, #{createEmp}, #{createOrg}, now(), #{updateEmp}, #{updateOrg}, #{sort})
+	</insert>
+	
+	<select id="findUserMenuByEmpCodeAndOrgCode" parameterType="cn.uce.omg.portal.entity.PortalUserMenu" resultType="java.lang.Long">
+		SELECT OMG_PORTAL_USER_MENU.PERMISSION_ID FROM OMG_PORTAL_USER_MENU
+		WHERE 1 = 1 
+		<if test="empCode != null and empCode != '' "> AND OMG_PORTAL_USER_MENU.EMP_CODE = #{empCode}</if>
+		<if test="orgCode != null and orgCode != '' "> AND OMG_PORTAL_USER_MENU.ORG_CODE = #{orgCode}</if>
+		ORDER BY SORT ASC
+	</select>
+	
+	<delete id="deleteUserMenuByEmpAndOrgAndPerId" parameterType="java.util.Map">
+		DELETE FROM OMG_PORTAL_USER_MENU WHERE EMP_CODE = #{empCode} and ORG_CODE = #{orgCode} 
+		<foreach item="item" collection="permissionIds" open=" AND PERMISSION_ID IN (" separator="," close=")">
+		#{item}
+		</foreach>
+		
+	</delete>
+	<delete id="deleteUserMenuByEmpAndOrg" parameterType="java.util.Map">
+		DELETE FROM OMG_PORTAL_USER_MENU WHERE EMP_CODE = #{empCode} and ORG_CODE = #{orgCode} 
+		
+	</delete>
+</mapper>

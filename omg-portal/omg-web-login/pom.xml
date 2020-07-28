@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>cn.uce.omg</groupId>
+		<artifactId>omg-portal</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>omg-web-login</artifactId>
+	<packaging>pom</packaging>
+	<dependencies>
+		<dependency>
+			<groupId>cn.uce.framework</groupId>
+			<artifactId>uce-common-base</artifactId>
+			<version>${portal-framework-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>cn.uce.framework</groupId>
+			<artifactId>uce-base</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.uce.framework</groupId>
+			<artifactId>uce-core-db</artifactId>
+		</dependency>
+	</dependencies>
+	<modules>
+		<module>omg-login-web</module>
+		<module>omg-login-service</module>
+	</modules>
+</project>

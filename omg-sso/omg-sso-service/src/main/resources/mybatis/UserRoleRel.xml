@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.IUserRoleRelDao">
+	<sql id="base_column_list">
+		ID,CREATE_EMP,EMP_CODE,ROLE_CODE,CREATE_ORG,CREATE_TIME,UPDATE_TIME
+	</sql>
+	
+	<select id="findUserRoleRelByCondition" parameterType="UserRoleRelVo" resultType="UserRoleRelVo">
+		SELECT <include refid="base_column_list"/> FROM FSP_USER_ROLE_REL
+		<where>
+			<if test="empCode != null">
+				AND EMP_CODE = #{empCode}
+			</if>
+			<if test="roleCode != null">
+				AND ROLE_CODE = #{roleCode}
+			</if>
+			<if test="empId != null">
+				AND EMP_ID = #{empId}
+			</if>
+			<if test="updateTime!=null">
+				AND UPDATE_TIME>=#{updateTime}
+			</if>
+		</where>
+	</select>
+	
+	<delete id="deleteByCondition" parameterType="UserRoleRelVo">
+		DELETE FROM FSP_USER_ROLE_REL 
+		<where>
+			<if test="empCode != null">
+				AND EMP_CODE = #{empCode}
+			</if>
+			<if test="roleCode != null">
+				AND ROLE_CODE = #{roleCode}
+			</if>
+		</where>
+	</delete>
+</mapper>

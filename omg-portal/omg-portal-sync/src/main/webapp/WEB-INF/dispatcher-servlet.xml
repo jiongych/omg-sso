@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="   
+           http://www.springframework.org/schema/beans   
+           http://www.springframework.org/schema/beans/spring-beans.xsd   
+           http://www.springframework.org/schema/context   
+           http://www.springframework.org/schema/context/spring-context.xsd  
+           http://www.springframework.org/schema/mvc   
+           http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+           default-lazy-init="false" >
+     <!-- 配置 SessionLocalResolver(实现国际化时使用) 该ID名需指定，这样DispatcherServlet才能自动侦测到它 -->
+    <bean id="localeResolver"  class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+       <property name="defaultLocale" value="cn"/>
+    </bean>	
+    
+    <!-- 文件上传 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="100000000"/>
+		<property name="defaultEncoding" value="UTF-8"/>
+	</bean>
+	
+	<!-- excel 处理视图 -->
+    <bean id="beanNameViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver" p:order="0"/>
+	<bean id="templateExcelView" class="cn.uce.core.excel.view.TemplateExcelView" />
+    <bean id="templateWordView" class="cn.uce.core.excel.view.TemplateWordView" />
+    <bean id="mapExcelView" class="cn.uce.core.excel.view.MapExcelView" />
+    <bean id="excelView" class="cn.uce.core.excel.view.SingleExcelView" />
+    <bean id="fileDownloadView" class="cn.uce.file.web.view.FileDownLoadView" />
+     
+</beans>   

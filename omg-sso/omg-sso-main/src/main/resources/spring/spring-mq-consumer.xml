@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context.xsd  ">
+     
+    <bean id="loginSuccessListener" class="cn.uce.omg.main.sso.mq.LoginSuccessListener">
+    	<property name="userBiz" ref="userBiz"></property>
+    </bean>
+	<bean id="ssoLoginSuccessListenerContainer" class="cn.uce.core.mq.rocket.listener.RocketMessageListenerContainer" init-method="start" destroy-method="shutdown">
+	    <property name="consumerId" value="CID_SSO_LOGIN_SUCCESS"></property>
+	    <property name="consumeThreadNums" value="10"></property>
+	    <property name="factory" ref="mqFactory"></property>
+	    <property name="listener" ref="loginSuccessListener"></property>
+	    <property name="topicName" value="omgLoginSuccess"></property>
+	</bean>
+    
+    <!-- <bean id="updatePasswordListener" class="cn.uce.omg.main.sso.mq.UpdatePasswordListener">
+		<property name="authBiz" ref="authBiz"/>
+	</bean>
+	<bean id="updatePasswordListenerContainer" class="cn.uce.omg.main.sso.mq.listener.RocketMqMsgListenerContainer" init-method="start" destroy-method="shutdown">
+	    <property name="mqConsumer">
+	        <bean class="com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer" parent="ymMqClientConfig">
+	            自定义消费id
+	            <property name="consumerGroup" value="CID_SSO_UPDATE_PASSWORD"/>
+	            消费线程数最小值
+	            <property name="consumeThreadMin" value="${mq.consumeThreadMinNum}"/>
+	            消费线程数最大值
+	            <property name="consumeThreadMax" value="${mq.consumeThreadMaxNum}"/>
+	            消息批量消费消息最大数量
+	            <property name="consumeMessageBatchMaxSize" value="${mq.consumeMessageBatchMaxSize}"/>
+		     </bean>
+	    </property>
+	    <property name="listener" ref="updatePasswordListener"/>
+	    <property name="topicName" value="updatePassword"/>
+	    <property name="ymMqClient" value="${mq.nameSrvAddr.ymdd.mq.main}"/>
+	</bean> -->
+	
+	<bean id="updatePasswordListener" class="cn.uce.omg.main.sso.mq.UpdatePasswordListener">
+		<property name="authBiz" ref="authBiz"/>
+	</bean>
+	<bean id="updatePasswordListenerContainer" class="cn.uce.core.mq.rocket.listener.RocketMessageListenerContainer" init-method="start" destroy-method="shutdown">
+		<property name="consumerId" value="CID_SSO_UPDATE_PASSWORD"/>
+		<property name="consumeThreadNums" value="10"/>
+		<property name="factory" ref="mqFactory"/>
+		<property name="listener" ref="updatePasswordListener"/>
+		<property name="topicName" value="updatePassword"/>
+	</bean>
+</beans>

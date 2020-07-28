@@ -1,0 +1,27 @@
+stages:
+  - build
+  - deploy
+
+buildPackage:
+  stage: build
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .m2/
+  variables:
+    rc_version: $PKG_TAG
+    projectid: $CI_PROJECT_ID
+    projectname: $CI_PROJECT_NAME
+    jobid: $CI_JOB_ID
+    pipelineid: $CI_PIPELINE_ID
+    commitid: $CI_COMMIT_SHA
+    envlabel: "最初构建"
+
+  script:
+    - mvn -U clean install -DskipTests
+    - echo $workdir ${PWD}
+    - /deploy/script/ci/package.py $projectname  $rc_version"_"$(date +%Y%m%d%H%M)  $projectid $pipelineid $jobid ${PWD} ${commitid} $envlabel
+  tags:
+    - t_VMP
+  only:
+    - api

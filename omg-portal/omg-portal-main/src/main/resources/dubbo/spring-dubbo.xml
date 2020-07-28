@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+        
+    <!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+ 	<dubbo:application name="${dubbo.application.name}" owner="${dubbo.application.owner}" />
+ 	<dubbo:registry  protocol="${sso.dubbo.registry.protocol}" address="${sso.dubbo.registry.address}" id="ssoRegistry"/>
+    <!-- 乾坤dubbo -->
+   <!--  <dubbo:registry  protocol="${qk.dubbo.registry.protocol}" address="${qk.dubbo.registry.address.sso.main}" id="qkRegistry"/>  --> 
+    <!-- PRSdubbo -->
+    <dubbo:registry  protocol="${prs.dubbo.registry.protocol}" address="${prs.dubbo.registry.address.sso.main}" id="prsRegistry"/>       
+     <!-- UCTdubbo -->
+    <dubbo:registry  protocol="${uct.dubbo.registry.protocol}" address="${uct.dubbo.registry.address.sso.main}" id="uctRegistry"/>       
+   
+</beans>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:reg="http://www.dangdang.com/schema/ddframe/reg" 
+       xmlns:job="http://www.dangdang.com/schema/ddframe/job" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.dangdang.com/schema/ddframe/reg 
+                        http://www.dangdang.com/schema/ddframe/reg/reg.xsd 
+                        http://www.dangdang.com/schema/ddframe/job 
+                        http://www.dangdang.com/schema/ddframe/job/job.xsd">
+    <!--配置作业注册中心 -->
+    <reg:zookeeper id="regCenter" server-lists="${elastic.job.server.lists}" namespace="${elastic.job.uop.job}" 
+    base-sleep-time-milliseconds="${elastic.job.base.sleep.milliseconds}" max-sleep-time-milliseconds="${elastic.job.max.sleep.milliseconds}" max-retries="${elastic.job.max.retries}" />
+    
+    <!-- 配置数据同步异常重推作业-->
+    <job:dataflow id="pushErrorLogJob" 
+        class="cn.uce.omg.portal.job.PushErrorLogProcessor" 
+        registry-center-ref="regCenter" 
+        cron="${elastic.job.cron}" 
+	    disabled="${elastic.job.disabled}" 
+	    sharding-total-count="${elastic.job.sharding.total.count}" 
+	    sharding-item-parameters="${elastic.job.sharding.item.parameters}" 
+	    overwrite="${elastic.job.overwrite}" 
+	    job-parameter="${elastic.job.job.parameter}" 
+	    streaming-process="${elastic.job.streaming.process}"
+	    description="pushErrorLogJob" 
+	    event-trace-rdb-data-source="dataSource">
+	</job:dataflow>
+	
+	<!-- 配置每日登陆人次统计作业-->
+    <job:simple id="portalLoginElasticJob" 
+        class="cn.uce.omg.portal.job.PortalLoginStatisticsTask" 
+        registry-center-ref="regCenter" 
+        sharding-total-count="${elastic.job.login.sharding.total.count}" 
+        disabled="${elastic.job.login.disabled}" 
+        sharding-item-parameters="${elastic.job.login.sharding.item.parameters}"
+        description="portalLoginElasticJob" 
+        cron="${elastic.job.login.cron}">
+    </job:simple>
+    
+    <!-- 配置每月浏览器使用统计作业-->
+    <job:simple id="portalBrowserElasticJob" 
+        class="cn.uce.omg.portal.job.PortalBrowserStatisticsTask" 
+        registry-center-ref="regCenter" 
+        sharding-total-count="${elastic.job.browser.sharding.total.count}" 
+        disabled="${elastic.job.browser.disabled}" 
+        sharding-item-parameters="${elastic.job.browser.sharding.item.parameters}"
+        description="portalBrowserElasticJob" 
+        cron="${elastic.job.browser.cron}">
+    </job:simple>
+    
+    <!-- 配置每月浏览器使用统计作业-->
+    <job:simple id="portalScreenElasticJob" 
+        class="cn.uce.omg.portal.job.PortalScreenStatisticsTask" 
+        registry-center-ref="regCenter" 
+        sharding-total-count="${elastic.job.screen.sharding.total.count}" 
+        disabled="${elastic.job.screen.disabled}" 
+        sharding-item-parameters="${elastic.job.screen.sharding.item.parameters}"
+        description="portalBrowserElasticJob" 
+        cron="${elastic.job.screen.cron}">
+    </job:simple>
+    
+    <!-- 配置登陆排名统计作业-->
+    <job:simple id="portalRankingElasticJob" 
+        class="cn.uce.omg.portal.job.PortalRankingStatisticsTask" 
+        registry-center-ref="regCenter" 
+        sharding-total-count="${elastic.job.ranking.sharding.total.count}" 
+        disabled="${elastic.job.ranking.disabled}" 
+        sharding-item-parameters="${elastic.job.ranking.sharding.item.parameters}"
+        description="portalRankingElasticJob" 
+        cron="${elastic.job.ranking.cron}">
+    </job:simple>
+</beans>

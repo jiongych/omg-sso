@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.IOtherOrgRelationDao">
+	<!--add by BaoJingyu 20180420 增加搜索时查询createType字段-->
+	<sql id="base_column_list">
+		ID,ORG_ID,SYSTEM_ID,OTHER_ORG_ID,OTHER_ORG_CODE,OTHER_ORG_NAME,REMARK,CREATE_TIME,UPDATE_EMP,UPDATE_ORG,UPDATE_TIME,CREATE_TYPE
+	</sql>
+	<sql id="oor_base_column">
+		OOR.ID AS OOR_ID,OOR.ORG_ID AS OOR_ORG_ID,OOR.SYSTEM_ID AS OOR_SYSTEM_ID,OOR.OTHER_ORG_ID AS OOR_OTHER_ORG_ID,OOR.OTHER_ORG_CODE AS OOR_OTHER_ORG_CODE,OOR.OTHER_ORG_NAME AS OOR_OTHER_ORG_NAME,OOR.REMARK AS OOR_REMARK,OOR.CREATE_TIME AS OOR_CREATE_TIME,OOR.UPDATE_EMP AS OOR_UPDATE_EMP,OOR.UPDATE_ORG AS OOR_UPDATE_ORG,OOR.UPDATE_TIME AS OOR_UPDATE_TIME
+	</sql>
+	<sql id="cmsor_base_column">
+		CMSOR.ID AS CMSOR_ID,CMSOR.ORG_ID AS CMSOR_ORG_ID,CMSOR.SYSTEM_ID AS CMSOR_SYSTEM_ID,CMSOR.OTHER_ORG_ID AS CMSOR_OTHER_ORG_ID,CMSOR.OTHER_ORG_CODE AS CMSOR_OTHER_ORG_CODE,CMSOR.OTHER_ORG_NAME AS CMSOR_OTHER_ORG_NAME,CMSOR.REMARK AS CMSOR_REMARK,CMSOR.CREATE_TIME AS CMSOR_CREATE_TIME,CMSOR.UPDATE_EMP AS CMSOR_UPDATE_EMP,CMSOR.UPDATE_ORG AS CMSOR_UPDATE_ORG,CMSOR.UPDATE_TIME AS CMSOR_UPDATE_TIME
+	</sql>
+	<sql id="dingor_base_column">
+		DINGOR.ID AS DINGOR_ID,DINGOR.ORG_ID AS DINGOR_ORG_ID,DINGOR.SYSTEM_ID AS DINGOR_SYSTEM_ID,DINGOR.OTHER_ORG_ID AS DINGOR_OTHER_ORG_ID,DINGOR.OTHER_ORG_CODE AS DINGOR_OTHER_ORG_CODE,DINGOR.OTHER_ORG_NAME AS DINGOR_OTHER_ORG_NAME,DINGOR.REMARK AS DINGOR_REMARK,DINGOR.CREATE_TIME AS DINGOR_CREATE_TIME,DINGOR.UPDATE_EMP AS DINGOR_UPDATE_EMP,DINGOR.UPDATE_ORG AS DINGOR_UPDATE_ORG,DINGOR.UPDATE_TIME AS DINGOR_UPDATE_TIME
+	</sql>
+	<resultMap id="OtherOrgRelationMap" type="OtherOrgRelationVo">
+    	<id column="ID" jdbcType="BIGINT" property="id" />
+    	<result column="ORG_ID" jdbcType="INTEGER" property="orgId" />
+    	<result column="SYSTEM_ID" jdbcType="SMALLINT" property="systemId" />
+    	<result column="OTHER_ORG_ID" jdbcType="INTEGER" property="otherOrgId" />
+    	<result column="OTHER_ORG_CODE" jdbcType="VARCHAR" property="otherOrgCode" />
+    	<result column="OTHER_ORG_NAME" jdbcType="VARCHAR" property="otherOrgName" />
+    	<result column="REMARK" jdbcType="VARCHAR" property="remark" />
+   	 	<result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    	<result column="UPDATE_EMP" jdbcType="VARCHAR" property="updateEmp" />
+    	<result column="UPDATE_ORG" jdbcType="INTEGER" property="updateOrg" />
+    	<result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+  	</resultMap>
+	
+	<select id="findByCondition" parameterType="otherOrgRelationVo" resultType="otherOrgRelationVo">
+		SELECT <include refid="base_column_list"/>
+		FROM OMG_OTHER_ORG_RELATION
+		<where>
+			<if test="id != null">
+				AND ID = #{id}
+			</if>
+			<if test="orgId != null">
+				AND ORG_ID = #{orgId}
+			</if>
+			<if test="otherOrgId != null">
+				AND OTHER_ORG_ID = #{otherOrgId}
+			</if>
+			<if test="systemId != null">
+				AND SYSTEM_ID = #{systemId}
+			</if>
+			<if test="beginUpdateTime != null">
+				AND UPDATE_TIME >= #{beginUpdateTime}
+			</if>
+			<if test="endUpdateTime != null">
+				AND UPDATE_TIME <![CDATA[<]]>#{endUpdateTime}
+			</if>
+		</where>
+		<!-- 20180308 BaoJingyu add begin -->
+		<if test="currentPage != null and pageSize != null">
+			LIMIT #{currentPage},#{pageSize}
+		</if>
+		<!-- 20180308 BaoJingyu add end -->
+	</select>
+
+	<!--add by BaoJingyu 20180418 增加create_type字段-->
+	<!--机构绑定系统信息-->
+	<insert id="insert" parameterType="otherOrgRelationVo" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO
+		OMG_OTHER_ORG_RELATION(ORG_ID,SYSTEM_ID,OTHER_ORG_ID,OTHER_ORG_CODE,OTHER_ORG_NAME,REMARK,CREATE_TIME,UPDATE_EMP,UPDATE_ORG,UPDATE_TIME,CREATE_TYPE)
+		VALUES(#{orgId},#{systemId},#{otherOrgId},#{otherOrgCode},#{otherOrgName},#{remark},#{createTime},#{updateEmp},#{updateOrg},#{updateTime},#{createType})
+	</insert>
+
+	<delete id="deleteByCondition" parameterType="otherOrgRelationVo">
+		DELETE FROM OMG_OTHER_ORG_RELATION 
+		<where>
+			ORG_ID=#{orgId} 
+			<if test="systemId != null">
+				AND SYSTEM_ID=#{systemId} 
+			</if>
+			<if test="otherOrgId != null">
+				AND OTHER_ORG_ID= #{otherOrgId}
+			</if>
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="otherOrgRelationVo">
+		UPDATE OMG_OTHER_ORG_RELATION
+		<set>
+			<if test="orgId != null">
+				ORG_ID = #{orgId},
+			</if>
+			<if test="systemId != null">
+				SYSTEM_ID = #{systemId},
+			</if>
+			<if test="otherOrgId != null">
+				OTHER_ORG_ID = #{otherOrgId},
+			</if>
+			<if test="otherOrgCode != null">
+				OTHER_ORG_CODE = #{otherOrgCode},
+			</if>
+			<if test="otherOrgName != null">
+				OTHER_ORG_NAME = #{otherOrgName},
+			</if>
+			<if test="remark != null">
+				REMARK = #{remark},
+			</if>
+			<if test="updateEmp != null">
+				UPDATE_EMP = #{updateEmp},
+			</if>
+			<if test="updateOrg != null">
+				UPDATE_ORG = #{updateOrg},
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME = #{updateTime},
+			</if>
+		</set>
+		WHERE ID = #{id}
+	</update>
+	
+	<select id="findOrgRelationCountByCondition" parameterType="otherOrgRelationVo" resultType="java.lang.Integer">
+   	 	SELECT COUNT(*) FROM OMG_OTHER_ORG_RELATION 
+	    <where>
+		    <if test="orgId!=null">
+		    	AND ORG_ID=#{orgId}
+		    </if>
+		     <if test="otherOrgId!=null">
+		    	AND OTHER_ORG_ID=#{otherOrgId}
+		    </if>
+		     <if test="systemId!=null">
+		    	AND SYSTEM_ID=#{systemId}
+		    </if>
+	    </where>
+    </select>
+    
+    <!-- 乾坤所属网点 -->
+    <select id="findCmsOrgType" parameterType="otherOrgRelationVo" resultType="otherOrgRelationVo">
+		SELECT OCO.BASE_ORG_CODE,OCO.ORG_TYPE FROM OMG_OTHER_ORG_RELATION OOR 
+		LEFT JOIN OMG_CMS_ORG OCO ON OOR.ORG_ID = OCO.ORG_ID
+		WHERE OOR.OTHER_ORG_ID =#{otherOrgId} AND OOR.SYSTEM_ID =#{systemId}
+	</select>
+
+</mapper>

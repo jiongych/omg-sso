@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.ICompanyNoticeDao">
+
+	<select id="findNoticeByPageNew" parameterType="cn.uce.omg.portal.vo.PortalCompanyNoticeVo" resultType="cn.uce.omg.portal.vo.PortalCompanyNoticeVo">
+		SELECT 
+			OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID AS ID,
+			OMG_PORTAL_UCT_NOTICE_DATA.TITLE,
+			OMG_PORTAL_UCT_NOTICE_DATA.CONTENT,
+			OMG_PORTAL_UCT_NOTICE_DATA.NAME_SCOPE AS AUTHOR,
+			(SELECT OMG_EMP.EMP_NAME FROM OMG_EMP WHERE OMG_EMP.EMP_CODE=OMG_PORTAL_UCT_NOTICE_DATA.CREATE_EMP) AS CREATE_EMP,
+			(SELECT view_flag FROM omg_portal_company_notice_record 
+				WHERE OMG_PORTAL_COMPANY_NOTICE_RECORD.NOTICE_ID = OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID 
+				AND OMG_PORTAL_COMPANY_NOTICE_RECORD.VIEW_USER = #{empCode} LIMIT 1) view_flag,
+			OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG,
+			OMG_PORTAL_UCT_NOTICE_DATA.CREATE_TIME,
+			(SELECT TYPE_NAME FROM OMG_PORTAL_UCT_NOTICE_TYPE WHERE TYPE_ID = OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID) ONE_NAME,
+  			(SELECT TYPE_NAME FROM OMG_PORTAL_UCT_NOTICE_TYPE WHERE TYPE_ID = OMG_PORTAL_UCT_NOTICE_DATA.SON_ID) TWO_NAME,
+			<!-- (SELECT count(*) FROM OMG_PORTAL_COMPANY_NOTICE_RECORD WHERE OMG_PORTAL_COMPANY_NOTICE_RECORD.NOTICE_ID = OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID) AS view_count, -->
+		IF (TO_DAYS(NOW()) - TO_DAYS(OMG_PORTAL_UCT_NOTICE_DATA.istop_time) >= 0 AND 
+			TO_DAYS(NOW()) - TO_DAYS(OMG_PORTAL_UCT_NOTICE_DATA.ISTOP_TIME) <![CDATA[ <= ]]> OMG_PORTAL_UCT_NOTICE_DATA.ISTOP_DAY, 1, 0) AS setTop
+		FROM OMG_PORTAL_UCT_NOTICE_DATA 
+		<where>
+			(
+			<if test="orgListStr != null and orgListStr != ''">
+				${orgListStr}
+			</if>
+			OR OMG_PORTAL_UCT_NOTICE_DATA.CODE_SCOPE = '' 
+			OR OMG_PORTAL_UCT_NOTICE_DATA.CODE_SCOPE IS NULL
+			)
+			<if test="typeId != 0 and typeId != null">
+				<if test="typeId == '00004'">
+					AND (OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID = #{typeId} OR OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG = #{typeId} OR (OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG = '37246'))
+				</if>
+				<if test="typeId != '00004'">
+					AND (OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID = #{typeId} OR OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG = #{typeId})
+				</if>
+			</if>
+			<if test="title != null and title != ''">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.TITLE LIKE concat('%', #{title}, '%')
+			</if>
+			<if test="parentId != null">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID = #{parentId}
+			</if>
+			<if test="sonId != null">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.SON_ID = #{sonId}
+			</if>
+			<if test="sonId == null">
+				AND (OMG_PORTAL_UCT_NOTICE_DATA.SON_ID != 55 OR OMG_PORTAL_UCT_NOTICE_DATA.SON_ID IS NULL)
+			</if>
+			<if test="mustReadFlag != null and mustReadFlag == 1">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.MUST_READ_FLAG = #{mustReadFlag}
+			</if>
+			<if test="content != null and content != ''">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.CONTENT LIKE concat('%', #{content}, '%')
+			</if>
+			<if test="createTime != null and updateTime != null">
+		    	<![CDATA[ and OMG_PORTAL_UCT_NOTICE_DATA.create_time between #{createTime,jdbcType=TIMESTAMP} and #{updateTime,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="createTime != null and updateTime == null">
+			    <![CDATA[ and OMG_PORTAL_UCT_NOTICE_DATA.create_time >= #{createTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="createTime == null and updateTime != null">
+			    <![CDATA[ and OMG_PORTAL_UCT_NOTICE_DATA.create_time <= #{updateTime,jdbcType=TIMESTAMP}]]>
+			</if>
+		</where>
+		ORDER BY setTop DESC, CREATE_TIME DESC
+	</select>
+	
+	
+	<select id="findNoticeByPage" parameterType="cn.uce.omg.portal.vo.PortalCompanyNoticeVo" resultType="cn.uce.omg.portal.vo.PortalCompanyNoticeVo">
+		SELECT 
+			OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID AS ID,
+			OMG_PORTAL_UCT_NOTICE_DATA.TITLE,
+			OMG_PORTAL_UCT_NOTICE_DATA.CONTENT,
+			OMG_PORTAL_UCT_NOTICE_DATA.NAME_SCOPE AS AUTHOR,
+			(SELECT OMG_EMP.EMP_NAME FROM OMG_EMP WHERE OMG_EMP.EMP_CODE=OMG_PORTAL_UCT_NOTICE_DATA.CREATE_EMP) AS CREATE_EMP,
+			(SELECT view_flag FROM omg_portal_company_notice_record 
+				WHERE OMG_PORTAL_COMPANY_NOTICE_RECORD.NOTICE_ID = OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID 
+				AND OMG_PORTAL_COMPANY_NOTICE_RECORD.VIEW_USER = #{empCode} LIMIT 1) view_flag,
+			OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG,
+			OMG_PORTAL_UCT_NOTICE_DATA.CREATE_TIME,
+			(SELECT TYPE_NAME FROM OMG_PORTAL_UCT_NOTICE_TYPE WHERE TYPE_ID = OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID) ONE_NAME,
+  			(SELECT TYPE_NAME FROM OMG_PORTAL_UCT_NOTICE_TYPE WHERE TYPE_ID = OMG_PORTAL_UCT_NOTICE_DATA.SON_ID) TWO_NAME,
+			(SELECT OMG_EMP.EMP_NAME FROM OMG_EMP WHERE OMG_EMP.EMP_CODE=OMG_PORTAL_UCT_NOTICE_DATA.UPDATE_EMP) AS UPDATE_EMP,
+			<!-- (SELECT count(*) FROM OMG_PORTAL_COMPANY_NOTICE_RECORD WHERE OMG_PORTAL_COMPANY_NOTICE_RECORD.NOTICE_ID = OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID) AS view_count, -->
+			OMG_PORTAL_UCT_NOTICE_DATA.UPDATE_ORG,
+			OMG_PORTAL_UCT_NOTICE_DATA.UPDATE_TIME,
+		IF (TO_DAYS(NOW()) - TO_DAYS(OMG_PORTAL_UCT_NOTICE_DATA.istop_time) >= 0 AND 
+			TO_DAYS(NOW()) - TO_DAYS(OMG_PORTAL_UCT_NOTICE_DATA.ISTOP_TIME) <![CDATA[ <= ]]> OMG_PORTAL_UCT_NOTICE_DATA.ISTOP_DAY, 1, 0) AS setTop
+		FROM OMG_PORTAL_UCT_NOTICE_DATA 
+		<where>
+			(FIND_IN_SET(#{orgId}, OMG_PORTAL_UCT_NOTICE_DATA.CODE_SCOPE)
+			OR OMG_PORTAL_UCT_NOTICE_DATA.CODE_SCOPE = '' 
+			OR OMG_PORTAL_UCT_NOTICE_DATA.CODE_SCOPE IS NULL
+			)
+			<if test="typeId != 0 and typeId != null">
+				<if test="typeId == '00004'">
+					AND (OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID = #{typeId} OR OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG = #{typeId} OR (OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG = '37246'))
+				</if>
+				<if test="typeId != '00004'">
+					AND (OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID = #{typeId} OR OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG = #{typeId})
+				</if>
+			</if>
+			<if test="title != null and title != ''">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.TITLE LIKE concat('%', #{title}, '%')
+			</if>
+			<if test="parentId != null">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID = #{parentId}
+			</if>
+			<if test="sonId != null">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.SON_ID = #{sonId}
+			</if>
+			<if test="mustReadFlag != null and mustReadFlag == 1">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.MUST_READ_FLAG = #{mustReadFlag}
+			</if>
+			<if test="content != null and content != ''">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.CONTENT LIKE concat('%', #{content}, '%')
+			</if>
+			<if test="createTime != null and updateTime != null">
+		    	<![CDATA[ and OMG_PORTAL_UCT_NOTICE_DATA.create_time between #{createTime,jdbcType=TIMESTAMP} and #{updateTime,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="createTime != null and updateTime == null">
+			    <![CDATA[ and OMG_PORTAL_UCT_NOTICE_DATA.create_time >= #{createTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="createTime == null and updateTime != null">
+			    <![CDATA[ and OMG_PORTAL_UCT_NOTICE_DATA.create_time <= #{updateTime,jdbcType=TIMESTAMP}]]>
+			</if>
+		</where>
+		ORDER BY setTop DESC, CREATE_TIME DESC
+	</select>
+	
+	<resultMap type="cn.uce.omg.portal.vo.PortalCompanyNoticeVo" id="findNoticeResultMap">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="content" column="content"/>
+		<result property="author" column="author"/>
+		<result property="createTime" column="create_time"/>
+		<result property="oneName" column="ONE_NAME"/>
+		<result property="twoName" column="TWO_NAME"/>
+		<result property="createOrg" column="CREATE_ORG"/>
+		<collection property="noticeFiles" column="noticeFiles" ofType="java.util.Map">
+			<result property="filePath" column="filePath"/>
+			<result property="fileName" column="fileName"/>
+		</collection>
+	</resultMap>
+	<!-- 根据ID查询 -->
+	<select id="findNoticeById" parameterType="java.lang.Long" resultMap="findNoticeResultMap">
+		SELECT 	
+			OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID AS ID,
+			OMG_PORTAL_UCT_NOTICE_DATA.TITLE,
+			OMG_PORTAL_UCT_NOTICE_DATA.CONTENT,
+			OMG_PORTAL_UCT_NOTICE_DATA.NAME_SCOPE AS AUTHOR,
+			OMG_PORTAL_UCT_NOTICE_DATA.CREATE_TIME,
+			OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG,
+			(SELECT TYPE_NAME FROM OMG_PORTAL_UCT_NOTICE_TYPE WHERE TYPE_ID = OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID) ONE_NAME,
+  			(SELECT TYPE_NAME FROM OMG_PORTAL_UCT_NOTICE_TYPE WHERE TYPE_ID = OMG_PORTAL_UCT_NOTICE_DATA.SON_ID) TWO_NAME,
+			OMG_PORTAL_UCT_NOTICE_FILES.FILE_PATH AS filePath,
+  			OMG_PORTAL_UCT_NOTICE_FILES.FILE_NAME AS fileName
+		FROM OMG_PORTAL_UCT_NOTICE_DATA
+		LEFT JOIN OMG_PORTAL_UCT_NOTICE_FILES 
+    	ON OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID = OMG_PORTAL_UCT_NOTICE_FILES.NOTICE_ID 
+		WHERE OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID = #{id}
+	</select>
+	
+	
+		<!-- 根据条件查询数量 -->
+	<select id="findRecordByNoticeId" parameterType="cn.uce.omg.portal.vo.PortalCompanyNoticeRecordVo" resultType="java.lang.Integer">
+		SELECT count(1) FROM OMG_PORTAL_COMPANY_NOTICE_RECORD 
+		<where>
+			<if test="noticeId != null and noticeId != ''">
+				AND NOTICE_ID = #{noticeId}
+			</if>
+			<if test="viewUser != null and viewUser != ''">
+				AND VIEW_USER = #{viewUser}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 保存查看记录 -->
+	<insert id="saveNoticeRecord" parameterType="cn.uce.omg.portal.vo.PortalCompanyNoticeRecordVo" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO
+		OMG_PORTAL_COMPANY_NOTICE_RECORD(NOTICE_ID,VIEW_USER,VIEW_TIME,VIEW_FLAG,DATA_SOURCES)
+		VALUES(#{noticeId},#{viewUser},#{viewTime},#{viewFlag},#{dataSources})
+	</insert>
+	
+	<select id="findFullOrgIdList" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT org_full_id FROM omg_org WHERE ORG_ID = #{orgId}
+	</select>
+	
+	<resultMap type="cn.uce.omg.portal.vo.NoticeParentInfoVo" id="noticeTypeResultMap">
+		<result property="typeName" column="type_name"/>
+		<result property="parentId" column="type_id"/>
+		<collection property="towTwoLeveInfoList" ofType="cn.uce.omg.portal.vo.NoticeTwoLeveInfoVo" javaType="java.util.List">
+			<result property="twoLeveTypeName" column="two_leve_type_name"/>
+			<result property="twoLeveTypeId" column="two_leve_type_id"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findNoticeType" resultMap="noticeTypeResultMap">
+		SELECT 
+		  o.TYPE_ID AS type_id,
+		  o.TYPE_NAME AS type_name,
+		  t.TYPE_ID AS two_leve_type_id,
+		  t.TYPE_NAME AS two_leve_type_name 
+		FROM
+		  OMG_PORTAL_UCT_NOTICE_TYPE o 
+		  LEFT JOIN OMG_PORTAL_UCT_NOTICE_TYPE t ON o.TYPE_ID = t.PARENT_ID 
+		WHERE o.PARENT_ID IS NULL AND o.ORDER_ID IS NOT NULL ORDER BY o.ORDER_ID
+	</select>
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- 优速通公告接收 begin -->
+	<bean id="uctNoticeSyncListener" class="cn.uce.portal.sync.biz.impl.UctNoticeSyncBiz"></bean>
+	<bean id="uctNoticeRocketListenerContainer" class="cn.uce.core.mq.rocket.listener.RocketMessageListenerContainer"
+      init-method="start" destroy-method="shutdown">
+	    <property name="consumer">
+	        <bean class="com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer" parent="mqClientConfig">
+	            <!-- 自定义消费id -->
+	            <property name="consumerGroup" value="CID_PORTAL_SYNC_UCT_NOTICE"></property>
+	            <!-- 消费线程数最小值 -->
+	            <property name="consumeThreadMin" value="${uctNoticeSyncListener.consumeThreadNum}"></property>
+	            <!-- 消费线程数最大值 -->
+	            <property name="consumeThreadMax" value="${uctNoticeSyncListener.consumeThreadNum}"></property>
+	            <!-- 消息批量消费消息最大数量 -->
+	            <property name="consumeMessageBatchMaxSize" value="${uctNoticeSyncListener.consumeBatchMaxSize}"/>
+	        </bean>
+	    </property>
+	    <property name="subscriptionMap">
+	        <map>
+	            <entry value-ref="uctNoticeSyncListener">
+	                <key>
+	                    <bean class="cn.uce.core.mq.api.listener.Subscription">
+	                        <!-- 自定义topic -->
+	                        <property name="topicName" value="uctNoticeTopic"/>
+	                    </bean>
+	                </key>
+	            </entry>
+	        </map>
+	    </property>
+	</bean>
+	<!-- 优速通公告接收 end -->
+
+	<!-- 公告读取接收 begin -->
+	<bean id="noticeReadSyncListener" class="cn.uce.portal.sync.biz.impl.CompanyNoticeRecordSyncBiz"></bean>
+	<bean id="noticeReadRocketListenerContainer" class="cn.uce.core.mq.rocket.listener.RocketMessageListenerContainer"
+      init-method="start" destroy-method="shutdown">
+	    <property name="consumer">
+	        <bean class="com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer" parent="mqClientConfig">
+	            <!-- 自定义消费id -->
+	            <property name="consumerGroup" value="CID_PORTAL_NOTICE_READ"></property>
+	            <!-- 消费线程数最小值 -->
+	            <property name="consumeThreadMin" value="${uctNoticeSyncListener.consumeThreadNum}"></property>
+	            <!-- 消费线程数最大值 -->
+	            <property name="consumeThreadMax" value="${uctNoticeSyncListener.consumeThreadNum}"></property>
+	            <!-- 消息批量消费消息最大数量 -->
+	            <property name="consumeMessageBatchMaxSize" value="${uctNoticeSyncListener.consumeBatchMaxSize}"/>
+	        </bean>
+	    </property>
+	    <property name="subscriptionMap">
+	        <map>
+	            <entry value-ref="noticeReadSyncListener">
+	                <key>
+	                    <bean class="cn.uce.core.mq.api.listener.Subscription">
+	                        <!-- 自定义topic -->
+	                        <property name="topicName" value="uctNoticeReadTopic"/>
+	                    </bean>
+	                </key>
+	            </entry>
+	        </map>
+	    </property>
+	</bean>
+	<!-- 公告读取接收 end -->
+	
+	<!-- 新乾坤首页搜集菜单点击信息  begin -->
+	<bean id="collectPermissionSyncListener" class="cn.uce.portal.sync.biz.impl.CollectPermissionSyncBiz"></bean>
+	<bean id="collectPermissionRocketListenerContainer" class="cn.uce.core.mq.rocket.listener.RocketMessageListenerContainer"
+      init-method="start" destroy-method="shutdown">
+	    <property name="consumer">
+	        <bean class="com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer" parent="mqClientConfig">
+	            <!-- 自定义消费id -->
+	            <property name="consumerGroup" value="CID_COLLECT_OPEN_PERMISSION"></property>
+	            <!-- 消费线程数最小值 -->
+	            <property name="consumeThreadMin" value="${collectPermissionSyncListener.consumeThreadNum}"></property>
+	            <!-- 消费线程数最大值 -->
+	            <property name="consumeThreadMax" value="${collectPermissionSyncListener.consumeThreadNum}"></property>
+	            <!-- 消息批量消费消息最大数量 -->
+	            <property name="consumeMessageBatchMaxSize" value="${collectPermissionSyncListener.consumeBatchMaxSize}"/>
+	        </bean>
+	    </property>
+	    <property name="subscriptionMap">
+	        <map>
+	            <entry value-ref="collectPermissionSyncListener">
+	                <key>
+	                    <bean class="cn.uce.core.mq.api.listener.Subscription">
+	                        <!-- 自定义topic -->
+	                        <property name="topicName" value="portalCollectOpenPermissionTopic"/>
+	                    </bean>
+	                </key>
+	            </entry>
+	        </map>
+	    </property>
+	</bean>
+	<!-- 新乾坤首页搜集菜单点击信息 end -->
+</beans>

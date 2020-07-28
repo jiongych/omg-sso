@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IHomePageInfoDao">
+
+	<select id="findHomeInfoByPage" parameterType="cn.uce.omg.portal.vo.PortalHomePageInfoVo" resultType="cn.uce.omg.portal.vo.PortalHomePageInfoVo">
+		SELECT * FROM OMG_PORTAL_HOME_PAGE_INFO 
+		<where>
+			<if test="sysName != null and sysName != ''">
+				AND OMG_PORTAL_HOME_PAGE_INFO.SYS_NAME LIKE concat('%', #{sysName}, '%')
+			</if>
+			<if test="sysType != null">
+				AND OMG_PORTAL_HOME_PAGE_INFO.SYS_TYPE = #{sysType}
+			</if>
+		</where>
+		ORDER BY OMG_PORTAL_HOME_PAGE_INFO.SORT
+	</select>
+	
+</mapper>

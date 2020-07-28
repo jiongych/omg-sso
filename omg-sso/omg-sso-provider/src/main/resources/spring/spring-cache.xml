@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd">
+	
+	<!-- add by zhangRb 20180716 本地缓存实现  -->
+	<bean id="localStorage" class="cn.uce.core.cache.storage.LocallyStorage">
+    	<property name="maxCapacity" value="${locallyStorage.maxCapacity}"></property>
+  	</bean>
+	
+	<bean id="empCache" class="cn.uce.omg.sso.cache.EmpCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${empCache.timeout}"></property>
+		<property name="empBiz" ref="empBiz"></property>
+	</bean>
+	
+	<bean id="userCache" class="cn.uce.omg.sso.cache.UserCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="${userCache.timeout}"></property>
+		<property name="userBiz" ref="userBiz"></property>
+	</bean>
+		
+	<!-- redis缓存管理器 -->
+	<bean id="redisCacheManager" class="cn.uce.core.cache.redis.RedisCacheManager" scope="singleton">
+		<property name="client" ref="redisClient"/>
+	</bean>
+	
+	<!-- 集合缓存实例 -->
+	<bean id="collectionCache" class="cn.uce.core.cache.redis.RedisCacheFactoryBean">
+		<property name="cacheManager" ref="redisCacheManager"/>
+		<property name="cacheName" value="omgCollectionCache"/>
+	</bean>
+	
+	<!-- 方法缓存实例 -->
+	<bean id="methodCache" class="cn.uce.core.cache.redis.RedisCacheFactoryBean">
+		<property name="cacheManager" ref="redisCacheManager"/>
+		<property name="cacheName" value="omgMethodCache"/>
+	</bean>
+	<bean id="outsideTokenCache" class="cn.uce.core.cache.redis.RedisCacheFactoryBean">
+		<property name="cacheManager" ref="redisCacheManager"/>
+		<property name="cacheName" value="omgOutsideTokenCache"/>
+	</bean>
+	
+	<!-- 实体类缓存实例 begin -->
+	<bean id="sysTypeClassCache" class="cn.uce.core.cache.redis.RedisCacheFactoryBean">
+		<property name="cacheManager" ref="redisCacheManager"/>
+		<property name="cacheName" value="omgSysTypeClassCache"/>
+	</bean>
+	<bean id="sysTypeCache" class="cn.uce.core.cache.redis.RedisCacheFactoryBean">
+		<property name="cacheManager" ref="redisCacheManager"/>
+		<property name="cacheName" value="omgSysTypeCache"/>
+	</bean>
+<!-- 	<bean id="empCache" class="cn.uce.core.cache.redis.RedisCacheFactoryBean"> -->
+<!-- 		<property name="cacheManager" ref="redisCacheManager"/> -->
+<!-- 		<property name="cacheName" value="omgEmpCache"/> -->
+<!-- 	</bean> -->
+	<bean id="orgCache" class="cn.uce.core.cache.redis.RedisCacheFactoryBean">
+		<property name="cacheManager" ref="redisCacheManager"/>
+		<property name="cacheName" value="omgOrgCache"/>
+	</bean>
+	<bean id="areaCache" class="cn.uce.core.cache.redis.RedisCacheFactoryBean">
+		<property name="cacheManager" ref="redisCacheManager"/>
+		<property name="cacheName" value="omgAreaCache"/>
+	</bean>	
+	<bean id="roleCache" class="cn.uce.core.cache.redis.RedisCacheFactoryBean">
+		<property name="cacheManager" ref="redisCacheManager"/>
+		<property name="cacheName" value="omgRoleCache"/>
+	</bean>
+	<bean id="systemInfoCache" class="cn.uce.core.cache.redis.RedisCacheFactoryBean">
+		<property name="cacheManager" ref="redisCacheManager"/>
+		<property name="cacheName" value="omgSystemInfoCache"/>
+	</bean>
+	<bean id="virtualOrgCache" class="cn.uce.core.cache.redis.RedisCacheFactoryBean">
+		<property name="cacheManager" ref="redisCacheManager"/>
+		<property name="cacheName" value="omgVirtualOrgCache"/>
+	</bean>
+	<bean id="cmsOrgCache" class="cn.uce.core.cache.redis.RedisCacheFactoryBean">
+		<property name="cacheManager" ref="redisCacheManager"/>
+		<property name="cacheName" value="omgCmsOrgCache"/>
+	</bean>
+	<!-- 实体类缓存实例 end -->
+
+	<!-- 集合缓存加载器 -->
+	<bean id="collectionCacheLoader" class="cn.uce.core.cache.loader.CollectionCacheLoader">
+		<property name="cache">
+			<ref local="collectionCache" />
+		</property>
+	</bean>
+
+	<!-- 方法缓存加载器 -->
+	<bean id="methodCacheLoader" class="cn.uce.core.cache.loader.MethodCacheLoader">
+		<property name="cache">
+			<ref local="methodCache" />
+		</property>
+	</bean>
+	
+	<!-- 实体类缓存加载器 begin-->
+	<!-- 机构缓存加载器 -->
+	<bean id="ssoOrgCacheLoader" class="cn.uce.core.cache.loader.EntityCacheLoader">
+		<property name="cache" ref="orgCache"/>
+		<property name="dao" ref="orgDao"/>
+		<property name="cacheLabel" value="cn.uce.omg.sso.service.OrgService"/>
+		<property name="primaryKeyField" value="orgId"/>
+		<property name="initCache" value="${org.initCache.sso.provider}"></property>
+	</bean>
+	
+	<!-- 角色缓存加载器 -->
+	<bean id="ssoRoleCacheLoader" class="cn.uce.core.cache.loader.EntityCacheLoader">
+		<property name="cache" ref="roleCache"/>
+		<property name="dao" ref="roleDao"/>
+		<property name="cacheLabel" value="cn.uce.omg.sso.service.RoleService"/>
+		<property name="primaryKeyField" value="roleCode"/>
+		<property name="initCache" value="${role.initCache.sso.provider}"></property>
+	</bean>
+	
+	<!-- 系统信息缓存加载器 -->
+	<bean id="ssoSystemInfoCacheLoader" class="cn.uce.core.cache.loader.EntityCacheLoader">
+		<property name="cache" ref="systemInfoCache"/>
+		<property name="dao" ref="systemInfoDao"/>
+		<property name="cacheLabel" value="cn.uce.omg.sso.service.SystemInfoService"/>
+		<property name="primaryKeyField" value="systemCode"/>
+		<property name="initCache" value="${systemInfo.initCache.sso.provider}"></property>
+	</bean>
+	<!-- 实体类缓存加载器 end-->
+
+	<!-- 数据改变缓存拦截器 -->
+	<!-- 异步刷新 -->
+	<bean id="dataChangedInterceptor" class="cn.uce.core.cache.interceptor.DataChangedInterceptor">
+		<property name="mqTemplate" ref="omgCacheDataChangedTemplate"/>
+	</bean>
+	
+	<!-- 集合缓存拦截器 -->
+	<bean id="collectionCacheInterceptor"
+		class="cn.uce.core.cache.interceptor.CollectionCacheInterceptor">
+		<property name="cache">
+			<ref local="collectionCache" />
+		</property>
+	</bean>
+
+	<!-- 方法拦截器 -->
+	<bean id="methodCacheInterceptor"
+		class="cn.uce.core.cache.interceptor.MethodCacheInterceptor">
+		<property name="cache">
+			<ref local="methodCache" />
+		</property>
+	</bean>
+
+	<!-- 系统类型缓存拦截器 -->
+	<bean id="sysTypeClassCacheInterceptor"
+		class="cn.uce.core.cache.interceptor.EntityCacheInterceptor">
+		<property name="cache">
+			<ref local="sysTypeClassCache" />
+		</property>
+	</bean>
+	
+	<!-- 系统类型缓存拦截器 -->
+	<bean id="sysTypeCacheInterceptor"
+		class="cn.uce.core.cache.interceptor.EntityCacheInterceptor">
+		<property name="cache">
+			<ref local="sysTypeCache" />
+		</property>
+	</bean>
+	
+	<!-- 机构缓存拦截器 -->
+	<bean id="orgCacheInterceptor" 
+		class="cn.uce.core.cache.interceptor.EntityCacheInterceptor">
+		<property name="cache">
+			<ref local="orgCache"/>
+		</property>
+	</bean>
+
+	<!-- 地区缓存拦截器 -->
+	<bean id="areaCacheInterceptor" 
+		class="cn.uce.core.cache.interceptor.EntityCacheInterceptor">
+		<property name="cache">
+			<ref local="areaCache"/>
+		</property>
+	</bean>
+	
+	<!-- 角色缓存拦截器 -->
+	<bean id="roleCacheInterceptor" 
+		class="cn.uce.core.cache.interceptor.EntityCacheInterceptor">
+		<property name="cache">
+			<ref local="roleCache"/>
+		</property>
+	</bean>
+	
+	<!-- 虚拟机构缓存拦截器 -->
+	<bean id="virtualOrgCacheInterceptor"
+		class="cn.uce.core.cache.interceptor.EntityCacheInterceptor">
+		<property name="cache">
+			<ref local="virtualOrgCache"/>
+		</property>
+	</bean>
+	
+	<!-- 乾坤机构缓存拦截器 -->
+	<bean id="cmsOrgCacheInterceptor"
+		class="cn.uce.core.cache.interceptor.EntityCacheInterceptor">
+		<property name="cache">
+			<ref local="cmsOrgCache"/>
+		</property>
+	</bean>
+	
+	
+	<!-- 系统信息缓存拦截器 -->
+	<bean id="systemInfoCacheInterceptor" 
+		class="cn.uce.core.cache.interceptor.EntityCacheInterceptor">
+		<property name="cache">
+			<ref local="systemInfoCache"/>
+		</property>
+	</bean>
+	
+	<bean id="ssoCacheLoaderManager" class="cn.uce.core.cache.loader.CacheLoaderManager" 
+			init-method="start" destroy-method="destroy">
+		<property name="cacheLoaders">
+			<list>
+				<ref bean="collectionCacheLoader" />
+				<ref bean="methodCacheLoader" />
+		        <ref bean="ssoOrgCacheLoader" />  
+				<ref bean="ssoRoleCacheLoader" />
+				<ref bean="ssoSystemInfoCacheLoader" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="ssoCacheLoaderListenerContainer" class="cn.uce.core.mq.rocket.listener.RocketMessageListenerContainer" init-method="start" destroy-method="shutdown">
+       		<property name="consumerId" value="CID_SSO_CACHE_DATA_CHANGED"></property>
+       		<!-- 消费线程数，默认10 -->
+       		<property name="consumeThreadNums" value="5"></property>
+       		<property name="factory" ref="mqFactory"></property>
+       		<property name="listener" ref="ssoCacheLoaderManager"></property>
+       		<property name="topicName" value="omgCacheDataChanged"></property>
+       		<property name="instanceName" value="${omgCacheUpdateMqListener.instanceName.sso.provider}"></property>
+    </bean>
+	
+	<!-- AOP代理设置 -->
+	<aop:config>
+		<!-- 机构缓存切入点 -->
+		<aop:advisor id="orgByIdAdvisor" advice-ref="orgCacheInterceptor"
+			pointcut="execution(* cn.uce.omg.sso.service.OrgService.findOrgById(..))"/>
+		<aop:advisor id="orgByCodeAdvisor" advice-ref="methodCacheInterceptor"
+			pointcut="execution(* cn.uce.omg.sso.service.OrgService.findOrgByCode(..))"/>
+
+		<!-- 角色缓存切入点 -->
+		<aop:advisor id="roleByConditionCacheAdvisor" advice-ref="collectionCacheInterceptor"
+			pointcut="execution(* cn.uce.omg.sso.service.RoleService.findAllAvailableRole(..))"/>
+		<aop:advisor id="roleByCodeAdvisor" advice-ref="roleCacheInterceptor"
+			pointcut="execution(* cn.uce.omg.sso.service.RoleService.findRoleByCode(..))"/>
+		<aop:advisor id="userRoleRelByConditionAdvisor" advice-ref="methodCacheInterceptor"
+			pointcut="execution(* cn.uce.omg.sso.service.RoleService.findUserRoleRelByCondition(..))"/>
+			
+		<!-- 系统分类缓存切入点 -->
+		<aop:advisor id="sysInfoByConditionAdvisor" advice-ref="methodCacheInterceptor"
+			pointcut="execution(* cn.uce.omg.sso.service.SystemInfoService.findByCondition(..))" />
+		<aop:advisor id="sysInfoBySystemCodeAdvisor" advice-ref="systemInfoCacheInterceptor"
+			pointcut="execution(* cn.uce.omg.sso.service.SystemInfoService.findSystemBySystemCode(..))" />
+
+		<!-- 员工绑定关系切入点  -->
+ 		<aop:advisor id="otherEmpRelationByUniqueAdvisor" advice-ref="methodCacheInterceptor"
+ 			pointcut="execution(* cn.uce.omg.sso.service.OtherEmpRelationService.findOtherEmpRelationByUnique(..))"/>
+ 		<aop:advisor id="otherEmpRelationByUniqueAdvisor" advice-ref="methodCacheInterceptor"
+ 			pointcut="execution(* cn.uce.omg.sso.service.OtherEmpRelationService.findQkEmpRelationByEmpId(..))"/>
+
+		<!-- 数据变化存切入点 -->
+		<aop:advisor id="dataChangedAdvisor" advice-ref="dataChangedInterceptor"
+			pointcut="(execution(* cn.uce.omg.sso.service.*Service.create*(..)) 
+ 					or execution(* cn.uce.omg.sso.service.*Service.update*(..))  
+ 					or execution(* cn.uce.omg.sso.service.*Service.delete*(..)) ) 
+ 					AND !( execution(* cn.uce.omg.sso.service.UserService.*(..)) or execution(* cn.uce.omg.sso.service.EmpService.*(..)) )" /> 
+ 		
+	</aop:config>
+</beans>

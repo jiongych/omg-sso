@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+           http://www.springframework.org/schema/context/spring-context.xsd">
+     
+	<!-- 角色消息生产者 -->
+    <bean id="rolePushTemplate" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+       <property name="producer">
+            <bean class="com.alibaba.rocketmq.client.producer.DefaultMQProducer" parent="clientConfig">
+		       	  <property name="producerGroup" value="PID_OMG_ROLE_PUSH" />
+		       	  <property name="retryTimesWhenSendFailed" value="${mq.retryTimesWhenSendFailed}"></property>
+		       	  <property name="sendMsgTimeout" value="${mq.sendMsgTimeout}"></property>
+		       	  <property name="maxMessageSize" value="${mq.maxMessageSize}"></property>
+		    </bean>
+       </property>
+       <!-- 主题名称 -->
+       <property name="topic" value="omgPortalRolePush" />
+     </bean>      
+     
+    <!-- 權限消息生产者 -->
+    <bean id="permissionPushTemplate" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+       <property name="producer">
+           <bean class="com.alibaba.rocketmq.client.producer.DefaultMQProducer" parent="clientConfig">
+		       	  <property name="producerGroup" value="PID_OMG_PERMISSION_PUSH" />
+		       	  <property name="retryTimesWhenSendFailed" value="${mq.retryTimesWhenSendFailed}"></property>
+		       	  <property name="sendMsgTimeout" value="${mq.sendMsgTimeout}"></property>
+		       	  <property name="maxMessageSize" value="${mq.maxMessageSize}"></property>
+		    </bean>
+       </property>
+       <!-- 主题名称 -->
+       <property name="topic" value="omgPortalPermissionPush" />
+     </bean>
+     
+     <!-- 用戶消息生产者 -->
+    <bean id="userPushTemplate" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+       <property name="producer">
+            <bean class="com.alibaba.rocketmq.client.producer.DefaultMQProducer" parent="clientConfig">
+		       	  <property name="producerGroup" value="PID_OMG_USER_PUSH" />
+		       	  <property name="retryTimesWhenSendFailed" value="${mq.retryTimesWhenSendFailed}"></property>
+		       	  <property name="sendMsgTimeout" value="${mq.sendMsgTimeout}"></property>
+		       	  <property name="maxMessageSize" value="${mq.maxMessageSize}"></property>
+		    </bean>
+       </property>
+       <!-- 主题名称 -->
+       <property name="topic" value="omgPortalUserRoleRelPush" />
+     </bean>
+     
+      <!-- 数据字典消息生产者 -->
+    <bean id="dictDataPushTemplate" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+       <property name="producer">
+            <bean class="com.alibaba.rocketmq.client.producer.DefaultMQProducer" parent="clientConfig">
+		       	  <property name="producerGroup" value="PID_OMG_DICTDATA_PUSH" />
+		       	  <property name="retryTimesWhenSendFailed" value="${mq.retryTimesWhenSendFailed}"></property>
+		       	  <property name="sendMsgTimeout" value="${mq.sendMsgTimeout}"></property>
+		       	  <property name="maxMessageSize" value="${mq.maxMessageSize}"></property>
+		    </bean>
+       </property>
+       <!-- 主题名称 -->
+       <property name="topic" value="portalDictPush" />
+     </bean>
+     
+     <bean id="mqTemplateMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="rolePushTemplate" value-ref="rolePushTemplate"></entry>
+				<entry key="permissionPushTemplate" value-ref="permissionPushTemplate"></entry>
+				<entry key="userPushTemplate" value-ref="userPushTemplate"></entry>
+				<entry key="dictDataPushTemplate" value-ref="dictDataPushTemplate"></entry>
+			</map>
+		</constructor-arg>
+	</bean>
+</beans>

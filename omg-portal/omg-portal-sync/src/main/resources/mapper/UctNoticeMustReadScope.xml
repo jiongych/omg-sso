@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.portal.sync.dao.IUctNoticeMustReadScopeDao">
+
+	<select id="findNoticeMustReadScopeById" parameterType="java.lang.Long" resultType="cn.uce.portal.sync.entity.UctNoticeMustReadScope">
+		select * from omg_portal_uct_notice_must_read_scope where id = #{id}
+	</select>
+	
+	<update id="updateNoticeMustReadScopeById" parameterType="cn.uce.portal.sync.entity.UctNoticeMustReadScope">
+		UPDATE omg_portal_uct_notice_must_read_scope 
+		<set>
+			<if test="code != null and code !=''">
+			  code = #{code},
+			</if>
+			<if test="name != null and name !=''">
+			  name = #{name},
+			</if>
+			<if test="orgName != null and orgName !=''">
+			  org_name = #{orgName},
+			</if>
+			<if test="positionLevel != null and positionLevel !=''">
+			  position_level = #{positionLevel},
+			</if>
+			<if test="type != null and type !=''">
+			  type = #{type},
+			</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteNoticeMustReadScopeById" parameterType="java.lang.Long">
+		DELETE FROM omg_portal_uct_notice_must_read_scope WHERE notice_id = #{noticeId}
+	</delete>
+</mapper>

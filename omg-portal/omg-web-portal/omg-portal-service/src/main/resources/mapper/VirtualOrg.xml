@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IVirtualOrgDao">
+	
+	<!-- 查询所有虚拟机构树形节点 -->
+	<select id="findAllSyncVirtualOrgZTree" resultType="cn.uce.omg.portal.vo.OrgZTreeNodeVo">
+		SELECT
+		OMG_VIRTUAL_ORG.BASE_ORG_CODE AS id,
+		OMG_VIRTUAL_ORG.ORG_NAME AS name,
+		OMG_VIRTUAL_ORG.PARENT_ORG AS pid,
+		OMG_VIRTUAL_ORG.ORG_CODE AS orgCode,
+		OMG_VIRTUAL_ORG.ORG_TYPE AS orgType
+		FROM
+		OMG_VIRTUAL_ORG
+		WHERE
+		DELETE_FLAG = 0
+	</select>
+	
+</mapper>

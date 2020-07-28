@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IExportSetDao">
+	
+	<sql id="base_column_list">
+		id, SET_KEY, VALUE, CREATE_EMP, CREATE_ORG,CREATE_TIME, UPDATE_EMP, UPDATE_ORG, UPDATE_TIME
+	</sql>
+	
+	<select id="findExportSetByKey" resultType="cn.uce.omg.portal.vo.PortalExportSetVo">
+		SELECT <include refid="base_column_list"/> FROM FSP_EXPORT_SET
+		WHERE 
+		SET_KEY = #{key}
+	</select>
+	
+</mapper>

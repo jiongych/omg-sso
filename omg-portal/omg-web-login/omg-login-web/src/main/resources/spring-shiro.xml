@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"  
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+    xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"  
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.0.xsd">  
+    
+    <!-- 自定义权限定义 -->
+    <bean id="permissionsRealm" class="cn.uce.omg.login.realm.PermissionsRealm" />
+    <!-- 安全管理器 -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="permissionsRealm"/>  
+        <!-- 缓存管理器 -->
+        <property name="cacheManager" ref="shiroRedisCacheManager" />
+        <!-- session 管理器 -->
+      	<property name="sessionManager" ref="sessionManager" />
+    </bean>
+    <!-- redis 缓存管理器 -->
+    <bean id="shiroRedisCacheManager" class="org.crazycake.shiro.RedisCacheManager">
+    	<property name="redisManager" ref="shiroRedisManager" />
+    	<property name="keyPrefix" value="${realm.redis.namespace}" />
+    </bean>
+    <!-- update org.crazycake.shiro.RedisManager -->
+    <bean id="shiroRedisManager" class="cn.uce.omg.login.util.ShiroRedisManager">
+    	<property name="poolConfig" ref="ucePoolConfig"></property>
+		<property name="host" value="${redis.host}" />
+		<property name="port" value="${redis.port}" />
+		<property name="password" value="${redis.password}" />
+		<property name="expire" value="${session.maxInactiveInterval}" />
+		<property name="timeout" value="${redis.timeout}" />
+	</bean>
+    	
+	<!-- 提供单独的redis Dao -->
+	<bean id="redisSessionDAO" class="org.crazycake.shiro.RedisSessionDAO">
+      <property name="redisManager" ref="shiroRedisManager" />
+      <property name="keyPrefix" value="${session.redis.namespace}"></property>
+    </bean>
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">  
+        <property name="securityManager" ref="securityManager"/>
+        <property name="loginUrl" value="/login/loginAuthc.do"></property>
+        <property name="successUrl" value="login/loginIndex.do"></property>
+		<property name="unauthorizedUrl" value="login/forbidden.do" />
+        <property name="filters">  
+            <map>  
+               <entry key="authc" value-ref="formAuthenticationFilter"/>
+               <entry key="shiroSessionFilter" value-ref="shiroSessionFilter"></entry>
+            </map>  
+        </property> 
+        <property name="filterChainDefinitions">  
+            <value>
+               /check/checkAction.do=anon
+               /login/getSession.do=anon
+               /city/**=anon
+               /easyui-themes/**=anon
+               /images/**=anon
+               /jquery-easyui-1.5.1/**=anon
+               /scripts/**=anon
+               /styles/**=anon
+               /users/**=anon
+               /**=shiroSessionFilter,authc,user
+            </value>
+        </property>  
+    </bean>
+    <bean id="shiroSessionFilter" class="cn.uce.omg.login.filter.ShiroSessionFilter"></bean>
+     <!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    <!-- 开启Shiro的注解(如@RequiresRoles,@RequiresPermissions),需借助SpringAOP扫描使用Shiro注解的类,并在必要时进行安全逻辑验证 -->
+<!--     <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"  depends-on="lifecycleBeanPostProcessor"> -->
+<!--     	<property name="proxyTargetClass" value="true"/> -->
+<!--     </bean> -->
+<!--     <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor"> -->
+<!--        <property name="securityManager" ref="securityManager"/> -->
+<!--     </bean> -->
+  
+    <bean id="formAuthenticationFilter" class="org.apache.shiro.web.filter.authc.FormAuthenticationFilter"/> 
+    
+    <!-- session管理器 -->
+    <bean id="sessionManager" class="cn.uce.omg.login.filter.ShiroSessionManager">
+      <!-- 超时时间 -->
+      <property name="globalSessionTimeout" value="${session.global.timeout}" />
+      <!-- session存储的实现 -->
+      <property name="sessionDAO" ref="redisSessionDAO" />
+      <!-- <property name="deleteInvalidSessions" value="true"/> -->
+      <!-- 定时检查失效的session -->
+      <!-- <property name="sessionValidationSchedulerEnabled" value="true" /> -->
+      <!-- <property name="sessionValidationScheduler" ref="sessionValidationScheduler"/>
+      <property name="sessionIdCookieEnabled" value="true"/> -->
+      <property name="sessionIdCookie" ref="sessionIdCookie" />  
+    </bean>
+   
+	<!-- 会话验证调度器 -->
+	<!-- <bean id="sessionValidationScheduler"
+		class="org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler">
+		<property name="interval" value="9000" />
+		<property name="sessionManager" ref="sessionManager" />
+	</bean> -->
+   
+    <!-- sessionIdCookie的实现,用于重写覆盖容器默认的JSESSIONID -->  
+    <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">  
+        <!-- cookie的name,对应的默认是JSESSIONID -->  
+        <constructor-arg name="name" value="sid" />
+        <property name="domain" value=".uce.cn" />    
+        <!-- jsessionId的path为/用于多个系统共享jsessionId -->  
+        <property name="path" value="/" />  
+     	<property name="httpOnly" value="true"/>
+     	<property name="maxAge" value="-1" />
+    </bean>       
+    
+</beans>

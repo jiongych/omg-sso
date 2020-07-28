@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+           http://www.springframework.org/schema/context/spring-context.xsd">
+           
+      <!-- 消息生产者 -->
+      <bean id="loginSuccessTemplate" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+   		<!-- 连接工厂 -->
+   		<property name="factory" ref="mqFactory" />
+   		<!-- 生产者ID -->
+   		<property name="producerId" value="PID_SSO_LOGIN" />
+   		<!-- 主题名称 -->
+   		<property name="topicName" value="omgLoginSuccess" />
+       </bean>
+       
+       <!-- 修改密码消息生产者 -->
+      <!--  <bean id="pwdUpdateTemplate" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+	   	   <property name="factory" ref="ymMqFactory" />
+	   	   <property name="producerId" value="PID_UC_SSO_PWD_UPDATE" />
+	   	   <property name="topicName" value="ucUpdatePassword" />
+       </bean>  -->
+	
+	<bean id="updPassWordProducer" class="com.alibaba.rocketmq.client.producer.DefaultMQProducer" 
+			parent="mqClientConfig" init-method="start" destroy-method="shutdown">
+		<property name="producerGroup" value="PID_UC_SSO_PWD_UPDATE_YM"/>
+	</bean>
+	
+	<!-- 缓存数据变化拦截器 -->
+	<bean id="omgCacheDataChangedTemplate" class="cn.uce.core.mq.rocket.RocketTemplate"
+		init-method="start" destroy-method="shutdown">
+		<!-- 连接工厂 -->
+		<property name="factory" ref="mqFactory" />
+		<!-- 生产者ID -->
+		<property name="producerId" value="PID_OMG_CACHE_DATA_CHANGED" />
+		<!-- 主题名称 -->
+		<property name="topicName" value="omgCacheDataChanged" />
+	</bean>
+       
+    <!-- 消息生产者 -->
+    <bean id="passwordUpdateTemplate" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+       	<!-- 连接工厂 -->
+       	<property name="factory" ref="mqFactory" />
+       	<!-- 生产者ID -->
+       	<property name="producerId" value="PID_SSO_PASSWORD_UPDATE" />
+       	<!-- 主题名称 -->
+       	<property name="topicName" value="ssoPasswordUpdate" />
+     </bean>
+     
+ 	<!-- 用户读取公告消息生产者 -->
+  	<bean id="noticeReadTemplate" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+       	<!-- 连接工厂 -->
+       	<property name="factory" ref="mqFactory" />
+       	<!-- 生产者ID -->
+       	<property name="producerId" value="PID_NOTICE_READ" />
+       	<!-- 主题名称 -->
+       	<property name="topicName" value="uctNoticeReadTopic" />
+     </bean>
+       
+    <!-- 乾坤系统首页菜单点击操作日志 -->
+  	<bean id="openPermissionTemplate" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+       	<!-- 连接工厂 -->
+       	<property name="factory" ref="mqFactory" />
+       	<!-- 生产者ID -->
+       	<property name="producerId" value="PID_COLLECT_OPEN_PERMISSION" />
+       	<!-- 主题名称 -->
+       	<property name="topicName" value="portalCollectOpenPermissionTopic" />
+     </bean>
+     
+    <!-- 发送消息变更状态 -->
+  	<bean id="sendMessageStatusTemplate" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+       	<!-- 连接工厂 -->
+       	<property name="factory" ref="mqFactory" />
+       	<!-- 生产者ID -->
+       	<property name="producerId" value="PID_SEND_MESSAGE_STATUS" />
+       	<!-- 主题名称 -->
+       	<property name="topicName" value="mcsPortalSendMessageStatusTopic" />
+     </bean>
+     <!-- 菜鸟日志推送消息生产者 -->
+     <bean id="loginLogoutTemplate" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+		<!-- 连接工厂 -->
+		<property name="factory" ref="mqFactory" />
+		<!-- 生产者ID -->
+		<property name="producerId" value="PID_SSO_OLS_ACCESS_LOG" />
+		<!-- 主题名称 -->
+		<property name="topicName" value="olsAccessLog" />
+      </bean>
+</beans>

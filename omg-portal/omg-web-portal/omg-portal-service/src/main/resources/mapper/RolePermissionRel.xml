@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IRolePermissionRelDao">
+	<delete id="deleteByRoleCode" parameterType="java.lang.String">
+		delete from OMG_PORTAL_ROLE_PERMISSION_REL where role_code = #{_parameter}
+	</delete>
+	
+	<delete id="deleteByRoleId" parameterType="java.lang.Long">
+		delete from OMG_PORTAL_ROLE_PERMISSION_REL where role_code in (select role_code from fsp_role where id = #{_parameter})
+	</delete>
+	
+	<select id="findRolePermissionRelByRoleCode" parameterType="java.lang.String" resultType="cn.uce.omg.portal.entity.RolePermissionRel">
+	    select * from fsp_role_permission_rel where role_code = #{_parameter}
+	</select>
+	
+	<!-- 按权限级别和权限码删除角色权限关系 用于修改权限的权限级别 -->
+	<delete id="deleteByRoleLevelAndPermissionCode" >
+		DELETE 
+		FROM
+		OMG_PORTAL_ROLE_PERMISSION_REL
+		WHERE 
+		<foreach item="item" collection="permissionCodeList" open=" OMG_PORTAL_ROLE_PERMISSION_REL.PERMISSION_CODE IN (" separator="," close=")">
+		#{item}
+		</foreach> 
+		<foreach item="item" collection="roleLevelList" open=" AND OMG_PORTAL_ROLE_PERMISSION_REL.ROLE_LEVEL IN (" separator="," close=")">
+		#{item}
+		</foreach> 
+	</delete>
+	
+	<!-- 按权限码查询角色权限关系数量 用于删除权限前判断权限是否被角色使用 -->
+	<select id="findCountByPermissionCode" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(1) from OMG_PORTAL_ROLE_PERMISSION_REL where permission_code = #{permissionCode} and system_code = #{systemCode}
+	</select>
+	
+	<select id="findRolePermissionCodeByRoleCode" parameterType="java.lang.String" resultType="cn.uce.omg.portal.vo.PortalRolePermissionRelVo">
+			SELECT 
+		  r.`PERMISSION_CODE`,
+		  r.`SYSTEM_CODE`,
+		  p.`PERMISSION_NAME`,
+  		  p.`CONTROL_TYPE`  
+		FROM
+		  omg_portal_role_permission_rel r 
+		  LEFT JOIN omg_portal_permission p 
+		    ON r.`PERMISSION_CODE` = p.`PERMISSION_CODE` 
+		    AND r.`SYSTEM_CODE` = p.`SYSTEM_CODE` 
+		WHERE r.`ROLE_CODE` = #{roleCode}
+	</select>
+	
+	<select id="findRolePermissionSCodeByRoleCode" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		p.PERMISSION_CODE
+		FROM omg_portal_menu m
+		INNER join OMG_PORTAL_PERMISSION p on p.PERMISSION_CODE = m.PERMISSION_CODE and p.SYSTEM_CODE = m.SYSTEM_CODE and p.DELETE_FLAG=0
+		INNER JOIN OMG_PORTAL_ROLE_PERMISSION_REL r ON m.PERMISSION_CODE = r.PERMISSION_CODE and m.SYSTEM_CODE = r.SYSTEM_CODE
+		WHERE 
+		p.DELETE_FLAG  <![CDATA[ <> ]]>   1 AND 
+		r.ROLE_CODE =  #{_parameter}
+		union 
+	    SELECT 
+		p.PERMISSION_CODE
+		FROM  OMG_PORTAL_PERMISSION p 
+		INNER JOIN OMG_PORTAL_ROLE_PERMISSION_REL r ON p.PERMISSION_CODE = r.PERMISSION_CODE and p.SYSTEM_CODE = r.SYSTEM_CODE
+		INNER join omg_portal_permission pp on pp.id = p.PARENT_PERMISSION
+        INNER join omg_portal_menu m on m.SYSTEM_CODE = pp.SYSTEM_CODE and m.PERMISSION_CODE = pp.PERMISSION_CODE
+		WHERE 
+		p.DELETE_FLAG  <![CDATA[ <> ]]>   1 AND 
+		r.ROLE_CODE =  #{_parameter} and p.CONTROL_TYPE=${ControlType.button}
+	</select>
+</mapper>

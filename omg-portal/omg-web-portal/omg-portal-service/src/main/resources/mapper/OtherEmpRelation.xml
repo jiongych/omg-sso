@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IOtherEmpRelationDao">
+
+<resultMap type="cn.uce.omg.portal.vo.OtherEmpRelationVo" id="findOtherEmpRelationByEmpCodeResultMap">
+	<id property="empId" column="empId"/>
+	<result property="empCode" column="empCode"/>
+	<result property="empName" column="empName"/>
+	<result property="otherEmpId" column="otherEmpId"/>
+	<result property="otherEmpCode" column="otherEmpCode"/>
+	<result property="otherEmpName" column="otherEmpName"/>
+	<collection property="otherOrgRelationList" column="orgId" ofType="cn.uce.omg.portal.vo.OtherOrgRelationVo" >
+		<id property="orgId" column="orgId"/>
+		<result property="orgCode" column="orgCode"/>
+		<result property="orgType" column="orgType"/>
+		<result property="orgName" column="orgName"/>
+		<result property="cmsOrgId" column="cmsOrgId"/>
+		<result property="cmsBaseOrgCode" column="cmsBaseOrgCode"/>
+		<result property="cmsOrgType" column="cmsOrgType"/>
+		<result property="cmsOrgName" column="cmsOrgName"/>
+	</collection>
+</resultMap>
+<select id="findOtherEmpRelationByEmpCode" resultMap="findOtherEmpRelationByEmpCodeResultMap">
+	SELECT 
+	OMG_OTHER_EMP_RELATION.ID AS id,
+	OMG_EMP.EMP_ID AS empId,
+	OMG_EMP.EMP_CODE AS empCode,
+	OMG_EMP.EMP_NAME AS empName,
+	OMG_OTHER_EMP_RELATION.OTHER_EMP_ID AS otherEmpId,
+	OMG_OTHER_EMP_RELATION.OTHER_EMP_CODE AS otherEmpCode,
+	OMG_OTHER_EMP_RELATION.OTHER_EMP_NAME AS otherEmpName,
+	
+	OMG_ORG.ORG_ID AS orgId,
+	OMG_ORG.ORG_CODE AS orgCode,
+	OMG_ORG.ORG_TYPE AS orgType,
+	OMG_ORG.ORG_NAME AS orgName,
+	
+	OMG_CMS_ORG.CMS_ORG_ID AS cmsOrgId,
+	OMG_CMS_ORG.BASE_ORG_CODE AS cmsBaseOrgCode,
+	OMG_CMS_ORG.ORG_TYPE AS cmsOrgType,
+	OMG_CMS_ORG.ORG_NAME AS cmsOrgName
+	
+	FROM 
+	OMG_OTHER_EMP_RELATION
+	INNER JOIN
+	OMG_EMP
+	ON OMG_OTHER_EMP_RELATION.EMP_ID = OMG_EMP.EMP_ID AND OMG_EMP.DELETE_FLAG = 0
+	INNER JOIN
+	OMG_ORG
+	ON OMG_OTHER_EMP_RELATION.ORG_ID = OMG_ORG.ORG_ID AND OMG_ORG.DELETE_FLAG = 0
+	INNER JOIN
+	OMG_CMS_ORG
+	ON OMG_OTHER_EMP_RELATION.OTHER_ORG_ID = OMG_CMS_ORG.CMS_ORG_ID AND OMG_CMS_ORG.DELETE_FLAG = 0
+	
+	WHERE 
+	OMG_EMP.EMP_CODE = #{empCode} AND OMG_OTHER_EMP_RELATION.SYSTEM_ID = 1
+
+</select>
+</mapper>

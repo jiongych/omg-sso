@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+    <bean id="commonIntercepter" class="cn.uce.omg.portal.aop.LogAndDataSyncIntercepter"></bean>
+	<aop:config>
+	    <!-- 数据字典操作日志拦截器配置 -->
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.DictDataBiz.updateDictData(..)))" id="dictDataUpdateCut" />
+			<aop:after-returning method="doInvoke" pointcut-ref="dictDataUpdateCut" returning="value"/>
+		</aop:aspect>
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.DictDataBiz.addDictData(..)))" id="dictDataAddCut" />
+			<aop:after-returning method="doInvoke" pointcut-ref="dictDataAddCut" returning="value"/>
+		</aop:aspect>
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.DictDataBiz.deleteDictData(..)))" id="dictDataDeleteCut" />
+			<aop:after-returning method="doInvoke" pointcut-ref="dictDataDeleteCut" returning="value"/>
+		</aop:aspect>
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.DictDataBiz.addDictType(..)))" id="dictTypeAddCut" />
+			<aop:after-returning method="doInvoke" pointcut-ref="dictTypeAddCut" returning="value"/>
+		</aop:aspect>
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.DictDataBiz.deleteDictType(..)))" id="dictTypeDeleteCut" />
+			<aop:after-returning method="doInvoke" pointcut-ref="dictTypeDeleteCut" returning="value"/>
+		</aop:aspect>
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.DictDataBiz.updateDictType(..)))" id="dictTypeUpdateCut" />
+			<aop:after-returning method="doInvoke" pointcut-ref="dictTypeUpdateCut" returning="value"/>
+		</aop:aspect>
+		<!-- 用户管理操作日志拦截器配置  -->
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.UserBiz.saveUserRoleRel(..)))" id="userRoleRelCut" />
+			<aop:before method="before" pointcut-ref="userRoleRelCut"/>
+			<aop:after-returning method="doInvoke" pointcut-ref="userRoleRelCut" returning="value"/>
+		</aop:aspect>
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.UserBiz.updateUserOrg(..)))" id="userOrgRelCut" />
+			<aop:after-returning method="doInvoke" pointcut-ref="userOrgRelCut" returning="value"/>
+		</aop:aspect>
+		<!-- 角色管理操作日志拦截器配置  -->
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.RoleBiz.addRole(..)))" id="addRoleCut" />
+			<aop:after-returning method="doInvoke" pointcut-ref="addRoleCut" returning="value"/>
+		</aop:aspect>
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.RoleBiz.deleteRole(..)))" id="deleteRoleCut" />
+			<aop:after-returning method="doInvoke" pointcut-ref="deleteRoleCut" returning="value"/>
+		</aop:aspect>
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.RoleBiz.updateRoleByRoleCode(..)))" id="updateRoleCut" />
+			<aop:before method="before" pointcut-ref="updateRoleCut"/>
+			<aop:after-returning method="doInvoke" pointcut-ref="updateRoleCut" returning="value"/>
+		</aop:aspect>
+		<!-- 权限操作拦截配置 -->
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.PermissionBiz.addPermission(..)))" id="addPermissionCut" />
+			<aop:after-returning method="doInvoke" pointcut-ref="addPermissionCut" returning="value"/>
+		</aop:aspect>
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.PermissionBiz.updatePermission(..)))" id="updatePermissionCut" />
+			<aop:after-returning method="doInvoke" pointcut-ref="updatePermissionCut" returning="value"/>
+		</aop:aspect>
+		<aop:aspect ref="commonIntercepter">
+		    <aop:pointcut expression="(execution(* cn.uce.omg.portal.biz.impl.PermissionBiz.deletePermission(..)))" id="deletePermissionCut" />
+			<aop:after-returning method="doInvoke" pointcut-ref="deletePermissionCut" returning="value"/>
+		</aop:aspect>
+	</aop:config>
+
+	<bean id="logBuffer" class="cn.uce.core.log.server.buffer.LogBuffer">
+		<property name="enable" value="true" />
+		<property name="queueSize" value="${logBuffer.queueSize}" />
+		<property name="listSize" value="${logBuffer.listSize}" />
+		<property name="interval" value="${logBuffer.interval}" />
+		<property name="logSender" ref="logSender" />
+	</bean>
+
+	<bean id="logSender" class="cn.uce.omg.portal.service.LogSender">
+		<property name="logService" ref="logService"></property>
+		<property name="threadSize" value="${logBuffer.threadSize}"></property>
+		<property name="queueSize" value="${logBuffer.queueSize}"></property>
+	</bean>
+</beans>

@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+  <title>Login</title>
+   <!-- Swiper JS -->
+  <script src="swiper/swiper.min.js"></script>
+  <script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="shortcut icon" href="images/favicon.ico">
+  <link rel="stylesheet" type="text/css" href="//static-file.uce.cn/uce-static/iconfont/iconfont.css"/>
+  <!-- Link Swiper's CSS -->
+  <link rel="stylesheet" href="swiper/swiper.min.css">
+
+  <!-- Demo styles -->
+  <style>
+    html, body {
+      position: relative;
+      height: 100%;
+    }
+    body {
+      background: #eee;
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color:#000;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .swiper-container {
+      width: 100%;
+      height: 100%;
+    }
+    .swiper-slide {
+      background-position: center;
+      background-size: cover;
+    }
+    
+    .layer{
+    	position: absolute;
+    	top: 0;
+    	z-index: 999;
+    	width: 100%;
+    	height: 100%;
+    	background-color: #fff;
+    	opacity: 0.5;
+    }
+    
+    
+    .form{
+    	width: 500px;
+	    height: 300px;
+	    position: absolute;
+	    z-index: 1000;
+	    bottom: 50%;
+	    left: calc(50% - 250px);
+	    transform: translateY(50%);
+	    border-radius: 5px;
+	    display: flex;
+	    flex-direction: row;
+	    transition: all 0.5s;
+    }
+    .logo{
+    	width: 100px;
+    	position: relative;
+    }
+    .logo img{
+    	width: 80px;
+    	position: absolute;
+    	top: 50%;
+    	left: 50%;
+    	transform: translate(-50%, -50%);
+    }
+    .user{
+    	position: relative;
+    	flex: 1;
+    	background: rgba(0, 0, 0, 0.7);
+    	border-top-left-radius: 10px;
+    	border-bottom-left-radius: 10px;
+    	padding: 30px;
+    }
+    .area-input{
+	    width: 250px;
+	    position: absolute;
+	    left: 50%;
+	    top: 50%;
+	    transform: translate(-50%, -50%);
+    }
+    .user i{
+    	color: #fff;
+    	font-size: 20px;
+    	position: absolute;
+    }
+    .user input{
+    	display: block;
+    	height: 34px;
+    	padding: 0 3px;
+    	width: 100%;
+    	background: transparent;
+    	color: #fff;
+    	outline: 0;
+    	border-width: 0 0 1px;
+    	border-style: solid;
+    	border-color: #ddd;
+    	appearance: none
+	    -webkit-appearance: none;
+	    -moz-appearance: none;
+	    margin-bottom: 25px;
+    }
+    input:hover{
+    	border-color: #5E6D82;
+    }
+    input:focus{
+    	border-width: 0 0 1px;
+    	border-style: solid;
+    	border-color: #007AFF;
+    }
+    .get-password{
+    	position: absolute;
+	    bottom: 30px;
+	    left: 90px;
+	    color: #fff;
+	    cursor: pointer;
+    }
+    
+    .login{
+    	position: relative;
+    	width: 80px;
+    	background: rgba(0, 122, 255, 0.9);
+    	border-top-right-radius: 10px;
+    	border-bottom-right-radius: 10px;
+    	cursor: pointer;
+    }
+    .login:hover{
+    	background: #2E8DED;
+    	opacity: 0.8;
+    }
+    .login:active{
+    	background: #007AFF;
+    }
+    .login i{
+	    position: absolute;
+	    top: 50%;
+	    left: 50%;
+	    font-size: 40px;
+	    color: #fff;
+	    transform: translate(-50%,-50%);
+    }
+    .footer{
+    	position: absolute;
+	    bottom: 40px;
+	    text-align: center;
+	    z-index: 99;
+	    width: 100%;
+	    color: #DCDCDC;
+    }
+    
+  </style>
+</head>
+<body>
+  <!-- Swiper -->
+  <div class="swiper-container">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide" style="background-image:url(images/timg1.jpg)"></div>
+      <div class="swiper-slide" style="background-image:url(images/timg2.jpg)"></div>
+      <div class="swiper-slide" style="background-image:url(images/timg3.jpg)"></div>
+    </div>
+    <!-- Add Pagination -->
+    <!--<div class="swiper-pagination swiper-pagination-white"></div>-->
+    <!-- Add Arrows -->
+    <!--<div class="swiper-button-next swiper-button-white"></div>-->
+    <!--<div class="swiper-button-prev swiper-button-white"></div>-->
+  </div>
+  
+  <!--login-->
+  <div class="layer"></div>
+  <!--<div class="logo">
+	<img src="images/logo.png"/>
+  </div>-->
+  <div id="form">
+  	<div class="user">
+  		<div class="area-input">
+			<input type="text" name="username" placeholder="用户名"/>
+			<input type="password" name="password" placeholder="密码"/>
+  		</div>
+  		<div class="get-password">
+  			<span>忘记密码?</span>
+  		</div>
+  	</div>
+  	<div class="login">
+  		<a href="portal2.html">
+  			<i class="iconfont uce-turnright"></i>
+  		</a>
+  	</div>
+  </div>
+  <!--footer-->
+  <footer class="footer">
+	<div>&copy;  2009-2018  优速物流有限公司版权所有</div>
+  </footer>
+  
+  <!-- Initialize Swiper -->
+  <script>
+    var swiper = new Swiper('.swiper-container', {
+	  autoplay:true,
+	  speed:1500,
+	  loop : true,
+      spaceBetween: 30,
+      effect: 'fade',
+      fadeEffect: {
+	    crossFade: true,
+	  },
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+    });
+    
+    window.onload = function(){
+    	$("#form").attr('class','form');
+    }
+  </script>
+</body>
+</html>

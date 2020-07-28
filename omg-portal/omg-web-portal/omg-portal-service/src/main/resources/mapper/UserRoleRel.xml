@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IUserRoleRelDao">
+	<!-- findCountByRoleCode -->
+	<select id="findCountByRoleCode" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(1) from OMG_PORTAL_USER_ROLE_REL where role_code = #{_parameter}
+	</select>
+	
+	<!-- deleteRelByEmpCode -->
+	<delete id="deleteRelByEmpCode" parameterType="java.lang.String">
+		DELETE FROM OMG_PORTAL_USER_ROLE_REL WHERE EMP_CODE = #{_parameter}
+	</delete>
+	
+	<!-- select user role rel -->
+	<select id="findRoleRelByEmpCode" parameterType="java.lang.String" resultType="cn.uce.omg.portal.vo.PortalUserRoleRelVo">
+	    SELECT 
+	      emp_code empCode, 
+	      role_code roleCode, 
+	      create_emp createEmp, 
+	      create_org createOrg, 
+	      create_time createTime, 
+	      version version
+	    FROM OMG_PORTAL_USER_ROLE_REL
+	    WHERE EMP_CODE = #{_parameter}
+	</select>
+	<!-- insertRel -->
+	<insert id="insertRel" parameterType="cn.uce.omg.portal.vo.PortalUserRoleRelVo" >
+		INSERT INTO 
+		OMG_PORTAL_USER_ROLE_REL 
+		(EMP_CODE, ROLE_CODE, CREATE_EMP, CREATE_ORG, CREATE_TIME, VERSION,UPDATE_TIME)
+		VALUES 
+		<if test="roleCodeList != null">
+	    <foreach collection="roleCodeList" item="item" index="index" separator="," >  
+	        (#{empCode},#{item},#{createEmp},#{createOrg},#{createTime},#{version},#{updateTime})  
+	    </foreach> 
+	    </if>
+	</insert>
+	
+	<!-- 查询使用此角色的用户 -->
+	<select id="findUserByRole" resultType="cn.uce.omg.portal.vo.UserVo">
+	    SELECT DISTINCT
+			E.EMP_CODE empCode,
+			E.EMP_NAME empName,
+			MO.ORG_NAME empOrg,
+			UR.ROLE_CODE roleCode,
+			GROUP_CONCAT(d.TYPE_NAME) as positionName
+		FROM
+			OMG_PORTAL_USER_ROLE_REL UR
+		INNER JOIN OMG_USER U ON UR.EMP_CODE = U.EMP_CODE
+		INNER JOIN OMG_EMP E ON U.EMP_CODE = E.EMP_CODE AND E.DELETE_FLAG = 0
+		INNER JOIN OMG_ORG MO ON MO.ORG_ID = E.ORG_ID AND MO.DELETE_FLAG = 0
+		left join omg_emp_org_position p on MO.ORG_ID = p.ORG_ID and E.EMP_ID= p.EMP_ID
+    	left join omg_sys_type d on p.POSITION_ID = d.TYPE_ID and d.TYPE_CLASS_CODE='POSITION'
+		WHERE UR.ROLE_CODE = #{roleCode}
+		group by E.EMP_CODE,
+			E.EMP_NAME,
+			MO.ORG_NAME
+		LIMIT #{startIndex}, #{pageSize}
+	</select>
+	
+	<!-- 查询使用此角色的用户 -->
+	<select id="findUserCountByRole" resultType="java.lang.Integer">
+	    SELECT DISTINCT
+			COUNT(1)
+		FROM
+			OMG_PORTAL_USER_ROLE_REL UR
+		INNER JOIN OMG_USER U ON UR.EMP_CODE = U.EMP_CODE
+		INNER JOIN OMG_EMP E ON U.EMP_CODE = E.EMP_CODE AND E.DELETE_FLAG = 0
+		INNER JOIN OMG_ORG MO ON MO.ORG_ID = E.ORG_ID AND MO.DELETE_FLAG = 0
+		WHERE UR.ROLE_CODE = #{roleCode}
+	</select>
+	
+	<!-- 根据员工工号查询角色 -->
+	<select id="findRoleByUser" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT ROLE_CODE FROM OMG_PORTAL_USER_ROLE_REL WHERE EMP_CODE = #{empCode}
+	</select>
+	
+	<!-- 根据角色编号查询用户 -->
+	<select id="findUserListByRole" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT EMP_CODE FROM OMG_PORTAL_USER_ROLE_REL WHERE ROLE_CODE = #{roleCode}
+	</select>
+</mapper>

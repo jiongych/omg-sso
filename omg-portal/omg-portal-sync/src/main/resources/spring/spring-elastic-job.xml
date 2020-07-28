@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:reg="http://www.dangdang.com/schema/ddframe/reg"
+    xmlns:job="http://www.dangdang.com/schema/ddframe/job"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.dangdang.com/schema/ddframe/reg
+        http://www.dangdang.com/schema/ddframe/reg/reg.xsd
+        http://www.dangdang.com/schema/ddframe/job
+        http://www.dangdang.com/schema/ddframe/job/job.xsd">
+
+	<reg:zookeeper id="regCenter" 
+     	server-lists="${elasticJob.zkConnect}" 
+     	namespace="uce-portal-sync"
+     	base-sleep-time-milliseconds="${elasticJob.zkBaseSleepTimeMilliseconds}" 
+     	max-sleep-time-milliseconds="${elasticJob.zkMaxSleepTimeMilliseconds}" 
+     	max-retries="${elasticJob.zkMaxRetries}" />
+    
+    <bean id="mqErrorRetryTaskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean" scope="prototype">
+		<property name="corePoolSize" value="${elastic.executor.corePoolSize}"></property>
+		<property name="maxPoolSize" value="${elastic.executor.maxPoolSize}"></property>
+		<property name="queueCapacity" value="${elastic.executor.queueCapacity}"></property>
+	</bean>
+    
+    <bean id="baseMqErrorRetryJobConfig" class="cn.uce.mq.rocket.exp.job.MqErrorRetryJobConfig" abstract="true">
+		<!-- 最多发送次数，默认3次 -->
+		<property name="maxConsumeNum" value="${mq.error.retry.maxConsumeNum}"></property>
+		<!-- 每次查询记录条数：默认5000 -->
+		<property name="fetchSize" value="${mq.error.retry.fetchSize}"></property>
+		<!-- 失败时，下次处理间隔基数，默认：300s -->
+		<property name="whenFailConsumeInterval" value="${mq.error.retry.whenFailConsumeInterval}"></property>
+		<property name="taskExecutor" ref="mqErrorRetryTaskExecutor"></property>
+		<property name="subscribeMap" ref="subscribeMap"></property>
+		<property name="allocateStrategy">
+			<bean class="cn.uce.core.mq.api.producer.HashAllocateStrategy"/>
+		</property>
+	</bean>
+	
+	<!-- ##########start##########  -->
+	<job:dataflow id="syncRetryUctNoticeJob" 
+    	class="cn.uce.portal.sync.job.SyncRetryUctNoticeJob" 
+    	registry-center-ref="regCenter" 
+    	cron="${elastic.exp.job.uctNotice.cron}" 
+    	sharding-total-count="${elastic.exp.job.uctNotice.shardingtotalcount}" 
+    	sharding-item-parameters="${elastic.exp.job.uctNotice.shardingitemparameters}" 
+    	overwrite="true" 
+    	streaming-process="true"
+    	disabled="${elastic.exp.job.uctNotice.disabled}"/>
+	
+	<bean id="syncRetryUctNoticeJob" parent="baseMqErrorRetryJobConfig">
+		<property name="consumerId" value="CID_PORTAL_SYNC_UCT_NOTICE"></property>
+	</bean>
+	<!-- ##########end##########  -->
+	
+	<!-- ##########start##########  -->
+	<job:dataflow id="syncRetryNoticeReadJob" 
+    	class="cn.uce.portal.sync.job.SyncRetryNoticeReadJob" 
+    	registry-center-ref="regCenter" 
+    	cron="${elastic.exp.job.uctNotice.cron}" 
+    	sharding-total-count="${elastic.exp.job.uctNotice.shardingtotalcount}" 
+    	sharding-item-parameters="${elastic.exp.job.uctNotice.shardingitemparameters}" 
+    	overwrite="true" 
+    	streaming-process="true"
+    	disabled="${elastic.exp.job.uctNotice.disabled}"/>
+	
+	<bean id="syncRetryNoticeReadJob" parent="baseMqErrorRetryJobConfig">
+		<property name="consumerId" value="CID_PORTAL_NOTICE_READ"></property>
+	</bean>
+	<!-- ##########end##########  -->
+	<!-- ##########start##########  -->
+	<job:dataflow id="syncRetryCollectPermissionJob" 
+    	class="cn.uce.portal.sync.job.SyncRetryCollectPermissionJob" 
+    	registry-center-ref="regCenter" 
+    	cron="${elastic.exp.job.collectPermission.cron}" 
+    	sharding-total-count="${elastic.exp.job.collectPermission.shardingtotalcount}" 
+    	sharding-item-parameters="${elastic.exp.job.collectPermission.shardingitemparameters}" 
+    	overwrite="true" 
+    	streaming-process="true"
+    	disabled="${elastic.exp.job.collectPermission.disabled}"/>
+	
+	<bean id="syncRetryCollectPermissionJob" parent="baseMqErrorRetryJobConfig">
+		<property name="consumerId" value="CID_COLLECT_OPEN_PERMISSION"></property>
+	</bean>
+	<!-- ##########end##########  -->
+	
+	<bean id="subscribeMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<!-- 优速通公告接收-->
+				<entry key="uctNoticeTopic" value-ref="uctNoticeSyncListener"/>
+				<!-- 公告读取接收-->
+				<entry key="uctNoticeReadTopic" value-ref="noticeReadSyncListener"/>
+				<!-- 新乾坤首页搜集菜单点击信息数据保存-->
+				<entry key="portalCollectOpenPermissionTopic" value-ref="collectPermissionSyncListener"/>
+			</map>
+		</constructor-arg>
+	</bean>
+</beans>

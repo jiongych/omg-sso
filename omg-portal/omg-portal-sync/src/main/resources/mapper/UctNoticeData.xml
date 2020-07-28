@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.portal.sync.dao.IUctNoticeDataDao">
+
+	<select id="findNoticeDataById" parameterType="java.lang.Long" resultType="cn.uce.portal.sync.entity.UctNoticeData">
+		select * from omg_portal_uct_notice_data where notice_id = #{id}
+	</select>
+	
+	<update id="updateNoticeDataById" parameterType="cn.uce.portal.sync.entity.UctNoticeData">
+		UPDATE omg_portal_uct_notice_data 
+		<set>
+			<if test="parentId != null and parentId !=''">
+			  parent_id = #{parentId},
+			</if>
+			<if test="sonId != null and sonId !=''">
+			  son_id = #{sonId},
+			</if>
+			<if test="updateEmp != null and updateEmp !=''">
+			  update_emp = #{updateEmp},
+			</if>
+			<if test="updateOrg != null and updateOrg !=''">
+			  update_org = #{updateOrg},
+			</if>
+			<if test="enabled != null and enabled !=''">
+			  enabled = #{enabled},
+			</if>
+			<if test="title != null and title !=''">
+			  title = #{title},
+			</if>
+			<if test="content != null and content !=''">
+			  content = #{content},
+			</if>
+			<if test="isCommit != null and isCommit !=''">
+			  is_commit = #{isCommit},
+			</if>
+			  code_scope = #{codeScope},
+			<if test="codeMark != null and codeMark !=''">
+			  code_mark = #{codeMark},
+			</if>
+			<if test="summary != null and summary !=''">
+			  summary = #{summary},
+			</if>
+			  name_scope = #{nameScope},
+			  istop_day = #{istopDay},
+			  istop_time = #{istopTime},
+			<if test="mustReadFlag != null and mustReadFlag !=''">
+			  must_read_flag = #{mustReadFlag},
+			</if>
+	        UPDATE_TIME=now(),
+		</set>
+		WHERE notice_id = #{noticeId}
+	</update>
+	
+	<delete id="deleteNoticeDataById" parameterType="java.lang.Long">
+		DELETE FROM omg_portal_uct_notice_data WHERE notice_id = #{id}
+	</delete>
+</mapper>

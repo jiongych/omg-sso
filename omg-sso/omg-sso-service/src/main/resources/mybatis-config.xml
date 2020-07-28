@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+
+<configuration>
+	<properties resource="SsoConstants.properties"></properties>
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"></setting>
+	</settings>
+
+	<typeAliases>
+		<package name="cn.uce.omg.sso.vo" />
+		<package name="cn.uce.omg.sso.entity" />
+	</typeAliases>
+	<mappers>
+		<mapper resource="mybatis/IpInfo.xml" />
+		<mapper resource="mybatis/PortalCurrentUser.xml" />
+		<mapper resource="mybatis/PortalPermission.xml" />
+		<mapper resource="mybatis/PortalCompanyNotice.xml" />
+		<mapper resource="mybatis/PortalUserMenu.xml" />
+		<mapper resource="mybatis/PortalCompanyNoticeRecord.xml" />
+		<mapper resource="mybatis/PortalHomePageInfo.xml" />
+		<mapper resource="mybatis/OmgWeakPassword.xml" />
+		<!-- add by zhangRb 20180905 -->
+		<mapper resource="mybatis/FspDictData.xml" />
+	</mappers>
+</configuration>

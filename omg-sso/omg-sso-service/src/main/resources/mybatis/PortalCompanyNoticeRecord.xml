@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.portal.IPortalCompanyNoticeRecordDao">
+	
+	<!-- 根据条件查询数量 -->
+	<select id="findRecordByNoticeId" parameterType="cn.uce.omg.sso.entity.portal.PortalCompanyNoticeRecord" resultType="java.lang.Integer">
+		SELECT count(1) FROM OMG_PORTAL_COMPANY_NOTICE_RECORD 
+		<where>
+			<if test="noticeId != null and noticeId != ''">
+				AND NOTICE_ID = #{noticeId}
+			</if>
+			<if test="viewUser != null and viewUser != ''">
+				AND VIEW_USER = #{viewUser}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 保存查看记录 -->
+	<insert id="saveNoticeRecord" parameterType="cn.uce.omg.sso.entity.portal.PortalCompanyNoticeRecord" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO
+		OMG_PORTAL_COMPANY_NOTICE_RECORD(NOTICE_ID,VIEW_USER,VIEW_TIME,VIEW_FLAG)
+		VALUES(#{noticeId},#{viewUser},#{viewTime},#{viewFlag})
+	</insert>
+	
+</mapper>

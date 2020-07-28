@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.ICmsOrgDao">
+	<sql id="baseColumnList">
+		O.ORG_ID, O.CMS_ORG_ID, O.ORG_CODE, O.BASE_ORG_CODE
+		,O.ORG_NAME, O.ORG_NAME_TW, O.ORG_NAME_EN, O.NAME_PY, 
+		O.NAME_SPY,O.ORG_TYPE, O.PARENT_ORG, O.OPERATE_CENTER, O.FINANCE_CENTER, 
+		O.MANAGE_CENTER, O.PARENT_ORG_CODE,O.OPERATE_CENTER_CODE,O.FINANCE_CENTER_CODE,O.MANAGE_CENTER_CODE
+		,O.ACC_ORG,O.ACC_ORG_CODE, O.CURRENCY, O.STATUS, O.ORG_PROPERTY, O.EFFECT_TIME, 
+		O.EXPIRE_TIME, O.REMARK, O.DELETE_FLAG, O.VERSION, O.CREATE_EMP, O.CREATE_ORG, 
+		O.CREATE_TIME, O.UPDATE_EMP, O.UPDATE_ORG, O.UPDATE_TIME, O.ORG_FULL_CODE, O.STATUS_UPDATE_TIME,
+		O.STATUS_UPDATE_DESC
+	</sql>
+	<!-- 20180416 huangting add begin -->
+	<sql id="cmsorg_base_column">
+		CMS.ORG_ID AS CMSORG_ORG_ID, CMS.CMS_ORG_ID AS CMSORG_CMS_ORG_ID, CMS.ORG_CODE AS CMSORG_ORG_CODE, CMS.BASE_ORG_CODE AS CMSORG_BASE_ORG_CODE
+		,CMS.ORG_NAME AS CMSORG_ORG_NAME , CMS.ORG_NAME_TW AS CMSORG_ORG_NAME_TW, CMS.ORG_NAME_EN AS CMSORG_ORG_NAME_EN, CMS.NAME_PY AS CMSORG_NAME_PY, 
+		CMS.NAME_SPY AS CMSORG_NAME_SPY,CMS.ORG_TYPE AS CMSORG_ORG_TYPE, CMS.PARENT_ORG AS CMSORG_PARENT_ORG, CMS.OPERATE_CENTER AS CMSORG_OPERATE_CENTER, CMS.FINANCE_CENTER AS CMSORG_FINANCE_CENTER, 
+		CMS.MANAGE_CENTER AS CMSORG_MANAGE_CENTER, CMS.PARENT_ORG_CODE AS CMSORG_PARENT_ORG_CODE,CMS.OPERATE_CENTER_CODE AS CMSORG_OPERATE_CENTER_CODE,CMS.FINANCE_CENTER_CODE AS CMSORG_FINANCE_CENTER_CODE,CMS.MANAGE_CENTER_CODE  AS CMSORG_MANAGE_CENTER_CODE
+		,CMS.ACC_ORG  AS CMSORG_ACC_ORG,CMS.ACC_ORG_CODE AS CMSORG_ACC_ORG_CODE, CMS.CURRENCY AS CMSORG_CURRENCY, CMS.STATUS AS CMSORG_STATUS, CMS.ORG_PROPERTY AS CMSORG_ORG_PROPERTY, CMS.EFFECT_TIME AS CMSORG_EFFECT_TIME, 
+		CMS.EXPIRE_TIME AS CMSORG_EXPIRE_TIME, CMS.REMARK AS CMSORG_REMARK, CMS.DELETE_FLAG AS CMSORG_DELETE_FLAG, CMS.VERSION AS CMSORG_VERSION, CMS.CREATE_EMP AS CMSORG_CREATE_EMP, CMS.CREATE_ORG AS CMSORG_CREATE_ORG, 
+		CMS.CREATE_TIME AS CMSORG_CREATE_TIME, CMS.UPDATE_EMP AS CMSORG_UPDATE_EMP, CMS.UPDATE_ORG AS CMSORG_UPDATE_ORG, CMS.UPDATE_TIME AS CMSORG_UPDATE_TIME, CMS.ORG_FULL_CODE AS CMSORG_ORG_FULL_CODE, CMS.STATUS_UPDATE_TIME AS CMSORG_STATUS_UPDATE_TIME,
+		CMS.STATUS_UPDATE_DESC AS CMSORG_STATUS_UPDATE_DESC
+	</sql>
+	<resultMap id="CmsOrgMap" type="cmsOrgVo">
+    	<id column="ORG_ID" jdbcType="INTEGER" property="orgId" />
+    	<result column="CMS_ORG_ID" jdbcType="INTEGER" property="cmsOrgId" />
+    	<result column="ORG_CODE" jdbcType="VARCHAR" property="orgCode" />
+    	<result column="ORG_NAME" jdbcType="VARCHAR" property="orgName" />
+    	<result column="ORG_NAME_TW" jdbcType="VARCHAR" property="orgNameTw" />
+    	<result column="ORG_NAME_EN" jdbcType="VARCHAR" property="orgNameEn" />
+    	<result column="NAME_PY" jdbcType="VARCHAR" property="namePy" />
+    	<result column="NAME_SPY" jdbcType="VARCHAR" property="nameSpy" />
+    	<result column="ORG_TYPE" jdbcType="SMALLINT" property="orgType" />
+    	<result column="PARENT_ORG" jdbcType="INTEGER" property="parentOrg" />
+    	<result column="FINANCE_CENTER" jdbcType="INTEGER" property="financeCenter" />
+    	<result column="OPERATE_CENTER" jdbcType="INTEGER" property="operateCenter" />
+    	<result column="MANAGE_CENTER" jdbcType="INTEGER" property="manageCenter" />
+    	<result column="ACC_ORG" jdbcType="INTEGER" property="accOrg" />
+    	<result column="CURRENCY" jdbcType="SMALLINT" property="currency" />
+    	<result column="STATUS" jdbcType="SMALLINT" property="status" />
+    	<result column="STATUS_NAME" jdbcType="VARCHAR" property="statusName" />
+    	<result column="ORG_PROPERTY" jdbcType="SMALLINT" property="orgProperty" />
+    	<result column="EFFECT_TIME" jdbcType="TIMESTAMP" property="effectTime" />
+    	<result column="EXPIRE_TIME" jdbcType="TIMESTAMP" property="expireTime" />
+        <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    	<result column="DELETE_FLAG" jdbcType="BIT" property="deleteFlag" />   	
+        <result column="CREATE_EMP" jdbcType="VARCHAR" property="createEmp" />
+    	<result column="CREATE_ORG" jdbcType="INTEGER" property="createOrg" />
+    	<result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    	<result column="UPDATE_EMP" jdbcType="VARCHAR" property="updateEmp" />
+    	<result column="UPDATE_ORG" jdbcType="INTEGER" property="updateOrg" />
+    	<result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" /> 
+    	<result column="STATUS_UPDATE_DESC" jdbcType="VARCHAR" property="statusUpdateDesc" /> 
+    	<result column="STATUS_UPDATE_TIME" jdbcType="TIMESTAMP" property="statusUpdateTime" /> 
+    	<result column="BASE_ORG_CODE" jdbcType="VARCHAR" property="baseOrgCode" />      	
+        <result column="FINANCE_CENTER_CODE" jdbcType="VARCHAR" property="financeCenterCode" />
+    	<result column="OPERATE_CENTER_CODE" jdbcType="VARCHAR" property="operateCenterCode" />
+    	<result column="MANAGE_CENTER_CODE" jdbcType="VARCHAR" property="manageCenterCode" />
+    	<result column="ACC_ORG_CODE" jdbcType="VARCHAR" property="accOrgCode" />    	
+    	<result column="PARENT_ORG_CODE" jdbcType="VARCHAR" property="parentOrgCode" /> 
+    	<result column="ORG_FULL_CODE" jdbcType="VARCHAR" property="orgFullCode" /> 
+  	</resultMap>
+	<!-- 20180416 huangting add end -->
+	
+	<select id="findOrgByUnique" parameterType="cmsOrgVo" resultType="cmsOrgVo">
+		SELECT <include refid="baseColumnList"/> FROM OMG_CMS_ORG O
+		<where>
+			<if test="orgId != null">
+				AND ORG_ID = #{orgId}
+			</if>
+			<if test="orgCode != null">
+				AND ORG_CODE = #{orgCode} AND DELETE_FLAG = 0
+			</if>
+			<if test="cmsOrgId != null">
+				AND CMS_ORG_ID = #{cmsOrgId} AND DELETE_FLAG = 0
+			</if>
+			<if test="baseOrgCode != null">
+				AND BASE_ORG_CODE = #{baseOrgCode} AND DELETE_FLAG = 0
+			</if>			
+		</where>
+	</select>
+	
+	
+	<select id="findByCmsOrgIds" parameterType="java.util.List" resultType="cmsOrgVo">
+		SELECT <include refid="baseColumnList"/> FROM OMG_CMS_ORG O
+		WHERE DELETE_FLAG = 0 AND CMS_ORG_ID IN 
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+						#{item}
+		</foreach>	
+	</select>
+
+	<select id="findCmsOrgByCondition" parameterType="cmsOrgVo" resultType="cmsOrgVo">
+		SELECT <include refid="baseColumnList"/> FROM OMG_CMS_ORG O
+		<where>
+			<if test="orgId != null">
+				AND ORG_ID = #{orgId}
+			</if>
+			<if test="orgIds != null">
+				AND ORG_ID IN
+				<foreach collection="orgIds" item="item" index="index" open="(" separator="," close=")">
+						#{item}
+				</foreach>
+			</if>			
+			<if test="cmsOrgId != null">
+				AND CMS_ORG_ID = #{cmsOrgId} AND DELETE_FLAG = 0
+			</if>	
+			<if test="baseOrgCode != null">
+				AND BASE_ORG_CODE = #{baseOrgCode} AND DELETE_FLAG = 0
+			</if>						
+			<if test="orgCode != null">
+				AND ORG_CODE = #{orgCode} AND DELETE_FLAG = 0
+			</if>
+			<if test="orgName != null">
+				AND ORG_NAME = #{orgName} AND DELETE_FLAG = 0
+			</if>
+			<if test="parentOrg != null">
+				AND PARENT_ORG = #{parentOrg} AND DELETE_FLAG = 0
+			</if>
+			<if test="parentOrgCode != null">
+				AND PARENT_ORG_CODE = #{parentOrgCode} AND DELETE_FLAG = 0
+			</if>			
+			<if test="beginUpdateTime !=null">
+				AND UPDATE_TIME >= #{beginUpdateTime}
+			</if>
+			<if test="endUpdateTime !=null">
+				AND UPDATE_TIME <![CDATA[<]]> #{endUpdateTime}
+			</if>
+			<if test="orgType !=null">
+				AND ORG_TYPE = #{orgType} AND DELETE_FLAG = 0
+			</if>								
+		</where>
+		<!-- 20180308 BaoJingyu add begin -->
+		<if test="currentPage != null and pageSize != null">
+			LIMIT #{currentPage},#{pageSize}
+		</if>
+		<!-- 20180308 BaoJingyu add end -->
+	</select>
+	
+	<select id="findCmsOrgByTime" parameterType="cmsOrgVo" resultType="cmsOrgVo">
+		SELECT <include refid="baseColumnList"/> FROM OMG_CMS_ORG O WHERE UPDATE_TIME BETWEEN #{beginUpdateTime} AND #{endUpdateTime} 
+	</select>
+
+	<select id="findByParentOrg" parameterType="java.lang.Integer" resultType="cmsOrgVo">
+		SELECT * FROM OMG_CMS_ORG O
+			<where>
+				 <if test="_parameter == null">O.PARENT_ORG is null AND DELETE_FLAG = 0 </if>  
+				 <if test="_parameter != null ">O.PARENT_ORG = #{_parameter} AND DELETE_FLAG = 0 </if>  
+			</where>
+	</select>	
+	
+	<select id="findByParentOrgCode" parameterType="java.lang.String" resultType="cmsOrgVo">
+		SELECT * FROM OMG_CMS_ORG O
+			<where>
+				 <if test="_parameter == null">O.PARENT_ORG_CODE is null</if>  
+				 <if test="_parameter != null ">O.PARENT_ORG_CODE = #{_parameter}</if>  
+			</where>
+	</select>
+
+
+	<select id="findBaseOrgCode" resultType="java.lang.String">
+		SELECT concat('UC',right(concat('000000',nextval('seq_omg_cms_base_org_code')),6)) FROM DUAL
+	</select>
+
+	<select id="findCmsOrgId" resultType="java.lang.Integer">
+		SELECT nextval('seq_omg_cms_org_id') FROM DUAL
+	</select>
+
+	<!--根据基准编码查询机构-->
+	<select id="findCmsOrgByBaseOrgCode" parameterType="java.lang.String"  resultType="cmsOrgVo">
+		SELECT
+		<include refid="baseColumnList"/>
+		FROM OMG_CMS_ORG O WHERE O.BASE_ORG_CODE = #{baseOrgCode} AND DELETE_FLAG = 0
+	</select>
+
+	<!---->
+	<select id="findCmsOrgByBaseOrgCodes" parameterType="list"  resultType="cmsOrgVo">
+		SELECT
+		<include refid="baseColumnList"/>
+		FROM omg_cms_org O
+		<where>
+			<if test="list != null">
+				AND O.BASE_ORG_CODE IN
+				<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			AND DELETE_FLAG = 0
+		</where>
+	</select>
+
+	<!--通过前缀找到最大orgCode-->
+	<select id="findMaxOrgCodeByPrefix" resultType="java.lang.String">
+		SELECT max(org_code) from omg_cms_org
+		where  ORG_CODE regexp  concat('^',#{0},'[0-9]{',#{1},'}$')
+	</select>
+
+</mapper>

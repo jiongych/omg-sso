@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.ISystemInfoDao">
+
+	<select id="findByCondition" parameterType="SystemInfoVo"
+		resultType="SystemInfoVo">
+		select * from omg_system_info t
+		<where>
+			<if test="id != null and id != '' ">
+				and t.ID = #{id}
+			</if>
+			<if test="systemCode != null and systemCode != '' ">
+				and t.SYSTEM_CODE = #{systemCode}
+			</if>
+			<if test="enable != null">
+				and t.enable = #{enable}
+			</if>
+		</where>
+	</select>
+
+	<select id="findSystemBySystemCode" parameterType="java.lang.String"
+		resultType="SystemInfo">
+		select * from omg_system_info t where t.SYSTEM_CODE = #{systemCode}
+	</select>
+
+</mapper>

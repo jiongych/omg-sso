@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.portal.IPortalCompanyNoticeDao">
+	
+	<!-- 查询公司公告前十条数据（优速通的）新方法 -->
+	<select id="findNoticeTopicTenNew" resultType="cn.uce.omg.sso.vo.portal.PortalCompanyNoticeVo">
+		SELECT 
+		OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID AS ID,
+		OMG_PORTAL_UCT_NOTICE_DATA.TITLE,
+		OMG_PORTAL_UCT_NOTICE_DATA.CONTENT,
+		OMG_PORTAL_UCT_NOTICE_DATA.NAME_SCOPE AS AUTHOR,
+		OMG_PORTAL_UCT_NOTICE_DATA.CREATE_TIME,
+		(SELECT view_flag FROM omg_portal_company_notice_record 
+		WHERE OMG_PORTAL_COMPANY_NOTICE_RECORD.NOTICE_ID = OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID 
+		AND OMG_PORTAL_COMPANY_NOTICE_RECORD.VIEW_USER = #{empCode} LIMIT 1) view_flag,
+		IF (TO_DAYS(NOW()) - TO_DAYS(OMG_PORTAL_UCT_NOTICE_DATA.istop_time) >= 0 AND 
+			TO_DAYS(NOW()) - TO_DAYS(OMG_PORTAL_UCT_NOTICE_DATA.ISTOP_TIME) <![CDATA[ <= ]]> OMG_PORTAL_UCT_NOTICE_DATA.ISTOP_DAY, 1, 0) AS setTop, 
+  		(SELECT TYPE_NAME FROM OMG_PORTAL_UCT_NOTICE_TYPE WHERE TYPE_ID = OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID) ONE_NAME,
+  		(SELECT TYPE_NAME FROM OMG_PORTAL_UCT_NOTICE_TYPE WHERE TYPE_ID = OMG_PORTAL_UCT_NOTICE_DATA.SON_ID) TWO_NAME
+		FROM OMG_PORTAL_UCT_NOTICE_DATA 
+		
+		<where>
+			(
+			<foreach collection="orgList" item="id" index="index" open="" close="" separator=" OR ">
+		    	FIND_IN_SET(#{id}, OMG_PORTAL_UCT_NOTICE_DATA.CODE_SCOPE)
+		    </foreach>
+			
+			OR OMG_PORTAL_UCT_NOTICE_DATA.CODE_SCOPE = '' 
+			OR OMG_PORTAL_UCT_NOTICE_DATA.CODE_SCOPE IS NULL
+			)
+			AND (OMG_PORTAL_UCT_NOTICE_DATA.SON_ID != 55 OR OMG_PORTAL_UCT_NOTICE_DATA.SON_ID IS NULL)
+		<!-- <if test="typeId != 0 and typeId != null">
+				<if test="typeId == '00004'">
+					AND (OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID = #{typeId} OR OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG = #{typeId} OR (OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG = '37246'))
+				</if>
+				<if test="typeId != '00004'">
+					AND (OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID = #{typeId} OR OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG = #{typeId})
+				</if>
+			</if> -->
+			<if test="typeId != null and typeId != '' and typeId != -100">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID = #{typeId}
+			</if>
+			<!-- <if test="sonId != null and sonId != ''">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.SON_ID = #{sonId}
+			</if> -->
+			<if test="typeId != null and typeId == -100">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.MUST_READ_FLAG = 1
+			</if>
+		</where>
+		
+		ORDER BY setTop DESC, OMG_PORTAL_UCT_NOTICE_DATA.CREATE_TIME DESC LIMIT 10 
+	</select>
+	
+		<!-- 查询公司公告前十条数据（优速通的） -->
+	<select id="findNoticeTopicTen" resultType="cn.uce.omg.sso.vo.portal.PortalCompanyNoticeVo">
+		SELECT 
+		OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID AS ID,
+		OMG_PORTAL_UCT_NOTICE_DATA.TITLE,
+		OMG_PORTAL_UCT_NOTICE_DATA.CONTENT,
+		OMG_PORTAL_UCT_NOTICE_DATA.NAME_SCOPE AS AUTHOR,
+		OMG_PORTAL_UCT_NOTICE_DATA.CREATE_TIME,
+		(SELECT view_flag FROM omg_portal_company_notice_record 
+		WHERE OMG_PORTAL_COMPANY_NOTICE_RECORD.NOTICE_ID = OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID 
+		AND OMG_PORTAL_COMPANY_NOTICE_RECORD.VIEW_USER = #{empCode} LIMIT 1) view_flag,
+		IF (TO_DAYS(NOW()) - TO_DAYS(OMG_PORTAL_UCT_NOTICE_DATA.istop_time) >= 0 AND 
+			TO_DAYS(NOW()) - TO_DAYS(OMG_PORTAL_UCT_NOTICE_DATA.ISTOP_TIME) <![CDATA[ <= ]]> OMG_PORTAL_UCT_NOTICE_DATA.ISTOP_DAY, 1, 0) AS setTop, 
+  		(SELECT TYPE_NAME FROM OMG_PORTAL_UCT_NOTICE_TYPE WHERE TYPE_ID = OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID) ONE_NAME,
+  		(SELECT TYPE_NAME FROM OMG_PORTAL_UCT_NOTICE_TYPE WHERE TYPE_ID = OMG_PORTAL_UCT_NOTICE_DATA.SON_ID) TWO_NAMEFROM OMG_PORTAL_UCT_NOTICE_DATA 
+		
+		<where>
+			(FIND_IN_SET(#{orgId}, OMG_PORTAL_UCT_NOTICE_DATA.CODE_SCOPE)
+			OR OMG_PORTAL_UCT_NOTICE_DATA.CODE_SCOPE = '' 
+			OR OMG_PORTAL_UCT_NOTICE_DATA.CODE_SCOPE IS NULL
+			)
+			<!-- <if test="typeId != 0 and typeId != null">
+				<if test="typeId == '00004'">
+					AND (OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID = #{typeId} OR OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG = #{typeId} OR (OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG = '37246'))
+				</if>
+				<if test="typeId != '00004'">
+					AND (OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID = #{typeId} OR OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG = #{typeId})
+				</if>
+			</if> -->
+			<if test="typeId != null and typeId != '' and typeId != -100">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID = #{typeId}
+			</if>
+			<!-- <if test="sonId != null and sonId != ''">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.SON_ID = #{sonId}
+			</if> -->
+			<if test="typeId != null and typeId == -100">
+				AND OMG_PORTAL_UCT_NOTICE_DATA.MUST_READ_FLAG = 1
+			</if>
+		</where>
+		
+		ORDER BY setTop DESC, OMG_PORTAL_UCT_NOTICE_DATA.CREATE_TIME DESC LIMIT 10 
+	</select>
+	
+	<!-- 查询公司公告前十条数据PORTAL公告备份 -->
+	<select id="findNoticeTopicTenBeiFen" parameterType="java.lang.String" resultType="cn.uce.omg.sso.vo.portal.PortalCompanyNoticeVo">
+		SELECT 
+		OMG_PORTAL_COMPANY_NOTICE.ID,
+		OMG_PORTAL_COMPANY_NOTICE.TITLE,
+		OMG_PORTAL_COMPANY_NOTICE.AUTHOR,
+		OMG_PORTAL_COMPANY_NOTICE.CREATE_TIME,
+		OMG_PORTAL_COMPANY_NOTICE.SET_TOP,
+		OMG_PORTAL_COMPANY_NOTICE.SET_ALERT,
+		(SELECT view_flag FROM omg_portal_company_notice_record 
+		WHERE OMG_PORTAL_COMPANY_NOTICE_RECORD.NOTICE_ID = OMG_PORTAL_COMPANY_NOTICE.ID 
+		AND OMG_PORTAL_COMPANY_NOTICE_RECORD.VIEW_USER = #{empCode} LIMIT 1) view_flag,
+		(SELECT count(*) FROM omg_portal_company_notice_record 
+		WHERE OMG_PORTAL_COMPANY_NOTICE_RECORD.NOTICE_ID = OMG_PORTAL_COMPANY_NOTICE.ID) view_count
+		FROM OMG_PORTAL_COMPANY_NOTICE 
+		ORDER BY SET_TOP DESC, SORT IS NULL, SORT ASC, ID DESC LIMIT 10 
+	</select>
+	
+		<!-- 查询提示的公告-->
+	<select id="findNoticeAlert" resultType="cn.uce.omg.sso.vo.portal.PortalCompanyNoticeVo">
+		SELECT 
+			notice.notice_id AS id,
+		  	notice.title,
+		  	notice.create_time,
+		  	notice.create_emp AS author,
+		  	notice.must_read_flag AS setAlert
+		FROM omg_portal_uct_notice_must_read_scope scope 
+		LEFT JOIN omg_portal_uct_notice_data notice 
+		ON scope.notice_id = notice.notice_id
+		WHERE 
+		(
+			<foreach collection="orgList" item="id" index="index" open="" close="" separator=" OR ">
+		    	FIND_IN_SET(#{id}, SCOPE.CODE)
+		    </foreach>
+			OR FIND_IN_SET(#{empCode}, scope.code) 
+		)
+		AND notice.must_read_flag = 1 
+		AND notice.CREATE_TIME >  #{limitDate}
+		AND notice.notice_id NOT IN(
+			SELECT r.NOTICE_ID FROM omg_portal_company_notice_record r WHERE r.VIEW_USER  =#{empCode}
+		)
+		ORDER BY notice.create_time DESC 
+		LIMIT 1
+		
+	</select>
+	
+	<resultMap type="cn.uce.omg.sso.vo.portal.PortalCompanyNoticeVo" id="findNoticeResultMap">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="content" column="content"/>
+		<result property="author" column="author"/>
+		<result property="createTime" column="create_time"/>
+		<result property="oneName" column="ONE_NAME"/>
+		<result property="twoName" column="TWO_NAME"/>
+		<result property="createOrg" column="create_org" jdbcType="VARCHAR"/>
+		<collection property="noticeFiles" column="noticeFiles" ofType="java.util.Map">
+			<result property="filePath" column="filePath"/>
+			<result property="fileName" column="fileName"/>
+		</collection>
+	</resultMap>
+	<!-- 根据ID查询 -->
+	<select id="findNoticeById" parameterType="java.lang.Long" resultMap="findNoticeResultMap">
+		SELECT 	
+			OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID AS ID,
+			OMG_PORTAL_UCT_NOTICE_DATA.TITLE,
+			OMG_PORTAL_UCT_NOTICE_DATA.CONTENT,
+			OMG_PORTAL_UCT_NOTICE_DATA.NAME_SCOPE AS AUTHOR,
+			OMG_PORTAL_UCT_NOTICE_DATA.CREATE_TIME,
+			OMG_PORTAL_UCT_NOTICE_DATA.CREATE_ORG,
+			(SELECT TYPE_NAME FROM OMG_PORTAL_UCT_NOTICE_TYPE WHERE TYPE_ID = OMG_PORTAL_UCT_NOTICE_DATA.PARENT_ID) ONE_NAME,
+  			(SELECT TYPE_NAME FROM OMG_PORTAL_UCT_NOTICE_TYPE WHERE TYPE_ID = OMG_PORTAL_UCT_NOTICE_DATA.SON_ID) TWO_NAME,
+			OMG_PORTAL_UCT_NOTICE_FILES.FILE_PATH AS filePath,
+  			OMG_PORTAL_UCT_NOTICE_FILES.FILE_NAME AS fileName
+		FROM OMG_PORTAL_UCT_NOTICE_DATA
+		LEFT JOIN OMG_PORTAL_UCT_NOTICE_FILES 
+    	ON OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID = OMG_PORTAL_UCT_NOTICE_FILES.NOTICE_ID 
+		WHERE OMG_PORTAL_UCT_NOTICE_DATA.NOTICE_ID = #{id}
+	</select>
+	
+	<select id="findFullOrgIdList" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT org_full_id FROM omg_org WHERE ORG_ID = #{orgId}
+	</select>
+
+	<resultMap type="cn.uce.omg.sso.vo.NoticeParentInfoVo" id="noticeTypeResultMap">
+		<result property="typeName" column="type_name"/>
+		<result property="parentId" column="type_id"/>
+		<collection property="towTwoLeveInfoList" ofType="cn.uce.omg.sso.vo.NoticeTwoLeveInfoVo" javaType="java.util.List">
+			<result property="twoLeveTypeName" column="two_leve_type_name"/>
+			<result property="twoLeveTypeId" column="two_leve_type_id"/>
+		</collection>
+	</resultMap>
+	<select id="findNoticeType" resultMap="noticeTypeResultMap">
+		SELECT 
+		  o.TYPE_ID AS type_id,
+		  o.TYPE_NAME AS type_name,
+		  t.TYPE_ID AS two_leve_type_id,
+		  t.TYPE_NAME AS two_leve_type_name 
+		FROM
+		  OMG_PORTAL_UCT_NOTICE_TYPE o 
+		  LEFT JOIN OMG_PORTAL_UCT_NOTICE_TYPE t ON o.TYPE_ID = t.PARENT_ID 
+		WHERE o.PARENT_ID IS NULL AND o.ORDER_ID IS NOT NULL ORDER BY o.ORDER_ID
+	</select>
+</mapper>

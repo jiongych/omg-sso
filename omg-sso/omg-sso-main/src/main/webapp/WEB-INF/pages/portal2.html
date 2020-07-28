@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>   
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>优速快递</title>
+   	<script src="//static-file.uce.cn/uce-static/jquery-easyui-1.5.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+   	<script src="//static-file.uce.cn/uce-static/jquery-easyui-1.5.1/jquery.easyui.min.js" type="text/javascript" charset="utf-8"></script>
+   	<script src="js/vue-2.3.min.js" type="text/javascript" charset="utf-8"></script>
+   	<script type="text/javascript" src="js/jquery-accordion-menu.js"></script>
+   	<script src="js/uce.util.js" type="text/javascript" charset="utf-8"></script>
+   	
+   	<link rel="stylesheet" type="text/css" href="//static-file.uce.cn/uce-static/iconfont/iconfont.css"/>
+  	<link rel="stylesheet" type="text/css" href="//static-file.uce.cn/uce-static/easyui-themes/themes/insdep/easyui.css"/>
+  	<link rel="stylesheet" href="//static-file.uce.cn/uce-static/easyui-themes/themes/insdep/icon.css" />
+  	<link rel="stylesheet" type="text/css" href="css/jquery-accordion-menu.css">
+  	<link rel="stylesheet" type="text/css" href="css/common.css"/>
+   	<link rel="stylesheet" type="text/css" href="css/portal-index.css">
+	<style type="text/css">
+		body{
+			height: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<!--菜单模板-->
+	<script type="text/x-template" id="item-template">
+		<li @click="select($event)" v-bind:id="id">
+			<a style="display: flex;"><i class="iconfont" :class="iconClass"></i><span style="flex: 1;">{{model.text}}</span></a>
+			<ul class="submenu" v-if="model.children">
+				<items v-for="child in model.children" v-bind:model="child" ></items>
+			</ul>
+		</li>
+	</script>
+	
+	<div id="vueScope" :class="settings.themes" v-cloak>
+		<!------------header------------------->
+		<header class="header">
+			<div  class="left">
+				<img alt="logo" src="images/uc56_logo.png" style="width:70px;height:46px;">
+				<div class="title">优速快递</div>
+			</div>
+			<div class="searchArea">
+				<input type="text" class="searchText" placeholder="请输入订单号或运单号" v-model="billCode"/>
+				<i class="iconfont uce-search searchButton" @click="config.searchType=true"></i>
+				<!--搜索结果-->
+				<div class="search-data" v-if="config.searchType==true">
+					<i class="iconfont uce-cancel" @click="config.searchType=false"></i>
+				</div>
+			</div>
+			<div class="right">
+				<!-- 如果有加按钮，需要手动调整 padding  -->
+				<a id="userdtl"><i class="iconfont uce-people"></i><span id="empName">{{user.userInfo.empName}}</span><i class="iconfont uce-triangledown"></i></a>|
+				<a ><i class="iconfont uce-qiehuan"></i><span id="orgNmae">{{user.userInfo.loginOrg.orgName}}</span></a>|
+				<!--<a id="message"><i class="iconfont uce-remind-circle"></i><span class="span-tip">99</span><span>消息</span></a>|-->
+				<!--<a onclick="updatePwd()"><i class="iconfont uce-password"></i><span>密码修改</span></a>|-->
+				<a @click="openSetting()" id="setting"><i class="iconfont uce-set"></i><span>设置</span></a>|
+				<a onclick="logout()" ><i class="iconfont uce-exit"></i><span>退出</span></a>
+			</div>
+		</header>
+		<!--------------主体布局------------->
+		<article class="uce-layout" >
+			<!--菜单-->
+			<div id="vuedom" class="vuedom">
+				<div class="jquery-accordion-menu red" style="min-width:100%;width:100%;" v-cloak>
+					<ul id="demo-list">
+						<li id="homepage" class="" @click="openTab('首页','${pageContext.request.contextPath}/login/home.do',false,0)">
+							<a><i class="iconfont uce-home"></i>首页</a>
+						</li>
+					</ul>
+				</div>
+				<div id="jquery-accordion-menu" class="jquery-accordion-menu red" style="min-width:100%;width:100%;" v-cloak>
+					<ul id="demo-list">
+						<items v-for="item in dataMenu" :model="item" ></items>
+					</ul>
+				</div>
+			</div>
+			<!--主体内容-->
+			<div id="mainTab" class="easyui-tabs" fit="true" style="margin-left: 50px;"></div>
+		</article>
+		
+		<!-------------------------模板/模块------------------------->
+		<!--用户信息-->
+		<div class="userdtl" style="display:none;">
+			<div id="triangle-facing-left" class="triangle-facing-left" ></div>
+			<div class="user-content">
+				<ul>
+					<li>
+						<i class="iconfont uce-status"></i>
+						<span>{{user.userInfo.position}}</span>
+					</li>
+					<li>
+						<i class="iconfont uce-watch"></i>
+						<span id="loginTime">{{formatTime(user.userInfo.lastLoginTime)}}</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+		
+		<!--消息列表-->
+		<!--<div class="messages msg-p" style="display:none;">
+			<div id="triangle-facing-left" class="triangle-facing-left" ></div>
+			<div class="message-content">
+				<ul>
+					<li v-for="tip in message.msgs" @click="openMessage(tip)">
+						<i class="read-tip" v-bind:class="{'read-tip-off':tip.state==true}"></i>
+						<div>
+							<span>{{tip.title}}</span>
+							<span>{{tip.time}}</span>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="more-info">查看全部消息</div>
+		</div>-->
+		<!--消息详情model-->
+		<!--<div id="messageDetail" class="easyui-dialog" data-options="closed:true,title:'消息详情'"
+		style=" width:500px;height:300px;padding:5px 15px;display:none;" v-cloak>
+			<div class="msgdtl">{{message.msgdetl.content}}</div>
+		</div>-->
+		
+		<!--功能设置-->
+		<div class="setting">
+			<div class="setting-themes">
+				<span class="themes-title"><i class="iconfont uce-themes" style="font-size:24px"></i></span>
+				<ul>
+					<li class="themes-choice default" @click="settingThemes('default')">
+						<i v-if="settings.themes == 'default'" class="iconfont uce-success-circle"></i>
+					</li>
+					<li class="themes-choice blue" @click="settingThemes('blue')">
+						<i v-if="settings.themes == 'blue'" class="iconfont uce-success-circle"></i>
+					</li>
+					<li class="themes-choice black" @click="settingThemes('black')">
+						<i v-if="settings.themes == 'black'" class="iconfont uce-success-circle"></i>
+					</li>
+				</ul>
+			</div>
+			<div>
+				<a class="setPass" onclick="updatePwd()"><i class="iconfont uce-password"></i><span>密码修改</span></a>
+			</div>
+		</div>
+		
+	</div>
+
+	<!--右键菜单-->
+	<div id="mm" class="easyui-menu" style="width:120px;display:none;">
+		<div data-options="iconCls:'iconfont uce-cancel'" id="closecur">
+			关闭
+		</div>
+		<div data-options="iconCls:'iconfont uce-cancel'" id="closeall">
+			关闭全部
+		</div>
+		<div  data-options="iconCls:'iconfont uce-cancel'"id="closeother">
+			关闭其他
+		</div>
+		<div class="menu-sep"></div>
+		<div data-options="iconCls:'iconfont uce-cancel'" id="closeleft">
+			关闭左侧标签
+		</div>
+		<div data-options="iconCls:'iconfont uce-cancel'" id="closeright">
+			关闭右侧标签
+		</div>
+	</div>
+
+	<!------------------业务逻辑------------------------>
+	<script type="text/javascript">
+		var loginUser={};//用户信息-用于iframe调用
+		var permissionCode="";//权限 -用于iframe调用
+		//关闭消息窗口
+		var closeMessage = function(){
+			$(".messages").slideUp();
+			$(".userdtl").hide();
+		}
+		
+		//菜单组件
+		Vue.component('items', {
+			props: ['model'],
+			template: '#item-template',
+			computed: {
+				id: function () {
+				  return this.model.id
+				},
+				title: function () {
+					return this.model.text
+				},
+				href : function () {
+					var localObj = window.location;
+					var contextPath = localObj.pathname.split("/")[1];
+					var basePath = localObj.protocol+"//"+localObj.host+"/"+contextPath;
+					if(this.model.attributes != null){
+						if(this.model.attributes.indexOf("sysurl") == 0){
+							this.model.attributes = this.model.attributes.replace(/sysurl/,basePath);
+						}
+					};
+					return this.model.attributes;
+				},
+				iconClass: function(){
+					if(this.model.children!=null){
+						if(this.model.permissionIcon != null && this.model.permissionIcon.replace(/(^\s*)|(\s*$)/g, "") != ""){
+							return this.model.permissionIcon;
+						}else{
+							return 'uce-file';
+						}
+					}else{
+						return 'uce-thirdfile';
+					}
+				}
+				
+			},
+			methods: {
+				select: function(ev){
+					ev.stopPropagation();
+					//console.log(vm.tretabs)
+					if(this.model.children!=null){
+						return;
+					}
+					vm.openTab(this.title,this.href,true,this.id)
+				}
+			}
+		})
+		
+		//消息列表
+		var messages = [
+			{"title":"东方时代防水方式方式单身的1","time":"2017-05-06","state":true,"content":"contentcontentcontentcontentcontent"},
+			{"title":"东方时代防水方式方式单身的2","time":"2017-05-06","state":false,"content":"contentcontentcontentcontentcontent"},
+			{"title":"东方时代防水方式方式单身的3","time":"2017-05-06","state":true,"content":"contentcontentcontentcontentcontent"},
+			{"title":"东方时代防水方式方式单身的4","time":"2017-05-06","state":false,"content":"contentcontentcontentcontentcontent"},
+		]
+		var settings = localStorage.settings;
+		
+		//实例化vue
+		var vm = new Vue({
+			el: "#vueScope",
+			data: {
+				user:{
+					userInfo:{
+						loginOrg:{},
+						loginCmsOrg:{},
+						loginOrgRelList:{}
+					},//用户信息
+					changeOrg:[],//选择的部门
+					Orgs:[]//部门列表
+				},
+				dataMenu:[],//左侧菜单数据
+				message:{
+					"msgs":messages,//消息集合
+					"msgdetl":{}//单条消息详情
+				},
+				tretabs:{},//打开的tabs
+				settings:settings?JSON.parse(settings):{
+					type:false,
+					themes:"default"
+				},
+				billCode: "",
+				config: {
+					searchType: false
+				}
+			},
+			mounted:function(){//#el挂在后执行
+				var vueThis = this;
+				
+				vueThis.getMenus();
+				vueThis.getUser();
+				
+				//折叠消息窗口
+				$('#message').click(function(event){
+					var e =event||window.event;
+					$(".messages").slideDown(500);
+					$(".userdtl").hide();
+					$(document).one("click", function () {
+						$(".messages").hide();
+					});
+					/*$(".messages").click(function (event) {
+						event.stopPropagation();
+					});*/
+					e.stopPropagation();
+				})
+				//用户信息
+				$("#userdtl").mouseenter(function(event){
+					var offsetLeft = $("#userdtl").offset().left - $("#userdtl")[0].offsetWidth/2 + 15;
+					var e =event||window.event;
+					$(".userdtl").css({"left":offsetLeft})
+					$(".userdtl").slideDown(500);
+					$(".messages").hide();
+					$(".userdtl").mouseleave(function(event){
+						var e =event||window.event;
+						$(".userdtl").hide();
+						e.stopPropagation();
+					})
+					$(document).one("click", function () {
+						$(".userdtl").hide();
+					});
+					e.stopPropagation();
+				})
+				//tab切换
+				$('#mainTab').tabs({
+					onSelect:function(title,index){
+						$("#demo-list li.active").removeClass("active")
+						$(".jquery-accordion-menu .submenu a").css("background-color",'')
+						$(".jquery-accordion-menu a").css("background-color",'')
+						if(vm.tretabs[title]!='000'){
+							try{
+								$("#"+vm.tretabs[title])[0].childNodes[0].style.background = "rgb(238, 120, 0)";
+							}catch(e){
+								
+							}
+						}else if(vm.tretabs[title] === '000'){
+							//$("#homepage").addClass("active");
+						}
+					}
+				});
+				//tab右键菜单
+				tabRightMenu('mainTab','mm');
+				
+				//折叠菜单
+				$(".all-menus, .vuedom").mouseover(function(event){
+					event.stopPropagation();
+					$('#vuedom').addClass('vuedom-hover2'); 
+				})
+				$('#mainTab').mouseenter(function(event){
+					$('#vuedom').removeClass('vuedom-hover2'); 
+				})
+				$(".uce-layout").mousedown(function(event){
+					if(vueThis.settings.type){
+						$(".setting").removeClass('active');
+						vueThis.settings.type = false;
+						localStorage.setItem("settings",JSON.stringify(vueThis.settings));
+					}else{
+						return;
+					}
+				})
+			},
+			updated:function(){//视图更新后执行
+				
+			},
+			computed:{
+				//计算属性
+			},
+			methods: {
+				getUser:function(){
+					var vueThis = this;
+					//异步加载当前用户信息
+					$.ajax({
+						url:'../portal/getLoginUser.action',
+						data:{},
+						success:function(result){
+							loginUser=result;
+							vueThis.user.userInfo = result;
+							vueThis.user.userInfo.position = "开发工程师";
+						}
+					})
+				},
+				getMenus:function(){
+					var vueThis = this;
+					$.ajax({
+						url:'../portal/getExpandMenuTree.action',
+						data:{},
+						async:true, 
+						success:function(result){
+							vueThis.dataMenu = result;
+							setTimeout(function(){
+								$("#jquery-accordion-menu").jqueryAccordionMenu();
+							},500)
+						}
+					})
+				},
+				openTab: function(title,href,closable,treeid,ev){
+					//打开tab页
+					if (href.replace('${pageContext.request.contextPath}','') == '') {
+						href = '';
+					}
+					var e = $('#mainTab').tabs('exists',title);
+					if(e){
+						$("#mainTab").tabs('select',title);
+						var tab = $("#mainTab").tabs('getSelected');
+					}else{
+						if($('#mainTab').tabs('tabs').length >= 10){
+							showTips("最多只能打开10个标签页！","warning",3000);
+							return false;
+						}
+						vm.tretabs[title] = treeid?treeid:'000';
+						$('#mainTab').tabs('add',{
+							title:title,
+							content:'<iframe id="indextab'+treeid+'" scrolling="auto" src="'+href+'" frameborder="0" style="width:100%;height:100%"></iframe>',
+							closable:closable
+						});
+					}
+				},
+				openMessage:function(news){
+					//打开消息详情
+					this.message.msgdetl = news;
+					$('#messageDetail').dialog('options').title = news.title;
+					$('#messageDetail').dialog({modal:true}).dialog('open');
+				},
+				openSetting:function(event){
+					//折叠设置窗口
+					var e = event || window.event;
+					e.stopPropagation()
+					//$(".setting").toggle(!this.settings.type);
+					if(this.settings.type){
+						$(".setting").removeClass('active');
+					}else{
+						$(".setting").addClass('active');
+					}
+					this.settings.type = !this.settings.type;
+					localStorage.setItem("settings",JSON.stringify(this.settings));
+				},
+				settingThemes:function(val){
+					//皮肤设置
+					this.settings.themes = val;
+					for (var i=0; i<frames.length; i++){
+						var cssStyleDom = frames[i].frameElement.contentDocument.getElementById('themes-setting');
+						if(cssStyleDom == null){
+							var css = document.createElement('style');
+							css.type='text/css';
+							css.id="themes-setting";
+							if(val=='default'){
+								css.innerHTML =".iconfont{color:#ff9372;}";
+							}else if(val =='blue'){
+								css.innerHTML =".iconfont{color:#23b7e5;}";
+							}else{
+								css.innerHTML =".iconfont{color:#464c5b;}";
+							}
+							frames[i].frameElement.contentDocument.head.appendChild(css);
+						}else{
+							if(val=='default'){
+								cssStyleDom.innerHTML =".iconfont{color:#ff9372;}";
+							}else if(val =='blue'){
+								cssStyleDom.innerHTML =".iconfont{color:#23b7e5;}";
+							}else{
+								cssStyleDom.innerHTML =".iconfont{color:#464c5b;}";
+							}
+						}
+					}
+				}
+			},
+			directives:{
+			},
+			watch:{
+				'settings':function(newvalue,oldvalue){
+					var settings = JSON.stringify(newvalue);
+					localStorage.setItem("settings",settings);
+				},
+				'settings.themes':function(newvalue,oldvalue){
+					//皮肤设置
+					var settings = JSON.stringify(this.settings);
+					localStorage.setItem("settings",settings);
+				}
+			}
+		})
+		
+		//初始化打开首页
+		vm.openTab("首页",'home.html',false,0);
+		
+	</script>
+</body>
+</html>

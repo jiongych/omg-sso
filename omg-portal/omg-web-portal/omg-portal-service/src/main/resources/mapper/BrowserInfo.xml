@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IBrowserInfoDao">
+     <!-- 查询每月总的登录次数 -->
+    <select id="findMonthLoginNums" resultType="java.util.Map">
+        SELECT 
+          date_format(create_date,'%y-%m') monthNum,
+          count(1) loginNums 
+        FROM omg_portal_brower 
+        GROUP BY date_format(create_date,'%y-%m')
+    </select>
+
+    <!-- 查询每日登录人次 -->
+    <select id="findLoginStatisticsInfo" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT 
+           statistics_date statisticsDate,
+           login_times loginTimes,
+           login_pepoles loginPeoples,
+           statistics_type statisticsType,
+           statistics_category statisticsCategory,
+           statistics_name statisticsName,
+           remark
+        FROM omg_portal_login_statistics
+        <where>
+            statistics_type=#{statisticsType}
+            <if test="statisticsCategory != null and statisticsCategory != '' and statisticsCategory != 'null'">
+                and statistics_category=#{statisticsCategory}
+            </if>
+<!--             <if test="statistics_date != null and statistics_date != '' and statistics_date != 'null'">
+                AND date_sub(curdate(), INTERVAL ${statistics_date} DAY) <![CDATA[<=]]> date(statistics_date)
+            </if> -->
+        </where>
+        ORDER BY statistics_date DESC,login_times DESC limit 10
+    </select>
+    
+    <!-- 查询每月不同浏览器的使用次数 -->
+    <select id="findMonthBrowserNums" resultType="java.util.Map">
+        SELECT
+			date_format(create_date, '%y-%m') monthNum,
+			browser_name browserName,
+			count(1) loginNums
+		FROM
+			omg_portal_brower
+		GROUP BY
+			date_format(create_date, '%y-%m'),
+			browser_name
+    </select>
+    
+    <!-- 查询有几种浏览器 -->
+    <select id="findBrowserName" resultType="java.lang.String" parameterType="java.util.Map">
+        SELECT 
+           statistics_name browserName
+        FROM omg_portal_login_statistics
+        <where>
+            statistics_type=#{statisticsType}
+            <if test="statisticsCategory != null and statisticsCategory != '' and statisticsCategory != 'null'">
+                and statistics_category=#{statisticsCategory}
+            </if>
+        </where>
+		GROUP BY
+			statistics_name
+	    ORDER BY login_times DESC
+        LIMIT 8 
+    </select>
+    
+    <!-- 查询登陆人数 -->
+    <select id="findLoginPeopleNums" resultType="java.util.Map">
+        SELECT
+		  date_format(create_date, '%y-%m-%d') days,
+			count(1) loginNums,
+		    b.create_emp createEmp
+		FROM
+			omg_portal_brower b
+		GROUP BY 
+		    date_format(create_date, '%y-%m-%d'),
+		    b.create_emp
+	    ORDER BY create_date 
+    </select>
+    
+    <!-- 查询每日登陆次数 -->
+    <select id="findDaysLoginTimes" resultType="java.util.Map">
+        SELECT date_format(create_date, '%y-%m-%d') days,count(1) loginTimes 
+		FROM omg_portal_brower b
+		GROUP BY 
+			date_format(create_date, '%y-%m-%d')
+		ORDER BY create_date 
+    </select>
+    
+    <!-- 查询分辨率统计数据 -->
+    <select id="findResolutionRatio" resultType="java.util.Map">
+        SELECT create_emp createEmp,browser_screen browserScreen
+        FROM omg_portal_brower b 
+		WHERE b.create_date 
+		BETWEEN date_sub(now(),interval 3 month) AND now()
+		GROUP BY b.create_emp,b.browser_screen
+    </select>
+    
+    <!-- 查询最近7天或查询最近30天记录 -->
+    <select id="findLoginRankingInfo" resultType="java.util.Map" parameterType="java.lang.Integer">
+        SELECT b.create_emp createEmp,count(1) ranking,e.emp_name empName 
+        FROM omg_portal_brower b,omg_emp e
+		WHERE b.create_emp=e.emp_code
+		AND date_sub(curdate(), INTERVAL ${value} DAY) <![CDATA[<=]]> date(b.create_date)
+		GROUP BY b.create_emp
+		ORDER BY ranking DESC
+		LIMIT 10
+    </select>
+    
+    <!-- 加载浏览器信息 -->
+    <select id="findAllBrowserInfo" parameterType="cn.uce.omg.portal.vo.PortalBrowserInfoVo" resultType="cn.uce.omg.portal.vo.PortalBrowserInfoVo">
+        SELECT
+	      b.id,
+		  b.browser_name browserName,
+		  b.browser_version browserVersion,
+		  b.browser_operating_systems browserOperatingSystems,
+		  b.browser_screen browserScreen,
+		  b.operating_ip operatingIp,
+		  b.create_emp createEmp,
+		  b.create_date createDate,
+		  e.EMP_NAME empName
+		FROM
+			omg_portal_brower b,omg_emp e
+		WHERE b.create_emp=e.emp_code
+		<if test="browserName != null and browserName != ''">
+		    AND b.browser_name like CONCAT(CONCAT('%',#{browserName}),'%')
+		</if>
+		<if test="browserName != null and browserName != ''">
+		    AND b.create_emp like CONCAT(CONCAT('%',#{createEmp}),'%')
+		</if>
+		<if test="createDate != null and updatedTime != null">
+	    	<![CDATA[ and b.create_date between #{createDate,jdbcType=TIMESTAMP} and #{updatedTime,jdbcType=TIMESTAMP} ]]>
+		</if>
+		<if test="createDate != null and updatedTime == null">
+	    	<![CDATA[ and b.create_date between #{createDate,jdbcType=TIMESTAMP} and now() ]]>
+		</if>
+    </select>
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- 系统服务组件的切面Bean -->
+	<bean id="ssoLogAspect" class="cn.uce.omg.sso.aop.LogAspect">
+		<property name="userBiz" ref="userBiz"></property>
+		<property name="empBiz" ref="empBiz"></property>
+		<property name="loginSuccessTemplate" ref="loginSuccessTemplate"></property>
+	</bean>
+	<!-- AOP配置 -->
+	<aop:config>
+ 		<aop:aspect id="loginLogAspect" ref="ssoLogAspect">
+			<aop:pointcut expression="execution(* cn.uce.omg.sso.biz.IAuthBiz.login(..))"
+ 				id="loginLogAspect" />
+			<aop:around pointcut-ref="loginLogAspect" method="loginLog" />
+		</aop:aspect>
+		<aop:aspect id="logoutLogAspect" ref="ssoLogAspect">
+			<aop:pointcut expression="execution(* cn.uce.omg.sso.biz.IAuthBiz.logout(..))" 
+				id="logoutLogAspect"/>
+			<aop:around pointcut-ref="logoutLogAspect" method="logoutLog"/>
+		</aop:aspect>
+		<aop:aspect id="updUserPwdLogAspect" ref="ssoLogAspect">
+			<aop:pointcut expression="execution(* cn.uce.omg.sso.biz.IUserBiz.updateUserPassword(..))"
+				id="updPwdLogPointCut" />
+			<aop:around pointcut-ref="updPwdLogPointCut" method="updatePwdLog" />
+		</aop:aspect>
+		<aop:aspect id="updMyPwdAspect" ref="ssoLogAspect">
+			<aop:pointcut id="updMyPwdLogPointCut"
+				expression="execution(* cn.uce.omg.sso.biz.IUserBiz.updateMyUserPassword(..))" />
+			<aop:around pointcut-ref="updMyPwdLogPointCut" method="updateMyPwdLog" />
+		</aop:aspect>
+	</aop:config>
+</beans>

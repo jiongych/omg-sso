@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IOrgDao">
+	<select id="findAllSyncOrgZTree" resultType="cn.uce.omg.portal.vo.OrgZTreeNodeVo">
+		SELECT 
+		OMG_ORG.ORG_ID AS id,
+		OMG_ORG.ORG_NAME AS name,
+		OMG_ORG.PARENT_ORG AS pid,
+		OMG_ORG.ORG_CODE AS orgCode,
+		OMG_ORG.ORG_TYPE AS orgType
+		FROM 
+		OMG_ORG
+		WHERE
+		OMG_ORG.DELETE_FLAG = 0
+	</select>
+	<select id="findChildSyncOrgZTree" resultType="cn.uce.omg.portal.vo.OrgZTreeNodeVo">
+		SELECT 
+		OMG_ORG.ORG_ID AS id,
+		OMG_ORG.ORG_NAME AS name,
+		OMG_ORG.PARENT_ORG AS pid,
+		OMG_ORG.ORG_CODE AS orgCode,
+		OMG_ORG.ORG_TYPE AS orgType
+		FROM 
+		OMG_ORG
+		WHERE
+		OMG_ORG.DELETE_FLAG = 0
+		<if test="orgZTreeNodeVo != null and orgZTreeNodeVo.id != null">
+			AND FIND_IN_SET(#{orgZTreeNodeVo.id},OMG_ORG.ORG_FULL_ID)
+		</if>
+	</select>
+	
+	
+		<select id="findChildSyncOrgZTreeNew" resultType="cn.uce.omg.portal.vo.OrgZTreeNodeVo" parameterType="map">
+		SELECT 
+		OMG_ORG.ORG_ID AS id,
+		OMG_ORG.ORG_NAME AS name,
+		OMG_ORG.PARENT_ORG AS pid,
+		OMG_ORG.ORG_CODE AS orgCode,
+		OMG_ORG.ORG_TYPE AS orgType
+		FROM 
+		OMG_ORG
+		WHERE
+		OMG_ORG.DELETE_FLAG = 0
+		<if test="id != null and id != ''">
+			AND FIND_IN_SET(#{id},OMG_ORG.ORG_FULL_ID)
+		</if>
+		<if test="idList != null and idList.size() > 0">  
+			<foreach collection="idList" index="index" item="id" open="AND (" separator=" OR " close=")">
+				 OMG_ORG.ORG_FULL_ID LIKE CONCAT(CONCAT('%', #{id}), '%')
+			</foreach>
+		</if>
+	</select>
+	
+	<!-- 查询子异步机构树 -->
+	<select id="findChildAsyncOrgZTree"  resultType="cn.uce.omg.portal.vo.OrgZTreeNodeVo">
+		SELECT 
+		OMG_ORG.ORG_ID AS id,
+		OMG_ORG.ORG_NAME AS name,
+		OMG_ORG.PARENT_ORG AS pid,
+		OMG_ORG.ORG_CODE AS orgCode,
+		OMG_ORG.ORG_TYPE AS orgType
+		(CASE 
+		WHEN EXISTS (SELECT ID FROM OMG_ORG WHERE DELETE_FLAG = 0 AND PARENT_ORG != ORG_ID AND PARENT_ORG = O.ORG_ID)
+		THEN 'closed'
+		ELSE 'open'
+		END) AS state
+		FROM 
+		OMG_ORG O
+		WHERE
+		O.DELETE_FLAG = 0 AND
+		<choose>
+			<when test="parentOrg == null">
+				AND O.PARENT_ORG = 0
+			</when>
+			<otherwise>
+				AND O.PARENT_ORG != O.ORG_ID AND O.PARENT_ORG = #{pid}
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findByOrgId" resultType="cn.uce.omg.portal.vo.OrgVo">
+		SELECT * FROM OMG_ORG WHERE ORG_ID = #{orgId} and delete_flag = 0;
+	</select>
+	
+	<select id="findByOrgCode" resultType="cn.uce.omg.portal.vo.OrgVo">
+		SELECT * FROM OMG_ORG WHERE ORG_CODE = #{orgCode} and delete_flag = 0;
+	</select>
+</mapper>

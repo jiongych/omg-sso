@@ -1,0 +1,321 @@
+@charset "utf-8";
+* {
+	margin:0;
+	padding:0;
+	list-style-type:none;
+}
+a, img {
+	border:0;
+}
+.clear {
+	font-size:0px;
+	line-height:0px;
+	height:0px;
+	overflow:hidden;
+}
+/* tipbar */
+.tipbar {
+	background: url(../images/yindao1.png) no-repeat;
+	width: 1200px;
+	height: 1000px;
+    position: relative;
+}
+.tipSwitch, .tipbox, .tipword, .progress li, .tipbar .arrow, .tipBarword {
+	background:url(../images/guidebg.png) no-repeat;
+}
+#searchTip {
+	overflow:hidden;
+}
+/*弹窗部分*/
+.tipbox {
+	width:290px;
+	position:relative;
+	height:190px;
+	display:none;
+	background-position:0 -448px;
+	z-index: 1005;
+}
+/*tipboxBtn 关闭按钮*/
+.tipbox .tipboxBtn {
+	position:absolute;
+	display:inline-block;
+	width:25px;
+	height:25px;
+	left: 236px;
+    top: 36px;
+	cursor:pointer;
+}
+/*下一步*/
+.tipboxNextbtn {
+	position:absolute;
+	display:inline-block;
+	width:82px;
+	height:28px;
+	left:143px;
+	top:127px;
+	cursor:pointer;
+}
+/*进度条*/
+.progress {
+	position:absolute;
+	left:56px;
+	top:136px;
+	width:75px;
+	height:9px;
+	line-height:9px;
+	font-size:0px;
+}
+.progress li {
+	float:left;
+	width:9px;
+	height:9px;
+	margin-right:6px;
+	font-size:0px;
+	background-position:-635px -82px;
+}
+/*当前进度节点*/
+.progress .on {
+	background-position:100% -82px;
+}
+/*内容部分*/
+.tipword {
+	position:absolute;
+}
+#step1 {
+	left: 50%;
+    top: 170px;
+    background-color: transparent;
+    position: fixed;
+    margin-left: -145px;
+}
+#step2 {
+	background-position: 0px 0px;
+    position: fixed;
+    left: 50%;
+	top: 170px;
+	margin-left: -145px;
+}
+#step3 {
+	background-position: 0px 0px;
+    position: fixed;
+    left: 50%;
+	top: 170px;
+	margin-left: -145px;
+}
+#step4 {
+	background-position: -321px -270px;
+    z-index: 1002;
+    position: fixed;
+    left: 50%;
+	top: 170px;
+	margin-left: -145px;
+}
+#step5 {
+	width: 290px;
+	height: 190px;
+	background-position: -294px 0;
+	left: 50%;
+	top: 160px;
+	background-color: transparent;
+	position: fixed;
+	margin-left: -145px;
+}
+#step1 .tipword {
+	width:195px;
+	height:56px;
+	left:47px;
+	top:60px;
+	background-position:0 -219px;
+}
+#step2 .tipword {
+	width: 244px;
+    height: 22px;
+    left: 23px;
+    top: 84px;
+    background-position: -310px -459px;
+}
+#step3 .tipword {
+	width: 210px;
+    height: 50px;
+    left: 40px;
+    top: 67px;
+    background-position: -311px -489px;
+}
+#step4 .tipword {
+	width: 195px;
+    height: 26px;
+    left: 51px;
+    top: 54px;
+    background-position: -313px -543px;
+}
+#step5 .tipword {
+	width: 156px;
+    height: 26px;
+    left: 49px;
+    top: 73px;
+    background-position: -313px -566px;
+}
+#step1 .tipboxBtn{
+	left: 247px;
+    top: 47px;
+}
+#step2 .tipboxBtn{
+	left: 235px;
+    top: 36px;
+}
+
+#step3 .tipboxBtn{
+	top: 35px;
+    left: 235px;
+}
+#step4 .tipboxBtn {
+	left:252px;
+	top:20px;
+}
+#step5 .tipboxBtn {
+	top: 34px;
+    left: 228px;
+}
+#step1 .tipboxNextbtn{
+	left: 143px;
+    top: 127px;
+}
+#step2 .tipboxNextbtn{
+    left: 159px
+}
+#step3 .tipboxNextbtn{
+	left: 159px
+}
+#step4 .tipboxNextbtn {
+	left: 149px;
+    top: 102px;
+}
+#step5 .tipboxNextbtn {
+	left: 80px;
+	top: 123px;
+}
+#step1 .progress{
+	top:138px;
+}
+#step4 .progress{
+	top:113px;
+}
+/*引导部分*/
+.tipbar {
+	display:none;
+	position:absolute;
+	z-index:1000;
+}
+.tipbarInner{
+	width:100%;
+	height: 100%;
+}
+.tipbarInner .arrow{
+    width: 70px;
+    height: 46px;
+    position: absolute;
+}
+/*引导语*/
+.tipBarword {
+	position:absolute;
+}
+#tipbar1 {
+    width: 404px;
+    height: 82px;
+	top: 0px;
+	right: 10px;
+    background-position: 0px 0px;
+}
+#tipbar2 {
+	width: 209px;
+    top: 0px;
+    height: 197px;
+    right: 10px;
+    background-position: 0px -446px;
+}
+#tipbar3 {
+	width: 516px;
+    top: 414px;
+    right: 119px;
+    height: 332px;
+    background-position: 0px -105px;
+}
+#tipbar4 {
+	width: 46px;
+    top: 424px;
+    position: fixed;
+    right: 48px;
+    height: 38px;
+    background-position: -414px 0px;
+}
+/*引导箭头*/
+#tipbar1 .arrow {
+    top: 29px;
+	left: -80px;
+    background-position: -6px -406px;
+}
+#tipbar2 .arrow {
+    top: 90px;
+    left: -90px;
+    background-position: -585px -148px;
+}
+#tipbar3 .arrow {
+    top: -30px;
+    left: -92px;
+    background-position: -585px -148px;
+}
+#tipbar4 .arrow {
+	top: -29px;
+	left: -78px;
+	background-position: -585px -148px;
+}
+#tipbar1 .tipBarword {
+	width: 289px;
+    height: 26px;
+    left: -357px;
+    top: 46px;
+    background-position: -307px -596px;
+}
+#tipbar2 .tipBarword {
+	width: 227px;
+    height: 26px;
+    left: -320px;
+    top: 88px;
+    background-position: -309px -621px;
+}
+#tipbar3 .tipBarword {
+	width: 218px;
+    height: 26px;
+    top: -30px;
+    left: -321px;
+    background-position: -309px -654px;
+}
+#tipbar4 .tipBarword {
+	width: 193px;
+    height: 26px;
+    left: -271px;
+    top: -32px;
+    background-position: -312px -682px;
+}
+.notip {
+	position:absolute;
+	left:175px;
+	top:112px;
+}
+#notip {
+	vertical-align:middle;
+}
+.notip label {
+	vertical-align:middle;
+	color:#0c5685;
+}
+.tipSwitch {
+	width:80px;
+	height:26px;
+	cursor:pointer;
+	background-position:0 -190px;
+	cursor:pointer;
+	position:absolute;
+	top:15px;
+	right:30px;
+}

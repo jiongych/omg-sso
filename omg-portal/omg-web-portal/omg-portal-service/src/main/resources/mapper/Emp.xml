@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IEmpDao">
+	
+	<sql id="base_column_list">
+		emp_id,org_id,emp_code,emp_name
+	</sql>
+	
+	<sql id="dynamicWhere">
+		<trim prefix="where" prefixOverrides="and">
+			DELETE_FLAG <![CDATA[ <> ]]> 1
+			<if test="empName != null">
+			and emp_name = #{empName}
+			</if>
+			<if test="orgId != null">
+			and org_id = #{orgId}
+			</if>
+		</trim>
+	</sql>
+	
+	<select id="findAll" resultType="cn.uce.omg.portal.vo.EmpVo">
+		select <include refid="base_column_list" /> from OMG_EMP WHERE DELETE_FLAG <![CDATA[ <> ]]> 1
+	</select>
+	
+	<select id="countEmp" resultType="java.lang.Integer">
+		select count(1) from OMG_EMP WHERE DELETE_FLAG <![CDATA[ <> ]]> 1
+	</select>
+	
+	<select id="findEmpByPage" resultType="cn.uce.omg.portal.vo.EmpVo" parameterType="cn.uce.omg.portal.vo.EmpVo">
+		select <include refid="base_column_list" /> from OMG_EMP 
+		<include refid="dynamicWhere" />
+	</select>
+	
+	<select id="findByKeywordPage" resultType="cn.uce.omg.portal.vo.EmpVo" parameterType="java.lang.String">
+		select <include refid="base_column_list" /> from OMG_EMP 
+		WHERE
+		DELETE_FLAG <![CDATA[ <> ]]> 1
+		<if test="_parameter != null and _parameter != ''">
+			and emp_name like CONCAT('%',#{_parameter},'%') or emp_code like CONCAT('%',#{_parameter},'%')
+		</if>
+	</select>
+	
+	<select id="findEmpByPageOrg" resultType="cn.uce.omg.portal.vo.EmpVo" parameterType="cn.uce.omg.portal.vo.EmpVo">
+		SELECT 
+		OMG_EMP.EMP_ID,
+		OMG_EMP.EMP_CODE,
+		OMG_EMP.EMP_NAME,
+		OMG_EMP.ORG_ID,
+		OMG_EMP.TELEPHONE,
+		OMG_EMP.MOBILE,
+		OMG_EMP.EMAIL,
+		OMG_EMP.REMARK,
+		OMG_EMP.CREATE_TIME,
+		OMG_EMP.ENABLED,
+		OMG_ORG.ORG_NAME
+		FROM OMG_EMP 
+		INNER JOIN OMG_ORG ON
+		OMG_EMP.ORG_ID=OMG_ORG.ORG_ID
+		WHERE
+		OMG_EMP.DELETE_FLAG <![CDATA[ <> ]]> 1
+		<if test="orgId != null">AND OMG_EMP.ORG_ID=#{orgId}</if>
+		<if test="empCode != null and empCode != ''"> AND OMG_EMP.EMP_CODE=#{empCode}</if>
+		<if test="empName != null and empName != ''"> AND OMG_EMP.EMP_NAME LIKE CONCAT('%',#{empName},'%')</if>
+		<if test="enabled != null"> AND OMG_EMP.ENABLED =#{enabled}</if>
+	</select>
+	<select id="findByEmpCode" resultType="cn.uce.omg.portal.vo.EmpVo">
+		SELECT * FROM OMG_EMP e WHERE e.`EMP_CODE` = #{empCode};
+	</select>
+</mapper>

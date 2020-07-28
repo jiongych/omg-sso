@@ -1,0 +1,79 @@
+* {
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border: 0 none;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+html,
+body {
+    -webkit-overflow-scrolling: touch;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 14px;
+    height: 100%;
+}
+
+body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: #fff;
+    position: relative;
+    max-width: 750px;
+    min-width: 320px;
+    margin: 0 auto;
+}
+
+a,
+a:visited,
+a:hover,
+a:active {
+    text-decoration: none;
+    color: #333333;
+    -webkit-tap-highlight-color: transparent
+}
+
+input,
+button {
+    outline: none;
+    border: 0;
+}
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: 100%;
+}
+
+ul,
+ol,
+li {
+    list-style-type: none;
+}
+
+span {
+    display: inline-block;
+}

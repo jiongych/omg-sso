@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd">
+	
+	
+	<!-- 连接池 -->
+	<bean id="ucePoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxIdle" value="${redis.maxIdle}" />
+		<property name="minIdle" value="${redis.minIdle}" />
+		<property name="maxTotal" value="${redis.maxActive}" />
+		<property name="maxWaitMillis" value="${redis.maxWait}" />
+	</bean>
+		
+	<!-- redis缓存管理器 -->
+	<bean id="uceClient" class="cn.uce.core.cache.redis.RedisClient">
+		<property name="poolConfig" ref="ucePoolConfig"></property>
+		<property name="host" value="${redis.host}"></property> 
+		<property name="port" value="${redis.port}"></property>
+		<property name="database" value="${redis.database}"></property>  
+		<property name="password" value="${redis.password}"></property>    
+		<property name="timeout" value="${redis.timeout}"></property>
+	</bean>
+	
+	<bean id="redisCacheManager" class="cn.uce.cache.base.redis.RedisCacheManager" scope="singleton">
+		<property name="client" ref="uceClient"/>
+	</bean>
+	
+	<!-- 连接池 -->
+	<!-- <bean id="shiroPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxIdle" value="${redis.maxIdle}" />
+		<property name="minIdle" value="${redis.minIdle}" />
+		<property name="maxTotal" value="${redis.maxActive}" />
+		<property name="maxWaitMillis" value="${redis.maxWait}" />
+	</bean> -->
+    
+
+	<!-- 本地内存式缓存，放开注释就可以，将redis的配置注释掉
+	<bean id="storage"
+		class="cn.uce.core.cache.storage.LocallyStorage">
+		<property name="maxCapacity" value="12000"></property>
+	</bean>
+	-->
+	<bean id="storage" class="cn.uce.core.cache.storage.RedisStorage">
+		<property name="client" ref="uceClient"></property>
+	</bean>
+	
+	<bean id="localStorage" class="cn.uce.core.cache.storage.LocallyStorage">
+		<property name="maxCapacity" value="12000"></property>
+	</bean>
+	
+<!--方法缓存实例 
+	<bean id="methodCache" class="cn.uce.cache.base.redis.RedisCacheFactoryBean">
+		<property name="cacheManager" ref="redisCacheManager"/>
+		<property name="cacheName" value="fspMethodCache"/>
+	</bean>
+	
+	方法缓存加载器
+	<bean id="methodCacheLoader" class="cn.uce.cache.base.loader.MethodCacheLoader">
+		<property name="cache">
+			<ref bean="methodCache" />
+		</property>
+	</bean>
+	
+	实体类缓存加载器 begin
+	<bean id="permissionCacheLoader" class="cn.uce.core.cache.loader.EntityCacheLoader">
+		<property name="cache" ref="permissionCache"/>
+		<property name="dao" ref="permissionDao" />
+		<property name="primaryKeyField" value="id"/>
+		<property name="cacheLabel" value="cn.uce.authorg.biz.IPermissionService" />
+		<property name="initCache" value="${sysTypeClass.initCache}"></property>
+	</bean>
+	实体类缓存加载器 end
+	集合缓存加载器
+	<bean id="collectionCacheLoader" class="cn.uce.cache.base.loader.CollectionCacheLoader">
+		<property name="cache">
+			<ref bean="collectionCache" />
+		</property>
+	</bean>
+	
+	数据改变缓存拦截器
+	<bean id="dataChangedInterceptor" class="cn.uce.cache.base.interceptor.SyncRefreshCacheDataChangedInterceptor">
+		<property name="cacheLoaderManager" ref="fspCacheLoaderManager"/>
+	</bean>
+	
+	方法拦截器
+	<bean id="methodCacheInterceptor"
+		class="cn.uce.cache.base.interceptor.MethodCacheInterceptor">
+		<property name="cache">
+			<ref bean="methodCache" />
+		</property>
+	</bean>
+
+	系统类型缓存拦截器
+	<bean id="permissionCacheInterceptor"
+		class="cn.uce.cache.base.interceptor.EntityCacheInterceptor">
+		<property name="cache">
+			<ref bean="permissionCache" />
+		</property>
+	</bean>
+	
+	<bean id="fspCacheLoaderManager" class="cn.uce.cache.base.loader.CacheLoaderManager" 
+			init-method="start" destroy-method="destroy">
+		<property name="cacheLoaders">
+			<list>
+				<ref bean="collectionCacheLoader" />
+				<ref bean="methodCacheLoader" />
+				<ref bean="permissionCacheLoader" /> 
+			</list>
+		</property>
+	</bean> -->
+	
+</beans>

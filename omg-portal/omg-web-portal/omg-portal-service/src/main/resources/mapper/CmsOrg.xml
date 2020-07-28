@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.ICmsOrgDao">
+	
+	<select id="findByCondition" parameterType="cn.uce.omg.portal.vo.CmsOrgVo"  resultType="cn.uce.omg.portal.vo.CmsOrgVo">
+		SELECT  * FROM omg_cms_org O 
+		<where>
+		    O.DELETE_FLAG = 0
+			<if test="orgType!= null">
+				AND O.ORG_TYPE = #{orgType}
+			</if>
+			<if test="status != null">
+				AND O.STATUS = #{status}
+			</if>
+			<if test="queryParam != null and '' != queryParam">
+				AND (
+					ORG_NAME LIKE CONCAT('%', #{queryParam},'%')
+					OR ORG_CODE LIKE CONCAT('%', #{queryParam},'%')
+				)
+			</if>
+			AND DELETE_FLAG = 0
+		</where>
+	</select>
+
+	<select id="findSimpleByCondition" resultType="cn.uce.omg.portal.vo.SiteInfoVo">
+		SELECT
+		ORG_CODE,
+		BASE_ORG_CODE,
+		ORG_NAME
+		FROM
+		OMG_CMS_ORG
+		WHERE
+		OMG_CMS_ORG.DELETE_FLAG <![CDATA[<>]]> 1
+
+		<if test="orgType!= null">
+			AND ORG_TYPE = #{orgType}
+		</if>
+		<if test="status != null">
+			AND STATUS = #{status}
+		</if>
+		<if test="queryParam != null and '' != queryParam">
+			AND (
+			ORG_NAME LIKE CONCAT('%', #{queryParam},'%')
+			OR ORG_CODE LIKE CONCAT('%', #{queryParam},'%')
+			)
+		</if>
+
+	</select>
+	
+	<select id="findCmsOrgByBaseOrgCode" resultType="cn.uce.omg.portal.vo.CmsOrgVo">
+		SELECT  
+		CMS_ORG_ID,
+		ORG_CODE,
+		BASE_ORG_CODE,
+		ORG_TYPE,
+		ORG_NAME,
+		STATUS
+		FROM 
+		OMG_CMS_ORG 
+		WHERE 
+		OMG_CMS_ORG.DELETE_FLAG <![CDATA[<>]]> 1
+		
+		<if test="baseOrgCode != null and baseOrgCode != ''">
+			AND OMG_CMS_ORG.BASE_ORG_CODE = #{baseOrgCode}
+		</if>
+		<if test="cmsOrgId != null">
+			AND OMG_CMS_ORG.CMS_ORG_ID = #{cmsOrgId}
+		</if>
+	</select>
+	
+	<select id="findAllSyncCmsOrgZTree" resultType="cn.uce.omg.portal.vo.OrgZTreeNodeVo">
+		SELECT 
+		OMG_CMS_ORG.BASE_ORG_CODE AS id,
+		OMG_CMS_ORG.ORG_NAME AS name,
+		OMG_CMS_ORG.PARENT_ORG_CODE AS pid,
+		OMG_CMS_ORG.ORG_CODE AS orgCode,
+		OMG_CMS_ORG.ORG_TYPE AS orgType
+		FROM 
+		OMG_CMS_ORG
+		WHERE
+		OMG_CMS_ORG.DELETE_FLAG = 0
+	</select>
+	<select id="findChildSyncCmsOrgZTree" resultType="cn.uce.omg.portal.vo.OrgZTreeNodeVo">
+		SELECT 
+		OMG_CMS_ORG.BASE_ORG_CODE AS id,
+		OMG_CMS_ORG.ORG_NAME AS name,
+		OMG_CMS_ORG.PARENT_ORG_CODE AS pid,
+		OMG_CMS_ORG.ORG_CODE AS orgCode,
+		OMG_CMS_ORG.ORG_TYPE AS orgType
+		FROM 
+		OMG_CMS_ORG
+		WHERE
+		OMG_CMS_ORG.DELETE_FLAG = 0 AND
+		<if test="orgZTreeNodeVo != null and orgZTreeNodeVo.id != null">
+		FIND_IN_SET(#{orgZTreeNodeVo.id},OMG_CMS_ORG.ORG_FULL_CODE)
+		</if>
+	</select>
+	
+	<!-- 查询子异步机构树 -->
+	<select id="findChildAsyncCmsOrgZTree"  resultType="cn.uce.omg.portal.vo.OrgZTreeNodeVo">
+		SELECT 
+		OMG_CMS_ORG.BASE_ORG_CODE AS id,
+		OMG_CMS_ORG.ORG_NAME AS name,
+		OMG_CMS_ORG.PARENT_ORG_CODE AS pid,
+		OMG_CMS_ORG.ORG_CODE AS orgCode,
+		OMG_CMS_ORG.ORG_TYPE AS orgType
+		(CASE 
+		WHEN EXISTS (SELECT ID FROM OMG_CMS_ORG WHERE DELETE_FLAG = 0 AND PARENT_ORG_CODE != BASE_ORG_CODE AND PARENT_ORG_CODE = O.BASE_ORG_CODE)
+		THEN 'closed'
+		ELSE 'open'
+		END) AS state
+		FROM 
+		OMG_CMS_ORG O
+		WHERE
+		O.DELETE_FLAG = 0 AND
+		<choose>
+			<when test="parentOrg == null">
+				AND O.PARENT_ORG_CODE IS NULL
+			</when>
+			<otherwise>
+				AND O.PARENT_ORG_CODE != O.BASE_ORG_CODE AND O.PARENT_ORG_CODE = #{pid}
+			</otherwise>
+		</choose>
+	</select>	
+	
+</mapper>

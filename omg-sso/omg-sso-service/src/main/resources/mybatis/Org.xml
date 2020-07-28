@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.IOrgDao">
+	<sql id="base_column_list">
+		ORG.ORG_ID,ORG.ORG_CODE,ORG.ORG_NAME,ORG.ORG_FULL_NAME,ORG.ORG_SORT,ORG.ORG_TYPE,ORG.DEPT_FLAG,ORG.ORG_LABEL,ORG.PRINCIPAL,ORG.CHARGE_PRESIDENT,ORG.ORG_FULL_ID
+		,ORG.STATUS,ORG.DELETE_FLAG,ORG.VERSION,ORG.CREATE_EMP,ORG.CREATE_TIME,ORG.PARENT_ORG,ORG.CREATE_ORG,ORG.AFFILIATED_ORG_NAME,ORG.AFFILIATED_ORG,ORG.UPDATE_TIME,ORG.UPDATE_EMP,ORG.UPDATE_ORG,ORG.SYNC_DING_FLAG
+	</sql>
+	<sql id="org_base_column">
+		ORG.ORG_ID AS ORG_ORG_ID,ORG.ORG_CODE AS ORG_ORG_CODE,ORG.ORG_NAME AS ORG_ORG_NAME,ORG.ORG_FULL_NAME AS ORG_ORG_FULL_NAME,ORG.ORG_SORT AS ORG_ORG_SORT,ORG.ORG_TYPE AS ORG_ORG_TYPE,ORG.DEPT_FLAG AS ORG_DEPT_FLAG,ORG.ORG_LABEL AS ORG_ORG_LABEL,ORG.PRINCIPAL AS ORG_PRINCIPAL,ORG.CHARGE_PRESIDENT AS ORG_CHARGE_PRESIDENT,ORG.ORG_FULL_ID AS ORG_ORG_FULL_ID,ORG.STATUS AS ORG_STATUS,ORG.DELETE_FLAG AS ORG_DELETE_FLAG,ORG.VERSION AS ORG_VERSION,ORG.CREATE_EMP AS ORG_CREATE_EMP,ORG.CREATE_TIME AS ORG_CREATE_TIME,ORG.PARENT_ORG AS ORG_PARENT_ORG,ORG.CREATE_ORG AS ORG_CREATE_ORG,ORG.AFFILIATED_ORG_NAME AS ORG_AFFILIATED_ORG_NAME,ORG.AFFILIATED_ORG AS ORG_AFFILIATED_ORG,ORG.UPDATE_TIME AS ORG_UPDATE_TIME,ORG.UPDATE_EMP AS ORG_UPDATE_EMP,ORG.UPDATE_ORG AS ORG_UPDATE_ORG
+	</sql>
+	<sql id="org_detail_column">
+		ORG.ORG_ID AS ORG_ORG_ID,ORG.ORG_CODE AS ORG_ORG_CODE,ORG.ORG_NAME AS ORG_ORG_NAME,ORG.ORG_FULL_NAME AS ORG_ORG_FULL_NAME,ORG.ORG_SORT AS ORG_ORG_SORT,ORG.ORG_TYPE AS ORG_ORG_TYPE,ORG.DEPT_FLAG AS ORG_DEPT_FLAG,ORG.ORG_LABEL AS ORG_ORG_LABEL,ORG.PRINCIPAL AS ORG_PRINCIPAL,ORG.CHARGE_PRESIDENT AS ORG_CHARGE_PRESIDENT,ORG.ORG_FULL_ID AS ORG_ORG_FULL_ID,ORG.STATUS AS ORG_STATUS,ORG.DELETE_FLAG AS ORG_DELETE_FLAG,ORG.VERSION AS ORG_VERSION,ORG.CREATE_EMP AS ORG_CREATE_EMP,ORG.CREATE_TIME AS ORG_CREATE_TIME,ORG.PARENT_ORG AS ORG_PARENT_ORG,ORG.CREATE_ORG AS ORG_CREATE_ORG,ORG.AFFILIATED_ORG_NAME AS ORG_AFFILIATED_ORG_NAME,ORG.AFFILIATED_ORG AS ORG_AFFILIATED_ORG,ORG.UPDATE_TIME AS ORG_UPDATE_TIME,ORG.UPDATE_EMP AS ORG_UPDATE_EMP,ORG.UPDATE_ORG AS ORG_UPDATE_ORG
+	</sql>
+	<!--add by BaoJingyu 20180419 begin-->
+	<sql id="baseColumn">
+		O.ORG_ID,O.ORG_CODE,O.ORG_NAME,O.ORG_FULL_ID,O.ORG_FULL_NAME,O.ORG_SORT,O.ORG_TYPE,O.DEPT_FLAG,O.ORG_LABEL,
+		O.STATUS,O.DELETE_FLAG,O.VERSION,O.CREATE_EMP,O.CREATE_TIME,O.PARENT_ORG,O.CREATE_ORG,O.AFFILIATED_ORG_NAME,O.AFFILIATED_ORG,O.UPDATE_TIME,O.UPDATE_EMP,O.SYNC_DING_FLAG
+	</sql>
+	<!--add by BaoJingyu 20180419 end-->
+	<resultMap id="OrgMap" type="OrgVo">
+    	<id column="ORG_ID" jdbcType="INTEGER" property="orgId" />
+    	<result column="ORG_CODE" jdbcType="VARCHAR" property="orgCode" />
+    	<result column="ORG_NAME" jdbcType="VARCHAR" property="orgName" />
+    	<result column="ORG_FULL_NAME" jdbcType="VARCHAR" property="orgFullName" />
+    	<result column="AFFILIATED_ORG_NAME" jdbcType="VARCHAR" property="affiliatedOrgName" />
+    	<result column="NAME_PY" jdbcType="VARCHAR" property="namePy" />
+    	<result column="NAME_SPY" jdbcType="VARCHAR" property="nameSpy" />
+   	 	<result column="ORG_SORT" jdbcType="SMALLINT" property="orgSort" />
+    	<result column="ORG_TYPE" jdbcType="SMALLINT" property="orgType" />
+    	<result column="DEPT_FLAG" jdbcType="BIT" property="deptFlag" />
+    	<result column="ORG_LABEL" jdbcType="SMALLINT" property="orgLabel" />
+    	<result column="PARENT_ORG" jdbcType="INTEGER" property="parentOrg" />
+    	<result column="AFFILIATED_ORG" jdbcType="INTEGER" property="affiliatedOrg" />
+    	<result column="PRINCIPAL" jdbcType="INTEGER" property="principal" />
+    	<result column="CHARGE_PRESIDENT" jdbcType="INTEGER" property="chargePresident" />
+    	<result column="STATUS" jdbcType="SMALLINT" property="status" />
+    	<result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    	<result column="DELETE_FLAG" jdbcType="BIT" property="deleteFlag" />
+   	 	<result column="VERSION" jdbcType="INTEGER" property="version" />
+    	<result column="CREATE_EMP" jdbcType="VARCHAR" property="createEmp" />
+    	<result column="CREATE_ORG" jdbcType="INTEGER" property="createOrg" />
+    	<result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    	<result column="UPDATE_EMP" jdbcType="VARCHAR" property="updateEmp" />
+    	<result column="UPDATE_ORG" jdbcType="INTEGER" property="updateOrg" />
+    	<result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    	<result column="ORG_FULL_ID" jdbcType="VARCHAR" property="orgFullId" />
+  	</resultMap>
+  	<resultMap type="OrgVo" id="OrgDetailResultMap">
+  		<id column="ORG_ORG_ID" jdbcType="INTEGER" property="orgId" />
+    	<result column="ORG_ORG_CODE" jdbcType="VARCHAR" property="orgCode" />
+    	<result column="ORG_ORG_NAME" jdbcType="VARCHAR" property="orgName" />
+    	<result column="ORG_ORG_FULL_NAME" jdbcType="VARCHAR" property="orgFullName" />
+    	<result column="ORG_AFFILIATED_ORG_NAME" jdbcType="VARCHAR" property="affiliatedOrgName" />
+    	<result column="ORG_NAME_PY" jdbcType="VARCHAR" property="namePy" />
+    	<result column="ORG_NAME_SPY" jdbcType="VARCHAR" property="nameSpy" />
+   	 	<result column="ORG_ORG_SORT" jdbcType="SMALLINT" property="orgSort" />
+    	<result column="ORG_ORG_TYPE" jdbcType="SMALLINT" property="orgType" />
+    	<result column="ORG_DEPT_FLAG" jdbcType="BIT" property="deptFlag" />
+    	<result column="ORG_ORG_LABEL" jdbcType="SMALLINT" property="orgLabel" />
+    	<result column="ORG_PARENT_ORG" jdbcType="INTEGER" property="parentOrg" />
+    	<result column="ORG_AFFILIATED_ORG" jdbcType="INTEGER" property="affiliatedOrg" />
+    	<result column="ORG_PRINCIPAL" jdbcType="INTEGER" property="principal" />
+    	<result column="ORG_CHARGE_PRESIDENT" jdbcType="INTEGER" property="chargePresident" />
+    	<result column="ORG_STATUS" jdbcType="SMALLINT" property="status" />
+    	<result column="ORG_REMARK" jdbcType="VARCHAR" property="remark" />
+    	<result column="ORG_DELETE_FLAG" jdbcType="BIT" property="deleteFlag" />
+   	 	<result column="ORG_VERSION" jdbcType="INTEGER" property="version" />
+    	<result column="ORG_CREATE_EMP" jdbcType="VARCHAR" property="createEmp" />
+    	<result column="ORG_CREATE_ORG" jdbcType="INTEGER" property="createOrg" />
+    	<result column="ORG_CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    	<result column="ORG_UPDATE_EMP" jdbcType="VARCHAR" property="updateEmp" />
+    	<result column="ORG_UPDATE_ORG" jdbcType="INTEGER" property="updateOrg" />
+    	<result column="ORG_UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    	<result column="ORG_ORG_FULL_ID" jdbcType="VARCHAR" property="orgFullId" />
+    	<association property="principalEmpVo" javaType="EmpVo" resultMap="cn.uce.omg.sso.dao.IEmpDao.EmpMap" columnPrefix="E_" />
+    	<association property="chagePresidentEmpVo" javaType="EmpVo"  resultMap="cn.uce.omg.sso.dao.IEmpDao.EmpMap" columnPrefix="CP_"/>
+  		<association property="dingOrgRelationVo" javaType="OtherOrgRelationVo"  resultMap="cn.uce.omg.sso.dao.IOtherOrgRelationDao.OtherOrgRelationMap" columnPrefix="DINGOR_"/>
+  	</resultMap>
+  	<!-- 20180416 huangting add begin -->
+  	<resultMap type="OrgVo" id="OrgAndCmsOrgMap">
+  		<id column="ORG_ORG_ID" jdbcType="INTEGER" property="orgId" />
+    	<result column="ORG_ORG_CODE" jdbcType="VARCHAR" property="orgCode" />
+    	<result column="ORG_ORG_NAME" jdbcType="VARCHAR" property="orgName" />
+    	<result column="ORG_ORG_FULL_NAME" jdbcType="VARCHAR" property="orgFullName" />
+    	<result column="ORG_AFFILIATED_ORG_NAME" jdbcType="VARCHAR" property="affiliatedOrgName" />
+    	<result column="ORG_NAME_PY" jdbcType="VARCHAR" property="namePy" />
+    	<result column="ORG_NAME_SPY" jdbcType="VARCHAR" property="nameSpy" />
+   	 	<result column="ORG_ORG_SORT" jdbcType="SMALLINT" property="orgSort" />
+    	<result column="ORG_ORG_TYPE" jdbcType="SMALLINT" property="orgType" />
+    	<result column="ORG_DEPT_FLAG" jdbcType="BIT" property="deptFlag" />
+    	<result column="ORG_ORG_LABEL" jdbcType="SMALLINT" property="orgLabel" />
+    	<result column="ORG_PARENT_ORG" jdbcType="INTEGER" property="parentOrg" />
+    	<result column="ORG_AFFILIATED_ORG" jdbcType="INTEGER" property="affiliatedOrg" />
+    	<result column="ORG_PRINCIPAL" jdbcType="INTEGER" property="principal" />
+    	<result column="ORG_CHARGE_PRESIDENT" jdbcType="INTEGER" property="chargePresident" />
+    	<result column="ORG_STATUS" jdbcType="SMALLINT" property="status" />
+    	<result column="ORG_REMARK" jdbcType="VARCHAR" property="remark" />
+    	<result column="ORG_DELETE_FLAG" jdbcType="BIT" property="deleteFlag" />
+   	 	<result column="ORG_VERSION" jdbcType="INTEGER" property="version" />
+    	<result column="ORG_CREATE_EMP" jdbcType="VARCHAR" property="createEmp" />
+    	<result column="ORG_CREATE_ORG" jdbcType="INTEGER" property="createOrg" />
+    	<result column="ORG_CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    	<result column="ORG_UPDATE_EMP" jdbcType="VARCHAR" property="updateEmp" />
+    	<result column="ORG_UPDATE_ORG" jdbcType="INTEGER" property="updateOrg" />
+    	<result column="ORG_UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    	<result column="ORG_ORG_FULL_ID" jdbcType="VARCHAR" property="orgFullId" />
+    	<result column="ORG_STATUS_NAME" jdbcType="VARCHAR" property="statusName" />
+    	<result column="PRODUCTIDS" jdbcType="VARCHAR" property="productIds" />
+    	<result column="ORG_SYNC_DING_FLAG" jdbcType="BIT" property="syncDingFlag" />
+  		<association property="cmsOrgVo" javaType="CmsOrgVo"  resultMap="cn.uce.omg.sso.dao.ICmsOrgDao.CmsOrgMap" columnPrefix="CMSORG_"/>
+  		<association property="cmsOrgDetailVo" javaType="CmsOrgDetailVo"  resultMap="cn.uce.omg.sso.dao.ICmsOrgDetailDao.CmsOrgDetailMap" columnPrefix="DETAIL_"/>
+  		<association property="dingOrgRelationVo" javaType="OtherOrgRelationVo"  resultMap="cn.uce.omg.sso.dao.IOtherOrgRelationDao.OtherOrgRelationMap" columnPrefix="DINGOR_"/>
+  	</resultMap>
+  
+  	<select id="findOrgContainsCmsOrg" parameterType="OrgVo" resultMap="OrgAndCmsOrgMap">
+		SELECT T.TYPE_NAME AS ORG_STATUS_NAME,GROUP_CONCAT(p.PRODUCT_ID) AS PRODUCTIDS,ORG.SYNC_DING_FLAG AS ORG_SYNC_DING_FLAG,
+		<include refid="org_detail_column" />,
+		<include refid="cn.uce.omg.sso.dao.ICmsOrgDao.cmsorg_base_column"/>,
+		<include refid="cn.uce.omg.sso.dao.ICmsOrgDetailDao.cmsdetail_base_column"/>,
+		<include refid="cn.uce.omg.sso.dao.IOtherOrgRelationDao.dingor_base_column"/>
+		FROM (SELECT ORG.* FROM OMG_ORG ORG
+				<where>
+					delete_flag = false
+					<if test="orgId != null">
+						AND ORG.ORG_ID = #{orgId}
+					</if>
+				</where> ) ORG
+		LEFT JOIN OMG_OTHER_ORG_RELATION R ON R.ORG_ID = ORG.ORG_ID AND R.SYSTEM_ID = ${OMGSystemId.cms}
+		LEFT JOIN OMG_OTHER_ORG_RELATION DINGOR ON DINGOR.ORG_ID = ORG.ORG_ID AND DINGOR.SYSTEM_ID = ${OMGSystemId.ding}
+		LEFT JOIN OMG_CMS_ORG CMS ON CMS.CMS_ORG_ID = R.OTHER_ORG_ID AND CMS.DELETE_FLAG =false
+		LEFT JOIN OMG_FSP_DICT_DATA T ON T.TYPE_ID = CMS.STATUS AND T.TYPE_CLASS_CODE='${OMGSysTypeConstants.STATUS_DEFINE}' AND T.DELETE_FLAG =false 
+		LEFT JOIN OMG_CMS_ORG_DETAIL DETAIL ON DETAIL.BASE_ORG_CODE = CMS.BASE_ORG_CODE AND DETAIL.DELETE_FLAG =false 
+		LEFT JOIN omg_cms_org_product p on p.BASE_ORG_CODE = cms.BASE_ORG_CODE 
+	</select>
+	<!-- 20180416 huangting add end -->
+	
+  	<select id="findAll" resultType="OrgVo">
+  	SELECT <include refid="base_column_list" /> FROM OMG_ORG ORG
+  	</select>
+
+	<sql id="orgByConditionWhere">
+		<if test="orgId != null">
+			AND ORG.ORG_ID = #{orgId}
+		</if>
+		<if test="orgCode!= null">
+			AND ORG.ORG_Code = #{orgCode}
+		</if>
+		<if test="orgName != null">
+			AND ORG.ORG_NAME = #{orgName}
+		</if>
+		<if test="parentOrg != null">
+			AND ORG.PARENT_ORG = #{parentOrg}
+		</if>
+		<if test="orgType != null">
+			AND ORG.ORG_TYPE = #{orgType}
+		</if>
+		<if test="deptFlag != null">
+			AND ORG.DEPT_FLAG = #{deptFlag}
+		</if>
+		<if test="deleteFlag != null">
+			AND ORG.DELETE_FLAG = #{deleteFlag}
+		</if>
+		<if test="beginUpdateTime != null">
+			AND ORG.UPDATE_TIME >= #{beginUpdateTime}
+		</if>
+		<if test="endUpdateTime != null">
+			AND ORG.UPDATE_TIME <![CDATA[<]]>#{endUpdateTime}
+		</if>
+		<if test="affiliatedOrg != null">
+			AND AFFILIATED_ORG = #{affiliatedOrg}
+		</if>
+	</sql>
+
+	<select id="findOrgByCondition" parameterType="OrgVo" resultType="OrgVo">
+		SELECT
+		<include refid="base_column_list" />
+		FROM OMG_ORG ORG
+		<where>
+			<include refid="orgByConditionWhere"/>
+		</where>
+		<!-- 20180308 BaoJingyu add begin -->
+		<if test="currentPage != null and pageSize != null">
+			LIMIT #{currentPage},#{pageSize}
+		</if>
+		<!-- 20180308 BaoJingyu add end -->
+	</select>
+	
+	<select id="findOrgByUnique" parameterType="OrgVo" resultType="OrgVo">
+		SELECT
+		<include refid="base_column_list" />
+		FROM OMG_ORG ORG
+		<where>
+			<if test="orgId != null">
+				AND ORG_ID = #{orgId}
+			</if>
+			<if test="orgCode!= null">
+				AND ORG_Code = #{orgCode}
+			</if>
+			<if test="parentOrg != null and orgName != null">
+					AND PARENT_ORG = #{parentOrg} AND ORG_NAME = #{orgName}
+			</if>
+			<if test="deptFlag != null">
+				AND DEPT_FLAG = #{deptFlag}
+			</if>
+		</where>
+	</select>
+	<select id="findOrgDetailAndDingByCondition" parameterType="OrgVo" resultMap="OrgDetailResultMap">
+		SELECT 
+		<include refid="org_detail_column" />,
+		<include refid="cn.uce.omg.sso.dao.IEmpDao.e_base_column"/>,
+		<include refid="cn.uce.omg.sso.dao.IEmpDao.cp_base_column"/>,
+		<include refid="cn.uce.omg.sso.dao.IOtherOrgRelationDao.dingor_base_column"/>
+		<!-- 修复left join 主表数据大查询慢的问题 -->
+		FROM (SELECT ORG.*
+				<if test="dingId != null">
+					FROM OMG_ORG ORG INNER JOIN OMG_OTHER_ORG_RELATION DING ON DING.ORG_ID = ORG.ORG_ID AND DING.SYSTEM_ID = ${OMGSystemId.ding} AND DING.OTHER_ORG_ID = #{dingId}
+				</if>
+				<if test="dingId == null">
+					FROM OMG_ORG ORG
+				</if>
+				<where>
+					<include refid="orgByConditionWhere"/>
+				</where> ) ORG
+		LEFT JOIN  OMG_EMP E ON ORG.PRINCIPAL = E.EMP_ID
+		LEFT JOIN  OMG_EMP CP ON ORG.CHARGE_PRESIDENT = CP.EMP_ID
+		LEFT JOIN  OMG_OTHER_ORG_RELATION DINGOR ON DINGOR.ORG_ID = ORG.ORG_ID AND DINGOR.SYSTEM_ID = ${OMGSystemId.ding}
+	</select>
+	
+	<select id="findOrgDetailByCondition" parameterType="OrgVo" resultMap="OrgDetailResultMap">
+		SELECT 
+		<include refid="org_base_column" />,
+		<include refid="cn.uce.omg.sso.dao.IEmpDao.e_base_column"/>,
+		<include refid="cn.uce.omg.sso.dao.IEmpDao.cp_base_column"/>
+		FROM OMG_ORG ORG
+		LEFT JOIN  OMG_EMP E ON ORG.PRINCIPAL = E.EMP_ID
+		LEFT JOIN  OMG_EMP CP ON ORG.CHARGE_PRESIDENT = CP.EMP_ID
+		<where>
+			<include refid="orgByConditionWhere"/>
+		</where>
+	</select>
+	
+	<select id="findAllChildOrg" parameterType="java.lang.Integer" resultType="OrgVo">
+		SELECT <include refid="base_column_list" /> FROM OMG_ORG ORG
+		WHERE ORG_ID in (SELECT ORG_ID FROM OMG_ORG WHERE ORG_FULL_ID LIKE CONCAT(
+				  (SELECT ORG_FULL_ID FROM OMG_ORG O WHERE O.ORG_ID = #{orgId}),'%'))
+	</select>
+	
+	<select id="findParentOrgListByOrgId" parameterType="java.lang.Integer" resultType="OrgVo">
+		SELECT <include refid="base_column_list" /> FROM OMG_ORG ORG
+		WHERE find_in_set(ORG_ID,(SELECT ORG_FULL_ID FROM OMG_ORG WHERE ORG_ID=#{orgId})) ORDER BY ORG_FULL_ID
+	</select>
+	
+	<select id="findOrgByIds" parameterType="list" resultMap="OrgDetailResultMap">
+		SELECT 
+		<include refid="org_base_column" />
+		FROM OMG_ORG ORG
+		<where>
+			<if test="list != null">
+				AND ORG_ID IN
+				<foreach collection="list" item="orgId" open="(" close=")" separator=",">
+					#{orgId}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	
+	<delete id="deleteById">
+		DELETE FROM OMG_ORG WHERE  ORG_ID = #{orgId}
+	</delete>
+	
+	<insert id="insert" parameterType="orgVo" useGeneratedKeys="true" keyProperty="orgId">
+		INSERT INTO OMG_ORG(ORG_ID,ORG_CODE,ORG_NAME,ORG_FULL_ID,ORG_FULL_NAME,ORG_SORT,ORG_TYPE,DEPT_FLAG,ORG_LABEL ,STATUS,DELETE_FLAG,VERSION,CREATE_EMP,CREATE_TIME,PARENT_ORG,CREATE_ORG,AFFILIATED_ORG_NAME,AFFILIATED_ORG,UPDATE_TIME,UPDATE_EMP,SYNC_DING_FLAG,CREATE_TYPE)
+		VALUES(#{orgId},nextval('seq_omg_org_code'),#{orgName},#{orgFullId},#{orgFullName},#{orgSort},#{orgType},#{deptFlag},#{orgLabel},#{status},#{deleteFlag},#{version},#{createEmp},#{createTime},#{parentOrg},#{createOrg},#{affiliatedOrgName},
+				#{affiliatedOrg}, #{updateTime}, #{updateEmp},#{syncDingFlag},#{createType})
+	</insert>
+	
+	<update id="update" parameterType="OrgVo">
+		UPDATE OMG_ORG
+			<set>
+				<if test="orgName!=null">
+					ORG_NAME=#{orgName},
+				</if>
+				<if test="orgFullName!=null">
+					ORG_FULL_NAME=#{orgFullName},
+				</if>
+				<if test="orgFullId!=null">
+					ORG_FULL_ID=#{orgFullId},
+				</if>
+				<if test="orgSort != null">
+					 ORG_SORT = #{orgSort},
+				</if>
+				<if test="parentOrg != null">
+					 PARENT_ORG = #{parentOrg},
+				</if>
+				<if test="orgType!=null">
+					ORG_TYPE=#{orgType},
+				</if>
+				<if test="deptFlag!=null">
+					DEPT_FLAG=#{deptFlag},
+				</if>
+				<if test="orgLabel!=null">
+					ORG_LABEL=#{orgLabel},
+				</if>
+				<if test="remark!=null">
+					REMARK=#{remark},
+				</if>
+				<if test="deleteFlag!=null">
+					DELETE_FLAG=#{deleteFlag},
+				</if>
+				<if test="version!=null">
+					VERSION=#{version},
+				</if>
+				<if test="updateEmp!=null">
+					UPDATE_EMP=#{updateEmp},
+				</if>
+				<if test="updateOrg!=null">
+					UPDATE_ORG=#{updateOrg},
+				</if>
+				<if test="updateTime!=null">
+					UPDATE_TIME=#{updateTime},
+				</if>
+				<if test="affiliatedOrgName!=null">
+					AFFILIATED_ORG_NAME=#{affiliatedOrgName},
+				</if>
+				<if test="affiliatedOrg!=null">
+					AFFILIATED_ORG=#{affiliatedOrg},
+				</if>
+			</set>
+			<where>
+				ORG_ID=#{orgId}
+			</where>
+	</update>
+	
+	<select id="findOrgMaxSort" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT MAX(O.ORG_SORT) FROM OMG_ORG O  WHERE PARENT_ORG = #{parentOrg}
+	</select>
+	
+	<update id="updateOrgFullNameAndFullId" parameterType="orgVo">
+		UPDATE OMG_ORG 
+		SET ORG_FULL_NAME = CONCAT(REPLACE(SUBSTRING(ORG_FULL_NAME,1,CHAR_LENGTH(#{oldOrgFullName})),#{oldOrgFullName},#{orgFullName}), SUBSTRING(ORG_FULL_NAME,CHAR_LENGTH(#{oldOrgFullName})+1)) ,
+			ORG_FULL_ID = CONCAT(REPLACE(SUBSTRING(ORG_FULL_ID,1,CHAR_LENGTH(#{oldOrgFullId})),#{oldOrgFullId},#{orgFullId}), SUBSTRING(ORG_FULL_ID,CHAR_LENGTH(#{oldOrgFullId})+1)) ,
+			UPDATE_TIME = NOW()
+		WHERE ORG_FULL_NAME LIKE CONCAT(#{oldOrgFullName} ,'-%')
+	</update>
+	
+	<update id="updateAffiliatedOrgName" parameterType="orgVo">
+		UPDATE OMG_ORG 
+		SET AFFILIATED_ORG_NAME = #{affiliatedOrgName},
+			UPDATE_TIME = NOW()
+		WHERE DEPT_FLAG = 1 AND AFFILIATED_ORG = #{affiliatedOrg}
+	</update>
+	
+	<select id="findOrgCountByCondition" parameterType="OrgVo" resultType="java.lang.Integer">
+		SELECT COUNT(*) 
+		<if test="dingId != null">
+			FROM OMG_ORG ORG INNER JOIN OMG_OTHER_ORG_RELATION DING ON DING.ORG_ID = ORG.ORG_ID AND DING.SYSTEM_ID = ${OMGSystemId.ding} AND DING.OTHER_ORG_ID = #{dingId}
+		</if>
+		<if test="dingId == null">
+			FROM OMG_ORG ORG
+		</if>
+		<where>
+			<if test="orgId != null">
+				AND ORG.ORG_ID = #{orgId}
+			</if>
+			<if test="orgCode != null">
+				AND ORG.ORG_CODE = #{orgCode}
+			</if>
+			<if test="orgName != null">
+				AND ORG.ORG_NAME = #{orgName}
+			</if>
+			<if test="parentOrg != null">
+				AND ORG.PARENT_ORG = #{parentOrg}
+			</if>
+			<if test="dingId != null">
+				AND DING.OTHER_ORG_ID = #{dingId}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 查找机构的隶属机构以及隶属机构绑定的乾坤机构信息 -->
+	<select id="findAffiliatedOrgAndCmsOrgByOrgIds" resultType="OrgVo">
+		SELECT OO.ORG_ID,OO.AFFILIATED_ORG,OOR.OTHER_ORG_ID FROM OMG_ORG OO 
+		LEFT JOIN OMG_OTHER_ORG_RELATION OOR ON OOR.ORG_ID = OO.AFFILIATED_ORG AND OOR.SYSTEM_ID = 1
+		<where>
+		    OO.ORG_ID IN
+		    <foreach collection="list" item="orgId" open="(" close=")" separator=",">
+				#{orgId}
+			</foreach>
+		</where>
+	</select>
+
+	<!--add by BaoJingyu 20180419 begin-->
+	<!--根据条件查询机构-->
+	<select id="findByConditionforDing" resultType="cn.uce.omg.vo.OrgVo">
+		SELECT
+		<include refid="baseColumn"/>,ding.OTHER_ORG_ID AS DING_ID
+		FROM OMG_ORG O
+		LEFT JOIN OMG_OTHER_ORG_RELATION ding ON O.ORG_ID = ding.ORG_ID AND ding.SYSTEM_ID = ${OMGSystemId.ding}
+		<where>
+			<if test="orgId != null">
+				AND O.ORG_ID = #{orgId}
+			</if>
+			<if test="orgCode!= null">
+				AND O.ORG_Code = #{orgCode}
+			</if>
+			<if test="orgName != null">
+				AND O.ORG_NAME = #{orgName}
+			</if>
+			<if test="fuzzyOrgName != null">
+				AND
+				<if test="orgFullName != null">
+					O.ORG_FULL_NAME LIKE concat('%', #{orgFullName}, '%') AND
+				</if>
+				O.ORG_NAME LIKE concat('%', #{fuzzyOrgName}, '%')
+			</if>
+			<if test="parentOrg != null">
+				AND O.PARENT_ORG = #{parentOrg}
+			</if>
+		</where>
+	</select>
+	<!--add by BaoJingyu 20180419 end-->
+
+	<!--add by BaoJingyu 20180428 begin-->
+	<select id="findParentOrgByOrgId" resultType="cn.uce.omg.vo.OrgVo">
+		SELECT po.* FROM omg_org oo INNER JOIN omg_org co ON oo.PARENT_ORG = co.ORG_ID INNER JOIN omg_org po ON co.PARENT_ORG = po.ORG_ID WHERE oo.ORG_ID = #{orgId}
+	</select>
+	<!--add by BaoJingyu 20180428 end-->
+</mapper>

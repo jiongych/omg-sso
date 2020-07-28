@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IDictTypeDao">
+	<sql id="base_column_list">
+		type_class_id, type_class_code,source_type,system_code, type_class_name, visible,DELETE_FLAG, CREATE_EMP, CREATE_ORG,CREATE_TIME, VERSION, REMARK, UPDATE_EMP, UPDATE_ORG, UPDATE_TIME
+	</sql>
+	
+	<select id="findDictTypeList" parameterType="cn.uce.omg.portal.vo.PortalDictTypeVo" resultType="cn.uce.omg.portal.vo.PortalDictTypeVo">
+		SELECT 
+		OMG_PORTAL_DICT_TYPE.TYPE_CLASS_ID,
+		OMG_PORTAL_DICT_TYPE.TYPE_CLASS_CODE,
+		OMG_PORTAL_DICT_TYPE.SOURCE_TYPE,
+		OMG_PORTAL_DICT_TYPE.TYPE_CLASS_NAME,
+		OMG_PORTAL_DICT_TYPE.REMARK,
+		OMG_PORTAL_DICT_TYPE.SYSTEM_CODE,
+		OMG_PORTAL_DICT_TYPE.VISIBLE,
+		(SELECT OMG_EMP.EMP_NAME FROM OMG_EMP WHERE OMG_EMP.EMP_CODE=OMG_PORTAL_DICT_TYPE.CREATE_EMP) AS CREATE_EMP,
+		OMG_PORTAL_DICT_TYPE.CREATE_TIME,
+		(SELECT OMG_EMP.EMP_NAME FROM OMG_EMP WHERE OMG_EMP.EMP_CODE=OMG_PORTAL_DICT_TYPE.UPDATE_EMP) AS UPDATE_EMP,
+		OMG_PORTAL_DICT_TYPE.UPDATE_TIME
+		FROM OMG_PORTAL_DICT_TYPE
+		WHERE OMG_PORTAL_DICT_TYPE.DELETE_FLAG <![CDATA[ <> ]]> 1
+			<if test="excludeTypeClassCode != null">
+				and OMG_PORTAL_DICT_TYPE.type_class_code <![CDATA[ <> ]]> #{excludeTypeClassCode}
+			</if>
+			<if test="typeClassCode != null and typeClassCode != ''">
+				and OMG_PORTAL_DICT_TYPE.type_class_code = #{typeClassCode}
+			</if>
+			<if test="typeClassName != null and typeClassName != ''">
+				and OMG_PORTAL_DICT_TYPE.type_class_name like concat ('%', #{typeClassName} ,'%')
+			</if>
+			<if test="visible != null">
+				and OMG_PORTAL_DICT_TYPE.visible = #{visible}
+			</if>
+			<if test="sourceType != null">
+				and OMG_PORTAL_DICT_TYPE.source_type = #{sourceType}
+			</if>
+	</select>
+	
+	<select id="findByTypeClassCode" parameterType="java.lang.String" resultType="cn.uce.omg.portal.vo.PortalDictTypeVo">
+		SELECT * FROM OMG_PORTAL_DICT_TYPE 
+		where type_class_code = #{typeClassCode} AND
+		DELETE_FLAG <![CDATA[ <> ]]> 1
+	</select>
+	
+	<delete id="deleteByTypeClassCode" parameterType="java.lang.String" >
+		DELETE FROM OMG_PORTAL_DICT_TYPE WHERE TYPE_CLASS_CODE = #{_parameter}
+	</delete>
+	
+	<update id="updateByCode" parameterType="cn.uce.omg.portal.vo.PortalDictTypeVo">
+		UPDATE OMG_PORTAL_DICT_TYPE SET TYPE_CLASS_NAME =#{typeClassName} ,VISIBLE = #{visible},REMARK = #{remark},UPDATE_EMP = #{updateEmp},UPDATE_ORG = #{updateOrg},UPDATE_TIME = #{updateTime} WHERE TYPE_CLASS_CODE = #{typeClassCode} 
+	</update>
+	
+	<!-- 通过empcode查询所属权限对应的系统编码 -->
+	<select id="findPermissionByEmpCode" parameterType="java.util.List" resultType="java.lang.String">
+		SELECT DISTINCT system_code FROM omg_portal_permission o 
+		WHERE EXISTS(
+			SELECT PERMISSION_CODE FROM omg_portal_role_permission_rel 
+			LEFT JOIN omg_portal_user_role_rel ON 
+			omg_portal_role_permission_rel.ROLE_CODE = omg_portal_user_role_rel.ROLE_CODE 
+			WHERE omg_portal_role_permission_rel.PERMISSION_CODE = o.PERMISSION_CODE AND 
+			omg_portal_user_role_rel.EMP_CODE = #{empCode}
+		)
+	
+	</select>
+</mapper>

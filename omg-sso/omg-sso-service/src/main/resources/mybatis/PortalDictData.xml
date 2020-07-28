@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.portal.IPortalDictDataDao">
+	
+	<!-- 查询当前登陆用户-->
+	<select id="findDictDataByTypeClassCode" resultType="cn.uce.omg.sso.vo.portal.PortalDictDataVo">
+		SELECT 
+		TYPE_CODE,
+		TYPE_NAME
+		FROM
+		OMG_PORTAL_DICT_DATA
+		WHERE 
+		TYPE_CLASS_CODE = #{_parameter}
+	</select>
+</mapper>

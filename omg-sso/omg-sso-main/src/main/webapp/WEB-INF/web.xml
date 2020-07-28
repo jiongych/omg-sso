@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+          http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd"
+    version="3.1">
+
+	<display-name>omg-sso-main</display-name>
+	<context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>omg-sso-main</param-value>
+	</context-param>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath*:spring-*.xml,classpath*:spring/spring-*.xml</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<!--<context-param>
+         <param-name>logbackConfigLocation</param-name>  
+         <param-value>classpath:logback.xml</param-value>  
+	</context-param>  -->
+	<listener>  
+	         <listener-class>ch.qos.logback.ext.spring.web.LogbackConfigListener</listener-class>  
+	</listener>  
+
+		 <!-- 非法参数过滤器 -->
+    <filter>
+        <filter-name>IllegalCharacterFilter</filter-name>
+        <filter-class>cn.uce.omg.main.filter.IllegalCharacterFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>IllegalCharacterFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+	<filter>
+		<filter-name>characterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>characterEncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<servlet>
+		<servlet-name>springmvc</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/dispatcher-servlet.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>springmvc</servlet-name>
+		<url-pattern>*.action</url-pattern>
+	</servlet-mapping>
+	<!-- Welcome file lists -->
+	<welcome-file-list>
+		<welcome-file>/toLogin.action</welcome-file>
+	</welcome-file-list>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/errors/404.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/errors/error.jsp</location>
+	</error-page>
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+</web-app>

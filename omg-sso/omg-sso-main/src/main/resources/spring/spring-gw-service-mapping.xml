@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/context 
+			http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+	default-lazy-init="true">
+	<bean id="loginService" class="cn.uce.omg.main.biz.ServiceProxyFactoryBean">
+		<property name="service" ref="localAuthService" />
+		<property name="methodName" value="login" />
+	</bean>
+	<bean id="logoutService" class="cn.uce.omg.main.biz.ServiceProxyFactoryBean">
+		<property name="service" ref="localAuthService" />
+		<property name="methodName" value="logout" />
+	</bean>
+	<bean id="updPwdService" class="cn.uce.omg.main.biz.ServiceProxyFactoryBean">
+		<property name="service" ref="localAuthService" />
+		<property name="methodName" value="updPwd" />
+	</bean>
+	<bean id="getCodeService" class="cn.uce.omg.main.biz.ServiceProxyFactoryBean">
+		<property name="service" ref="localAuthService" />
+		<property name="methodName" value="getCode" />
+	</bean>
+	<bean id="authCheckService" class="cn.uce.omg.main.biz.ServiceProxyFactoryBean">
+		<property name="service" ref="localAuthService" />
+		<property name="methodName" value="authCheck" />
+	</bean>
+	<!-- add by luheng 20190703 扫码登录 -->
+<!-- 	<bean id="confirmLoginCodeService" class="cn.uce.omg.main.biz.ServiceProxyFactoryBean">
+		<property name="service" ref="localAuthService"/>
+		<property name="methodName" value="confirmLoginCode"/>
+	</bean> -->
+	<bean id="resetPwdService" class="cn.uce.omg.main.biz.ServiceProxyFactoryBean">
+		<property name="service" ref="passwordResetService"/>
+		<property name="methodName" value="resetPwd"/>
+	</bean>
+
+	<!-- 找回密码相关 -->
+	<!-- add 20180119 BaoJingyu 发送验证码 -->
+	<bean id="sendVerificationCodeService" class="cn.uce.omg.main.biz.ServiceProxyFactoryBean">
+		<property name="service" ref="passwordResetService"/>
+		<property name="methodName" value="sendVerificationCode"/>
+	</bean>
+	<!-- add 20180120 BaoJingyu 校验验证码 -->
+	<bean id="checkVerificationCodeService" class="cn.uce.omg.main.biz.ServiceProxyFactoryBean">
+		<property name="service" ref="passwordResetService"/>
+		<property name="methodName" value="checkVerificationCode"/>
+	</bean>
+	<!-- add 20180120 BaoJingyu 重置密码 -->
+	<bean id="resetPasswordService" class="cn.uce.omg.main.biz.ServiceProxyFactoryBean">
+		<property name="service" ref="passwordResetService"/>
+		<property name="methodName" value="resetPassword"/>
+	</bean>
+
+	<!-- 权限相关 begin -->
+	<bean id="findUsrRoleService" class="cn.uce.omg.main.biz.ServiceProxyFactoryBean">
+		<property name="service" ref="authRoleService" />
+		<property name="methodName" value="findUserRole" />
+	</bean>
+	<bean id="findUserService" class="cn.uce.omg.main.biz.ServiceProxyFactoryBean">
+		<property name="service" ref="authRoleService" />
+		<property name="methodName" value="findUser" />
+	</bean>
+	<!-- 权限相关 end -->
+	
+	<bean id="serviceNameMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="login" value-ref="loginService" />
+				<entry key="logout" value-ref="logoutService"/>
+				<entry key="upd_pwd" value-ref="updPwdService" />
+				<entry key="get_code" value-ref="getCodeService" />
+				<entry key="auth_check" value-ref="authCheckService" />
+				<entry key="find_user_role" value-ref="findUsrRoleService" />
+				<entry key="find_user" value-ref="findUserService" />
+				<entry key="reset_pwd" value-ref="resetPwdService"/>
+				<entry key="send_code" value-ref="sendVerificationCodeService"/>
+				<entry key="check_ver_code" value-ref="checkVerificationCodeService"/>
+				<entry key="reset_password" value-ref="resetPasswordService"/>
+				<!-- <entry key="confirm_login_code" value-ref="confirmLoginCodeService"/> -->
+			</map>
+		</constructor-arg>
+	</bean>
+
+	<!-- 服务工厂对象 -->
+	<bean id="serviceProxyFactory" class="cn.uce.omg.main.biz.ServiceProxyFactory"
+		scope="singleton">
+		<property name="serviceProxyMap" ref="serviceNameMap" />
+	</bean>
+
+</beans>

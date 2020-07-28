@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.ILogDao">
+	<!-- 批量插入日志记录 -->
+	<insert id="saveLogList">
+		INSERT INTO omg_portal_operator_log(
+			operator_emp,
+			operator_table,
+			operator_menu,
+			operator_type,
+			operator_before,
+			operator_after,
+			operator_ip,
+		    created_time,
+		    created_org,
+		    created_org_name,
+		    operator_emp_name
+		)VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+            (#{item.operatorEmp}, #{item.operatorTable},#{item.operatorMenu},#{item.operatorType},
+            #{item.operatorBefore},#{item.operatorAfter},#{item.operatorIp},#{item.createdTime},
+            #{item.createdOrg},#{item.createdOrgName},#{item.operatorEmpName})
+        </foreach>
+	</insert>
+	
+	<!-- 插入日志记录 -->
+	<insert id="saveLog" parameterType="cn.uce.omg.portal.vo.LogVo">
+		INSERT INTO omg_portal_operator_log (
+			operator_emp,
+			operator_table,
+			operator_menu,
+			operator_type,
+			operator_before,
+			operator_after,
+			operator_ip,
+		    created_time,
+		    created_org,
+		    created_org_name,
+		    operator_emp_name
+		)VALUES(#{operatorEmp},#{operatorTable},#{operatorMenu},#{operatorType},
+            #{operatorBefore},#{operatorAfter},#{operatorIp},#{createdTime},
+            #{createdOrg},#{createdOrgName},#{operatorEmpName})
+	</insert>
+	
+	<!-- 根据条件查询操作日志 -->
+	<select id="findAllLogs" parameterType="cn.uce.omg.portal.vo.LogVo" resultType="cn.uce.omg.portal.vo.LogVo">
+	    SELECT
+			d.type_name operatorMenu,
+			o.type_name operatorType,
+			l.operator_table operatorTable,
+			l.operator_emp operatorEmp,
+		    l.created_org createdOrg,
+		    l.created_org_name createdOrgName,
+		    l.operator_emp_name operatorEmpName,
+		    l.operator_before operatorBefore,
+		    l.operator_after operatorAfter,
+		    l.operator_ip operatorIp,
+		    l.created_time createdTime
+		FROM
+			omg_portal_operator_log l
+		LEFT JOIN omg_portal_dict_data d ON l.operator_menu=d.TYPE_CODE AND d.TYPE_CLASS_CODE='SYS_MOUDLE'
+		LEFT JOIN omg_portal_dict_data o ON l.operator_type=o.TYPE_CODE AND o.TYPE_CLASS_CODE='SYS_OTYPE'
+		<where>
+		    <if test="operatorMenu != null and operatorMenu != '' and operatorMenu != 'null'">
+		        AND l.operator_menu=#{operatorMenu}
+		    </if>
+		    <if test="operatorType != null and operatorType != '' and operatorType != 'null'">
+		        AND l.operator_type=#{operatorType}
+		    </if>
+		    <if test="operatorTable != null and operatorTable != '' and operatorTable != 'null'">
+		        AND l.operator_table=#{operatorTable}
+		    </if>
+		    <if test="operatorAfter != null and operatorAfter != '' and operatorAfter != 'null'">
+		        AND l.operator_after like CONCAT(CONCAT('%',#{operatorAfter}),'%')
+		    </if>
+		    <if test="operatorEmp != null and operatorEmp != '' and operatorEmp != 'null'">
+		        AND l.operator_emp=#{operatorEmp}
+		    </if>
+		    <if test="operatorEmpName != null and operatorEmpName != '' and operatorEmpName != 'null'">
+		        AND l.operator_emp_name=#{operatorEmpName}
+		    </if>
+		    <if test="createdTime != null and updatedTime != null">
+		    	<![CDATA[ and l.created_time between #{createdTime,jdbcType=TIMESTAMP} and #{updatedTime,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="createdTime != null and updatedTime == null">
+			    <![CDATA[ and l.created_time >= #{createdTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="createdTime == null and updatedTime != null">
+			    <![CDATA[ and l.created_time <= #{updatedTime,jdbcType=TIMESTAMP}]]>
+			</if>
+	    </where>
+		ORDER BY l.created_time DESC
+	</select>
+</mapper>

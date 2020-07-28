@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IPermissionDao">
+	<!-- 按条件查询 -->
+	<select id="findByCondition" parameterType="cn.uce.omg.portal.vo.PermissionVo" resultType="cn.uce.omg.portal.vo.PermissionVo">
+		SELECT 
+		OMG_PORTAL_PERMISSION.ID,
+		OMG_PORTAL_PERMISSION.PERMISSION_CODE,
+		OMG_PORTAL_PERMISSION.PERMISSION_NAME,
+		OMG_PORTAL_PERMISSION.PERMISSION_URL,
+		OMG_PORTAL_PERMISSION.PERMISSION_ICON,
+		OMG_PORTAL_PERMISSION.CONTROL_TYPE,
+		OMG_PORTAL_PERMISSION.PARENT_PERMISSION,
+		OMG_PORTAL_PERMISSION.SORT,
+		OMG_PORTAL_PERMISSION.SYS_URL,
+		OMG_PORTAL_PERMISSION.SYSTEM_CODE,
+		OMG_PORTAL_PERMISSION.CATEGORY,
+		OMG_PORTAL_PERMISSION.PERMISSION_LEVELS,
+		OMG_PORTAL_PERMISSION.IS_HIDE
+		FROM OMG_PORTAL_PERMISSION 
+		WHERE
+		OMG_PORTAL_PERMISSION.DELETE_FLAG <![CDATA[ <> ]]> 1
+		<if test="parentPermission != null and parentPermission !=''" >
+			AND OMG_PORTAL_PERMISSION.PARENT_PERMISSION = #{parentPermission}
+		</if>
+		<if test="parentPermission != null and parentPermission == 0">
+			AND OMG_PORTAL_PERMISSION.PARENT_PERMISSION = 0 OR OMG_PORTAL_PERMISSION.PARENT_PERMISSION IS NULL
+		</if>
+		<if test="permissionCode != null and permissionCode != ''">
+		    AND OMG_PORTAL_PERMISSION.PERMISSION_CODE = #{permissionCode}
+		</if>
+		<if test="systemCode != null and systemCode != ''">
+		    AND OMG_PORTAL_PERMISSION.SYSTEM_CODE = #{systemCode}
+		</if>
+		<if test="category != null and category != ''">
+		    AND OMG_PORTAL_PERMISSION.CATEGORY = #{category}
+		</if>
+		<if test="permissionName != null and permissionName != ''">
+		    AND OMG_PORTAL_PERMISSION.PERMISSION_NAME like concat("%", #{permissionName}, "%") 
+		</if>
+		<if test="controlType != null">
+			AND OMG_PORTAL_PERMISSION.CONTROL_TYPE = #{controlType}
+		</if>
+		<if test="filterSystemCode !=null and filterSystemCode != ''">
+			AND OMG_PORTAL_PERMISSION.SYSTEM_CODE <![CDATA[ <> ]]> #{filterSystemCode}
+		</if>
+		<if test="emptyFlag" >
+			AND OMG_PORTAL_PERMISSION.CONTROL_TYPE = 1
+		</if>
+		ORDER BY SORT ASC
+	</select>
+	
+	<select id="findByConditionForTree" parameterType="cn.uce.omg.portal.vo.PermissionVo" resultType="cn.uce.omg.portal.vo.PermissionVo">
+		SELECT 
+		OMG_PORTAL_PERMISSION.ID,
+		OMG_PORTAL_PERMISSION.PERMISSION_CODE,
+		CONCAT(OMG_PORTAL_PERMISSION.SYSTEM_CODE,'-',OMG_PORTAL_PERMISSION.PERMISSION_NAME) as permissionName,
+		OMG_PORTAL_PERMISSION.PERMISSION_URL,
+		OMG_PORTAL_PERMISSION.PERMISSION_ICON,
+		OMG_PORTAL_PERMISSION.CONTROL_TYPE,
+		OMG_PORTAL_PERMISSION.PARENT_PERMISSION,
+		OMG_PORTAL_PERMISSION.SORT,
+		OMG_PORTAL_PERMISSION.SYS_URL,
+		OMG_PORTAL_PERMISSION.SYSTEM_CODE,
+		OMG_PORTAL_PERMISSION.CATEGORY,
+		OMG_PORTAL_PERMISSION.PERMISSION_LEVELS
+		FROM OMG_PORTAL_PERMISSION 
+		WHERE
+		OMG_PORTAL_PERMISSION.DELETE_FLAG <![CDATA[ <> ]]> 1
+		<if test="parentPermission != null and parentPermission !=''" >
+			AND OMG_PORTAL_PERMISSION.PARENT_PERMISSION = #{parentPermission}
+		</if>
+		<if test="permissionCode != null and permissionCode != ''">
+		    AND OMG_PORTAL_PERMISSION.PERMISSION_CODE = #{permissionCode}
+		</if>
+		<if test="systemCode != null and systemCode != ''">
+		    AND OMG_PORTAL_PERMISSION.SYSTEM_CODE = #{systemCode}
+		</if>
+		<if test="category != null and category != ''">
+		    AND OMG_PORTAL_PERMISSION.CATEGORY = #{category}
+		</if>
+		<if test="permissionName != null and permissionName != ''">
+		    AND OMG_PORTAL_PERMISSION.PERMISSION_NAME like concat("%", #{permissionName}, "%") 
+		</if>
+		<if test="controlType != null">
+			AND OMG_PORTAL_PERMISSION.CONTROL_TYPE = #{controlType}
+		</if>
+		<if test="filterSystemCode !=null and filterSystemCode != ''">
+			AND OMG_PORTAL_PERMISSION.SYSTEM_CODE <![CDATA[ <> ]]> #{filterSystemCode}
+		</if>
+		ORDER BY SORT ASC
+	</select>
+	
+	<!-- 按权限码查询 -->
+	<select id="findByPermissionCode" parameterType="java.lang.String" resultType="cn.uce.omg.portal.vo.PermissionVo">
+		SELECT * FROM OMG_PORTAL_PERMISSION
+		WHERE DELETE_FLAG <![CDATA[ <> ]]> 1 AND permission_code = #{permissionCode}
+		LIMIT 1
+	</select>
+	
+	<!-- 按权限码删除 -->
+	<delete id="deleteByPermissionCode" parameterType="java.lang.String">
+		DELETE FROM omg_portal_permission WHERE PERMISSION_CODE = #{permissionCode} and system_code = #{systemCode}
+	</delete>
+	
+	<!-- 查询用户所有权限 -->
+	<select id="findUserAllPermission" parameterType="java.util.List" resultType="cn.uce.omg.portal.vo.PermissionVo">
+		SELECT DISTINCT fp.id, fp.permission_name,fp.permission_code, fp.leaf_flag, fp.permission_url, fp.parent_permission,fp.sys_url,fp.permission_icon,fp.sort
+		FROM OMG_PORTAL_PERMISSION fp, OMG_PORTAL_ROLE_PERMISSION_REL frpr
+		WHERE fp.permission_code = frpr.permission_code 
+		AND fp.control_type = 1 AND fp.delete_flag = 0 
+		<foreach item="item" collection="list" open=" AND frpr.role_code IN (" separator="," close=")">
+		#{item}
+		</foreach>
+		order by fp.sort
+	</select>
+	
+	<!-- 按级别查询自己所有权限 -->
+	<select id="findPermissionTreeByLevel" resultType="cn.uce.omg.portal.vo.PermissionTreeVo">
+		SELECT 
+		DISTINCT
+		OMG_PORTAL_PERMISSION.ID AS id,
+		OMG_PORTAL_PERMISSION.PERMISSION_CODE,
+		CONCAT(OMG_PORTAL_PERMISSION.SYSTEM_CODE,'-',OMG_PORTAL_PERMISSION.PERMISSION_NAME) AS text,
+		OMG_PORTAL_PERMISSION.PARENT_PERMISSION AS parentId,
+		OMG_PORTAL_PERMISSION.SORT,
+		OMG_PORTAL_PERMISSION.SYSTEM_CODE,
+		OMG_PORTAL_PERMISSION.CATEGORY 
+		FROM 
+		OMG_PORTAL_PERMISSION 
+		<if test="empCode != null">
+		INNER JOIN 
+		OMG_PORTAL_ROLE_PERMISSION_REL ON OMG_PORTAL_PERMISSION.PERMISSION_CODE=OMG_PORTAL_ROLE_PERMISSION_REL.PERMISSION_CODE
+		INNER JOIN
+		OMG_PORTAL_USER_ROLE_REL ON OMG_PORTAL_USER_ROLE_REL.ROLE_CODE = OMG_PORTAL_ROLE_PERMISSION_REL.ROLE_CODE AND OMG_PORTAL_USER_ROLE_REL.EMP_CODE = #{empCode}
+		</if>
+		WHERE 
+		OMG_PORTAL_PERMISSION.DELETE_FLAG = 0 
+		<if test="roleLevel != null and roleLevel!=100">
+		AND 
+		FIND_IN_SET(#{roleLevel},OMG_PORTAL_PERMISSION.PERMISSION_LEVELS)
+		</if>
+		ORDER BY OMG_PORTAL_PERMISSION.SORT
+	</select>
+	
+	<!-- 按级别查询自己所有权限 -->
+	<select id="findPermissionTreeByLevelNew" resultType="cn.uce.omg.portal.vo.PermissionTreeNewVo">	
+		SELECT DISTINCT o.id, o.`PERMISSION_CODE`, o.`PARENT_PERMISSION`, o.`CONTROL_TYPE` ,
+			 CASE WHEN m.PERMISSION_ALIAS_NAME IS NULL OR m.PERMISSION_ALIAS_NAME = '' 
+			 THEN o.PERMISSION_NAME 
+			 ELSE m.PERMISSION_ALIAS_NAME END NAME,
+			m.PARENT_PERMISSION AS parentId,
+			o.SORT,
+			o.SYSTEM_CODE,
+			o.CATEGORY 
+		FROM `omg_portal_menu` m 
+		LEFT JOIN `omg_portal_permission` o ON o.`PERMISSION_CODE` = m.`PERMISSION_CODE` AND o.`SYSTEM_CODE` = m.`SYSTEM_CODE`
+		<if test="empCode != null">
+			INNER JOIN 
+			OMG_PORTAL_ROLE_PERMISSION_REL ON o.PERMISSION_CODE=OMG_PORTAL_ROLE_PERMISSION_REL.PERMISSION_CODE
+			INNER JOIN
+			OMG_PORTAL_USER_ROLE_REL ON OMG_PORTAL_USER_ROLE_REL.ROLE_CODE = OMG_PORTAL_ROLE_PERMISSION_REL.ROLE_CODE AND OMG_PORTAL_USER_ROLE_REL.EMP_CODE = #{empCode}
+		</if>
+		WHERE o.`DELETE_FLAG` = 0 
+		<if test="roleLevel != null and roleLevel!=100">
+			AND FIND_IN_SET(#{roleLevel},o.PERMISSION_LEVELS)
+		</if>
+		
+		UNION ALL
+		
+		SELECT DISTINCT op.id, op.`PERMISSION_CODE`, op.`PARENT_PERMISSION`, op.`CONTROL_TYPE`, 
+			op.PERMISSION_NAME AS NAME, 
+			op.PARENT_PERMISSION AS parentId,
+			op.SORT,
+			op.SYSTEM_CODE,
+			op.CATEGORY 
+		FROM `omg_portal_permission` op WHERE op.`PARENT_PERMISSION` IN(SELECT o.`ID` FROM `omg_portal_menu` m 
+		LEFT JOIN `omg_portal_permission` o ON o.`PERMISSION_CODE` = m.`PERMISSION_CODE` AND o.`SYSTEM_CODE` = m.`SYSTEM_CODE`
+		<if test="empCode != null">
+			INNER JOIN 
+			OMG_PORTAL_ROLE_PERMISSION_REL ON o.PERMISSION_CODE=OMG_PORTAL_ROLE_PERMISSION_REL.PERMISSION_CODE
+			INNER JOIN
+			OMG_PORTAL_USER_ROLE_REL ON OMG_PORTAL_USER_ROLE_REL.ROLE_CODE = OMG_PORTAL_ROLE_PERMISSION_REL.ROLE_CODE AND OMG_PORTAL_USER_ROLE_REL.EMP_CODE = #{empCode}
+			</if>
+			) 
+		<if test="roleLevel != null and roleLevel!=100">
+			AND FIND_IN_SET(#{roleLevel},op.PERMISSION_LEVELS)
+		</if>
+		AND op.`CONTROL_TYPE` = 2 AND op.`DELETE_FLAG` = 0
+		ORDER BY parentId, sort
+	</select>
+	
+	<!-- 按级别查询Portal所有权限 -->
+	<select id="findPortalMenuTreeByLevel" resultType="cn.uce.omg.portal.vo.PermissionTreeNewVo">
+		(SELECT DISTINCT
+		p.ID AS id,
+		p.PERMISSION_CODE,
+		CONCAT(p.SYSTEM_CODE,'-',p.PERMISSION_NAME) AS name,
+		m.PARENT_PERMISSION AS parentId,
+		m.SORT,
+		p.SYSTEM_CODE,
+		p.CATEGORY 
+		FROM 
+		omg_portal_menu m
+		inner join OMG_PORTAL_PERMISSION p on p.SYSTEM_CODE = m.SYSTEM_CODE and m.PERMISSION_CODE = p.PERMISSION_CODE
+		<if test="empCode != null">
+			INNER JOIN OMG_PORTAL_ROLE_PERMISSION_REL r ON p.PERMISSION_CODE = r.PERMISSION_CODE
+			INNER JOIN OMG_PORTAL_USER_ROLE_REL ro ON ro.ROLE_CODE = r.ROLE_CODE
+			AND ro.EMP_CODE = #{empCode}
+		</if>
+		WHERE 
+		p.DELETE_FLAG = 0 
+		<if test="roleLevel != null and roleLevel!=100">
+			AND FIND_IN_SET(#{roleLevel},p.PERMISSION_LEVELS)
+		</if>
+		ORDER BY m.SORT)
+		union 
+		( 
+		SELECT DISTINCT
+		  p.ID AS id,
+		  p.PERMISSION_CODE,
+		  CONCAT(
+		    p.SYSTEM_CODE,
+		    '-',
+		    p.PERMISSION_NAME
+		  ) AS NAME,
+		  p.PARENT_PERMISSION AS parentId,
+		  p.SORT,
+		  p.SYSTEM_CODE,
+		  p.CATEGORY from omg_portal_permission p
+		where p.CONTROL_TYPE=${ControlType.button} and p.DELETE_FLAG=0 and p.PARENT_PERMISSION in (SELECT DISTINCT p.ID 
+		FROM 
+		omg_portal_menu m
+		inner join OMG_PORTAL_PERMISSION p on p.SYSTEM_CODE = m.SYSTEM_CODE and m.PERMISSION_CODE = p.PERMISSION_CODE
+		<if test="empCode != null">
+			INNER JOIN OMG_PORTAL_ROLE_PERMISSION_REL r ON p.PERMISSION_CODE = r.PERMISSION_CODE
+			INNER JOIN OMG_PORTAL_USER_ROLE_REL ro ON ro.ROLE_CODE = r.ROLE_CODE
+			AND ro.EMP_CODE = #{empCode}
+		</if>
+		WHERE 
+		p.DELETE_FLAG = 0 
+		<if test="roleLevel != null and roleLevel!=100">
+			AND FIND_IN_SET(#{roleLevel},p.PERMISSION_LEVELS)
+		</if>)
+		order by  p.PARENT_PERMISSION,p.sort
+		)
+		order by sort
+	</select>
+	
+	<!-- 查询用户的所有权限码 -->
+	<select id="findUserAllPermissionCode" parameterType="java.util.List" resultType="java.lang.String">
+		SELECT PERMISSION_CODE
+		FROM OMG_PORTAL_ROLE_PERMISSION_REL
+		<where>
+		<foreach item="item" collection="list" open=" AND OMG_PORTAL_ROLE_PERMISSION_REL.ROLE_CODE IN (" separator="," close=")">
+		#{item}
+		</foreach>
+		</where>
+	</select>
+	
+	<!-- 按ID更新权限级别 -->
+	<update id="updateLevelsById" parameterType="cn.uce.omg.portal.vo.PermissionVo">
+		UPDATE OMG_PORTAL_PERMISSION SET PERMISSION_LEVELS=#{permissionLevels} where ID=#{id}
+	</update>
+	
+	<!-- 查询用户所有权限 -->
+	<select id="findPermissionByUser" resultType="cn.uce.omg.portal.vo.PermissionVo">
+		SELECT DISTINCT
+		OMG_PORTAL_PERMISSION.ID, 
+		OMG_PORTAL_PERMISSION.PERMISSION_NAME,
+		OMG_PORTAL_PERMISSION.PERMISSION_CODE, 
+		OMG_PORTAL_PERMISSION.LEAF_FLAG, 
+		OMG_PORTAL_PERMISSION.PERMISSION_URL, 
+		OMG_PORTAL_PERMISSION.PARENT_PERMISSION,
+		OMG_PORTAL_PERMISSION.SYS_URL,
+		OMG_PORTAL_PERMISSION.SYSTEM_CODE,
+		OMG_PORTAL_PERMISSION.CATEGORY,
+		OMG_PORTAL_PERMISSION.PERMISSION_ICON,
+		OMG_PORTAL_PERMISSION.SORT
+		FROM 
+		OMG_PORTAL_PERMISSION 
+		INNER JOIN 
+		OMG_PORTAL_ROLE_PERMISSION_REL 
+		ON OMG_PORTAL_PERMISSION.PERMISSION_CODE=OMG_PORTAL_ROLE_PERMISSION_REL.PERMISSION_CODE
+		WHERE  
+		OMG_PORTAL_PERMISSION.DELETE_FLAG = 0  
+		<!-- <if test="orgType != null">
+		AND FIND_IN_SET(#{orgType},OMG_PORTAL_PERMISSION.PERMISSION_LEVELS)
+		</if> -->
+		<if test="controlType != null">
+		AND OMG_PORTAL_PERMISSION.CONTROL_TYPE = #{controlType}
+		</if>
+		AND EXISTS (SELECT ROLE_CODE FROM OMG_PORTAL_USER_ROLE_REL WHERE EMP_CODE = #{empCode} AND ROLE_CODE = OMG_PORTAL_ROLE_PERMISSION_REL.ROLE_CODE)
+		ORDER BY OMG_PORTAL_PERMISSION.SORT
+	</select>
+	
+	<!-- 根据角色码查询权限ID -->
+	<select id="findPermissionByRoleCode" parameterType="java.lang.String" resultType="cn.uce.omg.portal.vo.PermissionVo">
+		SELECT 
+		OMG_PORTAL_PERMISSION.ID,
+		OMG_PORTAL_PERMISSION.PERMISSION_CODE,
+		OMG_PORTAL_PERMISSION.PERMISSION_NAME,
+		OMG_PORTAL_PERMISSION.SYSTEM_CODE
+		FROM 
+		OMG_PORTAL_PERMISSION
+		INNER JOIN
+		OMG_PORTAL_ROLE_PERMISSION_REL ON OMG_PORTAL_PERMISSION.PERMISSION_CODE = OMG_PORTAL_ROLE_PERMISSION_REL.PERMISSION_CODE 
+		AND OMG_PORTAL_ROLE_PERMISSION_REL.SYSTEM_CODE = OMG_PORTAL_PERMISSION.SYSTEM_CODE
+		WHERE 
+		OMG_PORTAL_PERMISSION.DELETE_FLAG <![CDATA[ <> ]]> 1 AND 
+		OMG_PORTAL_ROLE_PERMISSION_REL.ROLE_CODE = #{_parameter}
+	</select>
+	
+	<!-- 根据角色码查询portal权限ID -->
+	<select id="findPortalMenuByRoleCode" parameterType="java.lang.String" resultType="cn.uce.omg.portal.vo.PermissionVo">
+		SELECT 
+		p.ID,
+		p.PERMISSION_CODE,
+		p.PERMISSION_NAME,
+		p.SYSTEM_CODE,
+		p.CONTROL_TYPE,
+		m.PARENT_PERMISSION
+		FROM omg_portal_menu m
+		INNER join OMG_PORTAL_PERMISSION p on p.PERMISSION_CODE = m.PERMISSION_CODE and p.SYSTEM_CODE = m.SYSTEM_CODE and p.DELETE_FLAG=0
+		INNER JOIN OMG_PORTAL_ROLE_PERMISSION_REL r ON m.PERMISSION_CODE = r.PERMISSION_CODE and m.SYSTEM_CODE = r.SYSTEM_CODE
+		WHERE 
+		p.DELETE_FLAG  <![CDATA[ <> ]]>   1 AND 
+		r.ROLE_CODE =  #{_parameter}
+		union 
+	    SELECT 
+		p.ID,
+		p.PERMISSION_CODE,
+		p.PERMISSION_NAME,
+		p.SYSTEM_CODE,
+		p.CONTROL_TYPE,
+		m.PARENT_PERMISSION
+		FROM  OMG_PORTAL_PERMISSION p 
+		INNER JOIN OMG_PORTAL_ROLE_PERMISSION_REL r ON p.PERMISSION_CODE = r.PERMISSION_CODE and p.SYSTEM_CODE = r.SYSTEM_CODE
+		INNER join omg_portal_permission pp on pp.id = p.PARENT_PERMISSION
+        INNER join omg_portal_menu m on m.SYSTEM_CODE = pp.SYSTEM_CODE and m.PERMISSION_CODE = pp.PERMISSION_CODE
+		WHERE 
+		p.DELETE_FLAG  <![CDATA[ <> ]]>   1 AND 
+		r.ROLE_CODE =  #{_parameter} and p.CONTROL_TYPE=${ControlType.button}
+	</select>
+	
+	<select id="findPermissionByIds" parameterType="java.util.List" resultType="cn.uce.omg.portal.vo.PermissionVo">
+		SELECT 
+			o.id, 
+			o.PERMISSION_CODE, 
+			o.PERMISSION_NAME, 
+			o.SYSTEM_CODE, 
+			o.CONTROL_TYPE, 
+			m.PARENT_PERMISSION 
+		FROM omg_portal_permission o 
+			LEFT JOIN `omg_portal_menu` m ON o.`PERMISSION_CODE` = m.`PERMISSION_CODE` 
+			AND o.`SYSTEM_CODE` = m.`SYSTEM_CODE` 
+ 		WHERE o.id IN
+		<foreach item="item" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
+	<insert id="insert" parameterType="cn.uce.omg.portal.vo.PermissionVo" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO OMG_PORTAL_PERMISSION
+		(
+			OMG_PORTAL_PERMISSION.PERMISSION_CODE, OMG_PORTAL_PERMISSION.PERMISSION_NAME,
+			OMG_PORTAL_PERMISSION.PERMISSION_URL, OMG_PORTAL_PERMISSION.PERMISSION_ICON, OMG_PORTAL_PERMISSION.CONTROL_TYPE,
+			OMG_PORTAL_PERMISSION.PARENT_PERMISSION, OMG_PORTAL_PERMISSION.SORT, OMG_PORTAL_PERMISSION.DELETE_FLAG,
+			OMG_PORTAL_PERMISSION.CREATE_EMP, OMG_PORTAL_PERMISSION.CREATE_ORG, OMG_PORTAL_PERMISSION.CREATE_TIME,
+			OMG_PORTAL_PERMISSION.VERSION, OMG_PORTAL_PERMISSION.UPDATE_EMP, OMG_PORTAL_PERMISSION.UPDATE_TIME,
+			OMG_PORTAL_PERMISSION.UPDATE_ORG, OMG_PORTAL_PERMISSION.LEAF_FLAG, OMG_PORTAL_PERMISSION.SYS_URL,
+			OMG_PORTAL_PERMISSION.PERMISSION_LEVELS, OMG_PORTAL_PERMISSION.SYSTEM_CODE,
+			OMG_PORTAL_PERMISSION.CATEGORY			
+		)
+		VALUES (
+			#{permissionCode},#{permissionName},#{permissionUrl},#{permissionIcon},#{controlType},
+			#{parentPermission}, #{sort},#{deleteFlag},#{createEmp},#{createOrg},
+			#{createTime},#{version},#{updateEmp},#{updateTime},#{updateOrg},#{leafFlag},
+			#{sysUrl},#{permissionLevels},#{systemCode},#{category}
+		)
+	</insert>
+	
+	<select id="findPermissionCodeByDate" parameterType="cn.uce.omg.portal.vo.PortalDataPushVo" resultType="java.lang.String">
+	    SELECT PERMISSION_CODE FROM OMG_PORTAL_PERMISSION p
+		WHERE (p.CREATE_TIME <![CDATA[ >= ]]> #{startTime} AND p.CREATE_TIME <![CDATA[ <= ]]> #{endTime})
+		OR (p.UPDATE_TIME <![CDATA[ >= ]]> #{startTime} AND p.UPDATE_TIME <![CDATA[ <= ]]> #{endTime})
+	</select>
+	
+	<select id="findParentPermissionById" resultType="cn.uce.omg.portal.vo.PermissionVo">
+		SELECT DISTINCT n.id, n.PARENT_PERMISSION ,n.PERMISSION_CODE,n.SYSTEM_CODE
+		from omg_portal_permission n
+		WHERE n.CONTROL_TYPE =${ControlType.menu} and n.id in 
+		<foreach collection="list" item="id" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+		and n.SYSTEM_CODE <![CDATA[ <> ]]> ${SystemCode.portalMenu}
+	</select>
+	
+	<select id="findCountByUserAndPerCodeAndSysCode" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT count(*) FROM OMG_PORTAL_ROLE_PERMISSION_REL p INNER JOIN OMG_PORTAL_USER_ROLE_REL o ON o.`ROLE_CODE` = p.`ROLE_CODE` 
+			WHERE o.`EMP_CODE` = #{empCode} and p.`PERMISSION_CODE` = #{permissionCode} and p.`SYSTEM_CODE` = #{systemCode}
+	</select>
+</mapper>

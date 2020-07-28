@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.ICollectPermissionDao">
+
+    <select id="findByCondition" parameterType="cn.uce.omg.portal.vo.CollectPermissionVo" resultType="cn.uce.omg.portal.vo.CollectPermissionVo">
+    	select * from omg_portal_collect_click_permission 
+    	<where>
+    		<if test="permissionCode != null and permissionCode != ''">
+    			and permission_code like CONCAT(CONCAT('%',#{permissionCode}),'%')
+    		</if>
+    		<if test="permissionName != null and permissionName != ''">
+    			and permission_name like CONCAT(CONCAT('%',#{permissionName}),'%')
+    		</if>
+    		<if test="systemCode != null and systemCode != ''">
+    			and system_code = #{systemCode}
+    		</if>
+    		<if test="empCode != null and empCode != ''">
+    			and emp_code = #{empCode}
+    		</if>
+    		<if test="empName != null and empName != ''">
+    			and emp_name like CONCAT(CONCAT('%',#{empName}),'%')
+    		</if>
+    		<if test="createTime != null and updateTime != null">
+		    	<![CDATA[ and create_time between #{createTime,jdbcType=TIMESTAMP} and #{updateTime,jdbcType=TIMESTAMP} ]]>
+			</if>
+			<if test="createTime != null and updateTime == null">
+			    <![CDATA[ and create_time >= #{createTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="createTime == null and updateTime != null">
+			    <![CDATA[ and create_time <= #{updateTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="source != null and source != ''">
+    			and source = #{source}
+    		</if>
+    	</where>
+    	order by create_time desc
+    </select>
+    
+</mapper>

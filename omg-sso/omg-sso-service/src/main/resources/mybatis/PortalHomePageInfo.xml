@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.portal.IPortalHomePageInfoDao">
+	
+	<!-- 查询各系统首页跳转信息 -->
+	<select id="findHomePageInfo" resultType="cn.uce.omg.sso.vo.portal.PortalHomePageInfoVo">
+		SELECT 
+		*
+		FROM OMG_PORTAL_HOME_PAGE_INFO 
+		WHERE OMG_PORTAL_HOME_PAGE_INFO.DELETE_FLAG = 1
+		ORDER BY OMG_PORTAL_HOME_PAGE_INFO.SORT
+	</select>
+	
+	<!-- 保存浏览器信息 -->
+	<insert id="saveBrowserInfo" parameterType="cn.uce.omg.sso.vo.portal.PortalBrowserVo">
+	    INSERT INTO omg_portal_brower(
+	       browser_name,
+	       browser_version,
+	       browser_operating_systems,
+	       browser_screen,
+	       operating_ip,
+	       create_emp,
+	       create_date,
+	       create_org
+	    )VALUES(
+	       #{browserName},
+	       #{browserVersion},
+	       #{browserOperatingSystems},
+	       #{browserScreen},
+	       #{operatingIp},
+	       #{createEmp},
+	       #{createDate},
+	       #{createOrg}
+	    )
+	</insert>
+	<!-- 批量插入浏览器信息记录 -->
+	<insert id="saveBatchBrowserInfo">
+		INSERT INTO omg_portal_brower(
+	       browser_name,
+	       browser_version,
+	       browser_operating_systems,
+	       browser_screen,
+	       operating_ip,
+	       create_emp,
+	       create_date,
+	       create_org
+	    )VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+           (#{item.browserName},
+	       #{item.browserVersion},
+	       #{item.browserOperatingSystems},
+	       #{item.browserScreen},
+	       #{item.operatingIp},
+	       #{item.createEmp},
+	       #{item.createDate},
+	       #{item.createOrg})
+        </foreach>
+	</insert>
+</mapper>

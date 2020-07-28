@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.portal.sync.dao.IPermissionDao">
+
+	<select id="findByParam" resultType="cn.uce.portal.sync.entity.Permission">
+		SELECT * FROM OMG_PORTAL_PERMISSION 
+		<where>
+			<if test="permissionName != null and permissionName != ''">
+				AND PERMISSION_NAME = #{permissionName}
+			</if>
+			<if test="systemCode != null and systemCode != ''">
+				AND SYSTEM_CODE = #{systemCode}
+			</if>
+			<if test="permissionCode != null and permissionCode != ''">
+				AND PERMISSION_CODE = #{permissionCode}
+			</if>
+		</where>
+		limit 1
+	</select>
+
+</mapper>

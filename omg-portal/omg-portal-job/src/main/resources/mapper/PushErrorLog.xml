@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IPushErrorLogDao">
+	<!-- 查询处理中的推送错误数据记录 -->
+	<select id="findProcessingLog" parameterType="cn.uce.omg.portal.vo.PushErrorLogVo" resultType="cn.uce.omg.portal.vo.PushErrorLogVo">
+		SELECT * FROM omg_portal_push_error_log WHERE process_status=#{processStatus}
+	</select>
+    <update id="updateToProcessEnd" parameterType="cn.uce.omg.portal.vo.PushErrorLogVo">
+    <!-- 更新重推数据状态 -->
+        UPDATE omg_portal_push_error_log
+        SET process_status=#{processStatus},
+        remark=#{remark},
+        process_num=#{processNum},
+        total_process_num=#{totalProcessNum},
+        sync_content=#{syncContent},
+        next_process_time=#{nextProcessTime}
+        WHERE id=#{id}
+    </update>
+    <!-- 删除推送成功的错误日志记录 -->
+    <delete id="deleteLog" parameterType="java.lang.Long">
+        DELETE FROM omg_portal_push_error_log WHERE id=#{id}
+    </delete>
+    <!-- 查询待处理的推送错误日志记录 -->
+    <select id="findWaitProcessLog" parameterType="cn.uce.omg.portal.vo.PushErrorLogVo" resultType="cn.uce.omg.portal.vo.PushErrorLogVo">
+        SELECT
+           ID,
+           req_id reqId,
+           operator_type operatorType,
+           mq_templete mqTemplete,
+           sync_content syncContent,
+           next_process_time nextProcessTime,
+           total_process_num totalProcessNum,
+           process_status processStatus,
+           process_num processNum,
+           remark,
+           version,
+           create_emp createEmp,
+           create_time createTime,
+           update_time updateTime
+        FROM omg_portal_push_error_log
+        <where>
+			<if test="nextProcessTime != null">
+				AND NEXT_PROCESS_TIME <![CDATA[<=]]> #{nextProcessTime}
+			</if>
+			<if test="processNum != null">
+				AND PROCESS_NUM <![CDATA[<]]> #{processNum}
+			</if>
+			AND (PROCESS_STATUS = 'unprocess' OR PROCESS_STATUS = 'processFail')
+			AND MOD(req_id,#{shardingTotal}) = #{shardingItem}
+		</where> 
+		ORDER BY NEXT_PROCESS_TIME ASC
+    </select>
+    
+    <!-- 保存错误日志记录 -->
+    <insert id="savePushErrorLog" parameterType="cn.uce.omg.portal.vo.PushErrorLogVo">
+        INSERT INTO omg_portal_push_error_log(
+           req_id,
+           operator_type,
+           mq_templete,
+           sync_content,
+           next_process_time,
+           total_process_num,
+           process_status,
+           process_num,
+           remark,
+           version,
+           create_emp,
+           create_time
+        )VALUES(
+           #{reqId},
+           #{operatorType},
+           #{mqTemplete},
+           #{syncContent},
+           #{nextProcessTime},
+           #{totalProcessNum},
+           #{processStatus},
+           #{processNum},
+           #{remark},
+           #{version},
+           #{createEmp},
+           #{createTime}
+        )
+    </insert>
+    
+    <!-- 根据ID更新数据状态 -->
+    <update id="updateById" parameterType="cn.uce.omg.portal.vo.PushErrorLogVo">
+        UPDATE omg_portal_push_error_log 
+        SET process_status=#{processStatus},update_time=#{updateTime}
+        WHERE id=#{id}
+    </update>
+</mapper>

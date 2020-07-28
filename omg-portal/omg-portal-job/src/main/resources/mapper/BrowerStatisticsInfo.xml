@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IBrowserStatisticsDao">
+	<!-- 查询每日登陆次数 -->
+    <select id="findDaysLoginTimes" resultType="cn.uce.omg.portal.vo.BrowserStatisticsInfoVo">
+        SELECT
+			date_format(create_date, '%y-%m-%d') statisticsDate,
+			count(1) loginTimes
+		FROM
+			omg_portal_brower b
+		WHERE
+			date_format(b.create_date, '%y-%m-%d') = date_format(now(), '%y-%m-%d')
+    </select>
+    
+    <!-- 查询每日登陆人数 -->
+    <select id="findDaysLoginPeoples" resultType="cn.uce.omg.portal.vo.BrowserStatisticsInfoVo">
+        SELECT
+			COUNT(*) loginPeoples
+		FROM
+			(
+				SELECT
+					date_format(create_date, '%y-%m-%d') days,
+					count(1) loginNums,
+					b.create_emp createEmp
+				FROM
+					omg_portal_brower b
+				WHERE
+					date_format(b.create_date, '%y-%m-%d') = date_format(now(), '%y-%m-%d')
+				GROUP BY
+					b.create_emp
+			) c
+    </select>
+    
+    <!-- 统计每月浏览器使用情况 -->
+    <select id="findBrowserLoginTimes" resultType="cn.uce.omg.portal.vo.BrowserStatisticsInfoVo">
+        SELECT
+			date_format(create_date, '%y-%m') statisticsDate,
+			browser_name statisticsName,
+			count(1) loginTimes
+		FROM
+			omg_portal_brower
+		WHERE date_format(create_date, '%y-%m') = date_format(now(), '%y-%m')
+		GROUP BY
+			browser_name
+    </select>
+    
+    <!-- 统计最近30天分辨率使用情况 -->
+    <select id="findScreenPeoples" resultType="cn.uce.omg.portal.vo.BrowserStatisticsInfoVo">
+        SELECT browser_screen statisticsName
+        FROM omg_portal_brower b 
+		WHERE b.create_date 
+		BETWEEN date_sub(now(),interval 3 month) AND now()
+		GROUP BY b.create_emp,b.browser_screen
+    </select>
+    
+    <!-- 查询最近7天或查询最近30天记录 -->
+    <select id="findRankingInfo" resultType="cn.uce.omg.portal.vo.BrowserStatisticsInfoVo" parameterType="java.lang.Integer">
+        SELECT b.create_emp statisticsName,count(1) loginTimes,e.emp_name remark 
+        FROM omg_portal_brower b,omg_emp e
+		WHERE b.create_emp=e.emp_code
+		AND b.create_date <![CDATA[>=]]>  date_sub(curdate(), INTERVAL ${value} DAY)
+		GROUP BY b.create_emp
+		ORDER BY loginTimes DESC
+		LIMIT 10
+    </select>
+    
+    <!-- 保存每日登陆人次 -->
+    <insert id="insertBrowerStatiscsResult" parameterType="cn.uce.omg.portal.vo.BrowserStatisticsInfoVo">
+        INSERT INTO omg_portal_login_statistics(
+           statistics_date,
+           login_times,
+           login_pepoles,
+           statistics_type,
+           statistics_category,
+           statistics_name,
+           remark
+        )VALUES(
+           #{statisticsDate},
+           #{loginTimes},
+           #{loginPeoples},
+           #{statisticsType},
+           #{statisticsCategory},
+           #{statisticsName},
+           #{remark}
+        )
+    </insert>
+    
+    <!-- 根据日期查询当日是否已统计 -->
+    <select id="findStatisticsInfoByDate" parameterType="cn.uce.omg.portal.vo.BrowserStatisticsInfoVo" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM omg_portal_login_statistics
+        WHERE statistics_date=#{statisticsDate} 
+        AND statistics_type=#{statisticsType}
+    </select>
+    
+    <select id="deleteStatisticsInfoByDate" parameterType="cn.uce.omg.portal.vo.BrowserStatisticsInfoVo">
+        DELETE FROM omg_portal_login_statistics
+        WHERE statistics_date=#{statisticsDate}
+        AND statistics_type=#{statisticsType}
+    </select>
+</mapper>

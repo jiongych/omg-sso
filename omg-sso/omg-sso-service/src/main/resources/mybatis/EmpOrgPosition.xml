@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.IEmpOrgPositionDao">
+	<sql id="base_column_list">
+		REL_ID,EMP_ID,ORG_ID,POSITION_ID,CREATE_EMP,CREATE_ORG,CREATE_TIME,SYNC_DING_FLAG
+	</sql>
+	<sql id="eop_base_column">
+		EOP.REL_ID AS EOP_REL_ID,EOP.EMP_ID AS EOP_EMP_ID,EOP.ORG_ID AS EOP_ORG_ID,EOP.POSITION_ID AS EOP_POSITION_ID,EOP.CREATE_EMP AS EOP_CREATE_EMP,EOP.CREATE_ORG AS EOP_CREATE_ORG,EOP.CREATE_TIME AS EOP_CREATE_TIME,EOP.SYNC_DING_FLAG AS EOP_SYNC_DING_FLAG
+	</sql>
+	
+	<resultMap id="EmpOrgPositionMap" type="EmpOrgPositionVo">
+    	<!-- <id column="REL_ID" jdbcType="INTEGER" property="relId" /> -->
+    	<result column="EMP_ID" jdbcType="INTEGER" property="empId" />
+    	<result column="ORG_ID" jdbcType="INTEGER" property="orgId" />
+    	<result column="POSITION_ID" jdbcType="SMALLINT" property="positionId" />
+    	<result column="CREATE_EMP" jdbcType="VARCHAR" property="createEmp" />
+    	<result column="CREATE_ORG" jdbcType="INTEGER" property="createOrg" />
+    	<result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    	<result column="SYNC_DING_FLAG" jdbcType="BIT" property="syncDingFlag" />
+    	<!-- 机构名和岗位名关联机构表和系统类型表,使用下面两个字段时要先查出对应字段并取他们的别名为 前缀+ORG_NAME和 前缀+POSITION_NAME 。详见Emp.xml的findEmpDetailByCondition方法-->
+    	<result column="ORG_NAME" jdbcType="VARCHAR" property="orgName" />
+    	<result column="POSITION_NAME" jdbcType="VARCHAR" property="positionName" />
+  	</resultMap>
+	<select id="findByCondition" resultType="EmpOrgPositionVo">
+		SELECT <include refid="base_column_list"/> FROM OMG_EMP_ORG_POSITION
+		<where>
+			<if test="orgId != null">
+				AND ORG_ID = #{orgId}
+			</if>
+			<if test="empId != null">
+				AND EMP_ID = #{empId}
+			</if>
+			<if test="positionId != null">
+				AND POSITION_ID = #{positionId}
+			</if>
+		</where>
+		ORDER BY CREATE_TIME
+	</select>
+	
+	<insert id="insert" parameterType="EmpOrgPositionVo" useGeneratedKeys="true" keyProperty="relId">
+		INSERT INTO OMG_EMP_ORG_POSITION(EMP_ID,ORG_ID,POSITION_ID,CREATE_EMP,CREATE_ORG,CREATE_TIME,SYNC_DING_FLAG)
+		VALUES (#{empId},#{orgId},#{positionId},#{createEmp},#{createOrg},#{createTime},#{syncDingFlag})
+	</insert>
+	
+	<update id="updateById" parameterType="EmpOrgPositionVo">
+		UPDATE OMG_EMP_ORG_POSITION
+		<set>
+			<if test="empId!=null">
+				EMP_ID=#{empId},
+			</if>
+			<if test="orgId!=null">
+				ORG_ID=#{orgId},
+			</if>
+			<if test="POSITION_ID!=null">
+				POSITION_ID=#{positonId},
+			</if>
+			<if test="CREATE_EMP!=null">
+				CREATE_EMP=#{creteEmp},
+			</if>
+			<if test="CREATE_ORG!=null">
+				CREATE_ORG=#{createOrg},
+			</if>
+			<if test="CREATE_TIME!=null">
+				CREATE_TIME=#{createTime},
+			</if>
+			<if test="sycnDingFlag!=null">
+				SYNC_DING_FLAG=#{sycnDingFlag},
+			</if>
+		</set>
+		<where>
+			REL_ID=#{relId}
+		</where>
+	</update>
+	
+	<delete id="deleteByEmpId">
+		DELETE FROM OMG_EMP_ORG_POSITION  WHERE EMP_ID = #{empId}
+	</delete>
+	
+	<!-- 根据员工机构删除员工机构岗位 -->
+	<delete id="deleteEmpOrgPositionByEmpOrg" parameterType="EmpOrgVo">
+		DELETE FROM OMG_EMP_ORG_POSITION  WHERE EMP_ID = #{empId} AND ORG_ID = #{orgId}
+	</delete>
+	
+	<select id="findEmpOrgPositionCountByCondition" parameterType="EmpOrgPositionVo" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM OMG_EMP_ORG_POSITION
+		<where>
+			<if test="orgId != null">
+				AND ORG_ID = #{orgId}
+			</if>
+			<if test="positionId != null">
+				AND POSITION_ID = #{positionId}
+			</if>
+		</where>
+	</select>
+</mapper>

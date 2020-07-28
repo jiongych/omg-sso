@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.portal.IPortalCurrentUserDao">
+	
+	<resultMap type="cn.uce.omg.sso.vo.portal.PortalCurrentUser" id="findCurrentUserResultMap">
+		<result property="empId" column="empId"/>
+		<result property="empCode" column="empCode"/>
+		<result property="empName" column="empName"/>
+		<result property="empName" column="empName"/>
+		<result property="orgId" column="orgId"/>
+		<result property="orgCode" column="orgCode"/>
+		<result property="orgType" column="orgType"/>
+		<result property="orgName" column="orgName"/>
+		<result property="ymEmpCode" column="ymEmpCode"/>
+		<collection property="orgRefRel" column="otherEmpId" ofType="java.util.Map">
+			<result property="otherEmpId" column="otherEmpId"/>
+			<result property="otherEmpCode" column="otherEmpCode"/>
+			<result property="otherEmpName" column="otherEmpName"/>
+			<result property="orgId" column="r_orgId"/>
+			<result property="orgCode" column="r_orgCode"/>
+			<result property="orgType" column="r_orgType"/>
+			<result property="orgName" column="r_orgName"/>
+			<result property="otherOrgId" column="otherOrgId"/>
+			<result property="otherBaseOrgCode" column="otherBaseOrgCode"/>
+			<result property="otherOrgType" column="otherOrgType"/>
+			<result property="otherOrgName" column="otherOrgName"/>
+		</collection>
+	</resultMap>
+	
+	<!-- 查询当前登陆用户-->
+	<select id="findCurrentUser" resultMap="findCurrentUserResultMap">
+		SELECT 
+		E.EMP_ID AS empId,
+		E.EMP_CODE AS empCode,
+		E.EMP_NAME AS empName,
+		E.YM_EMP_CODE AS ymEmpCode,
+		O.ORG_ID AS r_orgId,
+		O.ORG_CODE AS r_orgCode,
+		O.ORG_TYPE AS r_orgType,
+		(CASE O.DEPT_FLAG WHEN 1 THEN CONCAT(O.AFFILIATED_ORG_NAME,'-',O.ORG_NAME) ELSE O.ORG_NAME END) AS r_orgName,
+		<!-- O.ORG_NAME AS orgName, -->
+		CO.CMS_ORG_ID AS otherOrgId,
+		CO.BASE_ORG_CODE AS otherBaseOrgCode,
+		CO.ORG_TYPE AS otherOrgType,
+		CO.ORG_NAME AS otherOrgName,
+		OER.OTHER_EMP_ID AS otherEmpId,
+		OER.OTHER_EMP_CODE AS otherEmpCode,
+		OER.OTHER_EMP_NAME AS otherEmpName
+		FROM 
+		OMG_EMP E
+		INNER JOIN
+		OMG_OTHER_EMP_RELATION OER ON OER.EMP_ID = E.EMP_ID AND SYSTEM_ID = 1
+		INNER JOIN
+		OMG_ORG O
+		ON OER.ORG_ID = O.ORG_ID AND O.DELETE_FLAG = 0
+		INNER JOIN
+		OMG_CMS_ORG CO ON CO.CMS_ORG_ID = OER.OTHER_ORG_ID AND CO.DELETE_FLAG = 0  and CO.STATUS not in(9903,1021)
+		WHERE 
+		E.EMP_CODE = #{empCode} AND
+		E.DELETE_FLAG = 0
+	</select>
+	
+	<!-- 查询当前登陆用户-->
+	<select id="findCurrentUserInfo" resultMap="findCurrentUserResultMap">
+		SELECT 
+		E.EMP_ID AS empId,
+		E.EMP_CODE AS empCode,
+		E.EMP_NAME AS empName,
+		OG.ORG_ID AS orgId,
+		OG.ORG_CODE AS orgCode,
+		OG.ORG_TYPE AS orgType,
+		OG.ORG_NAME AS orgName,
+		O.ORG_ID AS r_orgId,
+		O.ORG_CODE AS r_orgCode,
+		O.ORG_TYPE AS r_orgType,
+		(CASE O.DEPT_FLAG WHEN 1 THEN CONCAT(O.AFFILIATED_ORG_NAME,'-',O.ORG_NAME) ELSE O.ORG_NAME END) AS r_orgName,
+		CO.CMS_ORG_ID AS otherOrgId,
+		CO.BASE_ORG_CODE AS otherBaseOrgCode,
+		CO.ORG_TYPE AS otherOrgType,
+		CO.ORG_NAME AS otherOrgName,
+		OER.OTHER_EMP_ID AS otherEmpId,
+		OER.OTHER_EMP_CODE AS otherEmpCode,
+		OER.OTHER_EMP_NAME AS otherEmpName
+		FROM 
+		OMG_EMP E
+		left JOIN OMG_ORG OG ON OG.ORG_ID = E.ORG_ID AND OG.DELETE_FLAG = 0
+		left JOIN OMG_OTHER_EMP_RELATION OER ON OER.EMP_ID = E.EMP_ID AND SYSTEM_ID = 1
+		left JOIN OMG_ORG O ON OER.ORG_ID = O.ORG_ID AND O.DELETE_FLAG = 0
+		left JOIN OMG_CMS_ORG CO ON CO.CMS_ORG_ID = OER.OTHER_ORG_ID AND CO.DELETE_FLAG = 0  and CO.STATUS not in(9903,1021)
+		WHERE 
+		E.EMP_CODE = #{empCode} AND
+		E.DELETE_FLAG = 0
+	</select>
+	
+	<select id="findCurrentUserNoEmpRelation" resultType="cn.uce.omg.sso.vo.portal.PortalCurrentUser">
+		SELECT 
+		E.EMP_ID AS empId,
+		E.EMP_CODE AS empCode,
+		E.EMP_NAME AS empName,
+		O.ORG_ID AS orgId,
+		O.ORG_CODE AS orgCode,
+		O.ORG_TYPE AS orgType,
+		(CASE O.DEPT_FLAG WHEN 1 THEN CONCAT(O.AFFILIATED_ORG_NAME,'-',O.ORG_NAME) ELSE O.ORG_NAME END) AS orgName
+		FROM 
+		OMG_EMP E
+ 		INNER JOIN	OMG_ORG O ON e.ORG_ID = O.ORG_ID AND O.DELETE_FLAG = 0
+ 		WHERE 
+		E.EMP_CODE =#{empCode} AND
+		E.DELETE_FLAG = 0
+	</select>
+</mapper>

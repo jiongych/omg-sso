@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context.xsd  ">
+	<!-- biz -->
+	<bean id="authBiz" class="cn.uce.omg.sso.biz.impl.AuthBiz">
+		<property name="tokenSystemCache" ref="tokenSystemCache"></property>
+		<property name="userTokenCache" ref="userTokenCache"></property>
+		<!-- add by xj -->
+		<property name="tokenUserInfoCache" ref="tokenUserInfoCache"></property>
+		<!-- add by xj -->
+		<property name="failLoginNum" value="${sso.fail.login.number}" />
+		<property name="reservedLoginTimeout" value="${cas.reservedLoginTimeout}" />
+		<property name="defaultLoginTimeout" value="${cas.defaultLoginTimeout}" />
+		<property name="systemInfoBiz" ref="systemInfoBiz"></property>
+		<property name="empInfoUtil" ref="empInfoUtil"></property>
+		<property name="userBiz" ref="userBiz" />
+		<property name="roleBiz" ref="roleBiz" />
+		<property name="codeUtil" ref="codeUtil" />
+		<property name="smsUtil" ref="smsUtil"/>
+		<property name="loginCodeUtil" ref="loginCodeUtil"/>
+		<property name="smsTemplate" value="${smsSend.smsTemplate}"/>
+		<property name="smsLoginTemplate" value="${smsSend.smsLoginTemplate}"/>
+		<property name="updPwdIntervalTime" value="${sso.upd.pwd.interval.time}"/>
+		<property name="empBiz" ref="empBiz" />
+		<property name="loginSuccessTemplate" ref="loginSuccessTemplate"></property>
+		<!-- add by zhangRb 20170829 登录校验员工绑定关系开关 -->
+		<property name="sysTypeBiz" ref="sysTypeBiz"></property>
+		<!-- add by BaoJingyu 20180312 登录时查询对应的员工行政机构信息-->
+		<property name="orgBiz" ref="orgBiz"></property>
+		<!-- add by 2018-05-28 校验弱密码 -->
+		<property name="omgWeakPasswordService" ref="omgWeakPasswordService"></property>
+		<!-- add by xj -->
+		<property name="portalBiz" ref="portalBiz"></property>
+		<!-- add by xj -->
+		<property name="cmsOrgService" ref="cmsOrgService"></property>
+		<property name="historyTotal" value="${loginPassword.history.total:5}"></property>
+		<!-- <property name="pwdUpdateTemplate" ref="pwdUpdateTemplate"/> -->
+		<property name="mqProducer" ref="updPassWordProducer"/>
+	</bean>
+
+	<bean id="passwordResetBiz" class="cn.uce.omg.sso.biz.impl.PasswordResetBiz">
+		<property name="authBiz" ref="authBiz"/>
+		<!-- add by BaoJingyu 20180120 发送手机短信验证-->
+		<property name="mobileUtil" ref="mobileUtil"/>
+	</bean>
+	
+	<bean id="ipinfoBiz" class="cn.uce.omg.sso.biz.impl.IpinfoBiz">
+		<property name="ipInfoService" ref="ipInfoService" />
+	</bean>
+	
+	<bean id="authRoleBiz" class="cn.uce.omg.sso.biz.impl.AuthRoleBiz">
+		<property name="empBiz" ref="empBiz" />
+		<property name="roleBiz" ref="roleBiz" />
+		<property name="empInfoUtil" ref="empInfoUtil"></property>
+	</bean>
+	<!-- add by xj -->
+	<bean id="portalBiz" class="cn.uce.omg.sso.biz.impl.PortalBiz">
+		<property name="portalService" ref="portalService" />
+		<property name="logBuffer" ref="logBuffer"/>
+		<property name="noticeReadTemplate" ref="noticeReadTemplate"></property>
+		<property name="openPermissionTemplate" ref="openPermissionTemplate"></property>
+		<property name="sendMessageStatusTemplate" ref="sendMessageStatusTemplate"></property>
+	</bean>
+	<!-- add by xj -->
+
+	<!-- service -->
+	<bean id="ipInfoService" class="cn.uce.omg.sso.service.IpInfoService">
+		<property name="ipInfoDao" ref="ipInfoDao" />
+	</bean>
+	
+	<bean id="cmsOrgService" class="cn.uce.omg.sso.service.CmsOrgService">
+		<property name="cmsOrgDao" ref="cmsOrgDao" />
+	</bean>
+
+	<!-- add by 2018-05-28 校验弱密码 -->
+	<bean id="omgWeakPasswordService" class="cn.uce.omg.sso.service.OmgWeakPasswordService">
+		<property name="omgWeakPasswordDao" ref="omgWeakPasswordDao" />
+	</bean>
+
+	<!-- add by xj -->
+	<bean id="portalService" class="cn.uce.omg.sso.service.PortalService">
+		<property name="portalPermissionDao" ref="portalPermissionDao" />
+		<property name="portalCurrentUserDao" ref="portalCurrentUserDao" />
+		<property name="portalCompanyNoticeDao" ref="portalCompanyNoticeDao" />
+		<property name="portalUserMenuDao" ref="portalUserMenuDao" />
+		<property name="portalCompanyNoticeRecordDao" ref="portalCompanyNoticeRecordDao" />
+		<property name="portalHomePageInfoDao" ref="portalHomePageInfoDao" />
+		<property name="portalDictDataDao" ref="portalDictDataDao" />
+	</bean>
+	
+	<bean id="logBuffer" class="cn.uce.core.log.server.buffer.LogBuffer">
+		<property name="enable" value="true" />
+		<!-- <property name="queueSize" value="${logBuffer.queueSize}" />
+		<property name="listSize" value="${logBuffer.listSize}" />
+		<property name="interval" value="${logBuffer.interval}" /> -->
+		<property name="logSender" ref="logSender" />
+	</bean>
+
+    <bean id="logSender" class="cn.uce.omg.sso.log.LogSender">
+		<property name="portalService" ref="portalService"></property>
+		<!-- <property name="threadSize" value="${logBuffer.threadSize}"></property>
+		<property name="queueSize" value="${logBuffer.queueSize}"></property> -->
+	</bean>
+	<!-- add by xj -->
+
+	<!-- dao -->
+	<bean id="ipInfoDao" parent="baseDao">  
+	    <property name="mapperInterface" value="cn.uce.omg.sso.dao.IIpInfoDao" />  
+	</bean> 
+	
+	<bean id="cmsOrgDao" parent="baseDao">  
+	    <property name="mapperInterface" value="cn.uce.omg.sso.dao.ICmsOrgDao" />  
+	</bean> 
+
+	<!-- add by 2018-05-28 校验弱密码 -->
+	<bean id="omgWeakPasswordDao" parent="baseDao">  
+	    <property name="mapperInterface" value="cn.uce.omg.sso.dao.IOmgWeakPasswordDao" />  
+	</bean> 
+
+	<!-- add by xj -->
+	<bean id="portalPermissionDao" parent="baseDao">  
+	    <property name="mapperInterface" value="cn.uce.omg.sso.dao.portal.IPortalPermissionDao" />  
+	</bean> 
+	<bean id="portalCurrentUserDao" parent="baseDao">  
+	    <property name="mapperInterface" value="cn.uce.omg.sso.dao.portal.IPortalCurrentUserDao" />  
+	</bean> 
+	<bean id="portalCompanyNoticeDao" parent="baseDao">  
+	    <property name="mapperInterface" value="cn.uce.omg.sso.dao.portal.IPortalCompanyNoticeDao" />  
+	</bean> 
+	<bean id="portalUserMenuDao" parent="baseDao">  
+	    <property name="mapperInterface" value="cn.uce.omg.sso.dao.portal.IPortalUserMenuDao" />  
+	</bean> 
+	<bean id="portalCompanyNoticeRecordDao" parent="baseDao">  
+	    <property name="mapperInterface" value="cn.uce.omg.sso.dao.portal.IPortalCompanyNoticeRecordDao" />  
+	</bean> 
+	<bean id="portalHomePageInfoDao" parent="baseDao">  
+	    <property name="mapperInterface" value="cn.uce.omg.sso.dao.portal.IPortalHomePageInfoDao" />  
+	</bean> 
+	<bean id="portalDictDataDao" parent="baseDao">  
+	    <property name="mapperInterface" value="cn.uce.omg.sso.dao.portal.IPortalDictDataDao" />  
+	</bean> 
+	<!-- add by xj -->
+
+	<!-- util -->
+	<bean id="empInfoUtil" class="cn.uce.omg.sso.util.EmpInfoUtil">
+		<property name="loginFailCache" ref="loginFailCache" />
+		<property name="empCache" ref="empCache" />
+		<property name="userCache" ref="userCache" />
+		<property name="phoneRegex" value="${phone.regex}"></property>
+		<property name="userBiz" ref="userBiz"></property>
+		<!-- add by yangjun 20170914 并发锁管理 -->
+		<property name="lockManager" ref="lockManager"></property>
+		<property name="failLoginNum" value="${sso.fail.login.number}" />
+		<!-- add by zhangRb 20180905 支持手机号登录需求  -->
+		<property name="fspDictDataCache" ref="fspDictDataCache"></property>
+		<property name="empMobileCache" ref="empMobileCache"></property>
+		<property name="codeUtil" ref="codeUtil" />
+	</bean>
+	<bean id="codeUtil" class="cn.uce.omg.sso.util.CodeUtil">
+		<property name="codeCache" ref="codeCache"></property>
+		<property name="codeTimeout" value="${cas.codeTimeout}" />
+		<property name="verifyCount" value="${cas.verifyCount}" />
+		<property name="intervalTime" value="${cas.intervalTime}" />
+	</bean>
+	<!-- add by luheng 20190702 扫码登录 -->
+	<bean id="loginCodeUtil" class="cn.uce.omg.sso.util.LoginCodeUtil">
+		<property name="lockManager" ref="lockManager"></property>
+		<property name="codeCache" ref="codeCache"></property>
+<!-- 		<property name="codeTimeout" value="${scan.codeTimeout}" />
+		<property name="verifyCount" value="${scan.verifyCount}" />
+		<property name="intervalTime" value="${scan.intervalTime}" /> -->
+	</bean>
+	
+	<bean id="mobileUtil" class="cn.uce.omg.sso.util.MobileUtil">
+		<property name="mobileCache" ref="mobileCache"></property>
+		<property name="lockManager" ref="lockManager"></property>
+		<property name="codeTimeout" value="${mobile.codeTimeout}" />
+		<property name="verifyCount" value="${mobile.verifyCount}" />
+		<property name="intervalTime" value="${mobile.intervalTime}" />
+	</bean>
+	
+	<bean id="lockManager" class="cn.uce.omg.sso.util.LockManager"></bean>
+
+	<!-- 调用方配置信息 -->
+	<bean id="callerConfig" class="cn.uce.mcs.caller.sdk.vo.CallerConfig">
+		<property name="callerCode" value="${caller.code.mcs}" />
+		<property name="secretKey" value="${caller.secretKey.mcs}" />
+	</bean>
+
+	<!-- redis缓存管理器 -->
+	<bean id="callerHelper" class="cn.uce.mcs.caller.sdk.CallerHelper">
+		<property name="msgCallerApi" ref="msgCallerApiProxy"></property>
+		<property name="callerConfig" ref="callerConfig"></property>
+	</bean>
+
+	<bean id="smsUtil" class="cn.uce.omg.sso.util.SmsUtil">
+		<property name="smsUrl" value="${smsSend.url}"/>
+		<property name="httpRequestParam" ref="httpRequestParamVo"/>
+		<property name="callerHelper" ref="callerHelper"/>
+		<property name="baseOrgCodeHq" value="${baseOrgCodeHq}"/>
+	</bean>
+	
+	<bean id="authUtil" class="cn.uce.omg.sso.util.AuthUtil">
+		<property name="intervalTime" value="${sso.fail.login.interval.time}"/>
+	</bean>
+	
+	<bean id="ymHttpClientUtil" class="cn.uce.omg.sso.util.YmHttpClientUtil">
+		<property name="yimididaSsoUrl" value="${yimidida.sso.url}"/>
+		<property name="yimididaYhUrl" value="${yimidida.yh.url}"/>
+		<property name="oaUrl" value="${oa.url}"/>
+		<property name="pmsUrl" value="${pmsUrl}"/>
+	</bean>
+	
+	<bean id="httpRequestParamVo" class="cn.uce.smsp.base.HttpRequestParamVo">
+		<!-- <property name="charset" value="gbk"/> -->
+		<property name="charset" value="utf-8"/>
+		<property name="contentType" value="json"/>
+		<property name="serviceName" value="${smsSend.serviceName}"/>
+		<property name="partnerId" value="${smsSend.partnerId}"/>
+		<property name="secrtKey" value="${smsSend.secrtKey}"/>
+	</bean>
+</beans>

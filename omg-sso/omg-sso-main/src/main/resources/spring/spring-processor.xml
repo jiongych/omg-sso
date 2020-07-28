@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context.xsd  ">
+	<bean id="removeHashExpireFieldTask" class="cn.uce.omg.sso.processor.RemoveHashExpireFieldTask"
+		init-method="start">
+		<property name="waitTime" value="${cas.removeHashExpireFieldTask.waitTime}"></property>
+		<property name="redisTemplate" ref="redisTemplate"></property>
+		<property name="hashFieldExpireTimeCache" ref="hashFieldExpireTimeCache"></property>
+	</bean>
+
+	<bean id="removeUserTokenTask" class="cn.uce.omg.sso.processor.RemoveUserTokenTask"
+		init-method="start">
+		<property name="waitTime" value="${cas.removeUserTokenTask.waitTime}"></property>
+		<property name="tokenSystemCache" ref="tokenSystemCache"></property>
+		<property name="userTokenCache" ref="userTokenCache"></property>
+		<property name="tokenUserInfoCache" ref="tokenUserInfoCache"></property>
+	</bean>
+
+<!-- 	<bean id="ipAddrUpdateTask" class="cn.uce.omg.sso.processor.IpAddrUpdateTask" -->
+<!-- 		init-method="start"> -->
+<!-- 		<property name="ipAddrFlagCache" ref="ipAddrFlagCache"></property> -->
+<!-- 		<property name="ipAddrCache" ref="ipAddrCache"></property> -->
+<!-- 	</bean> -->
+	<bean id="imageCodeUtils" class="cn.uce.omg.main.util.ImageCodeUtils">
+		<property name="md5key" value="${image.code.md5key}"></property>
+		<property name="imageCodeTimeout" value="${image.code.timeout}" />
+	</bean>
+</beans>

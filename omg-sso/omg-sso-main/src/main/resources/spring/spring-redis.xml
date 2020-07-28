@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+           http://www.springframework.org/schema/context/spring-context.xsd  
+        http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- redis配置 -->
+	<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxActive" value="${redis.maxActive.sso.main}"></property>
+		<property name="maxIdle" value="${redis.maxIdle.sso.main}"></property>
+		<property name="maxWait" value="${redis.maxWait.sso.main}"></property>
+		<property name="testOnBorrow" value="${redis.testOnBorrow.sso.main}"></property>
+		<property name="testOnReturn" value="${redis.testOnReturn.sso.main}"></property>
+	</bean>
+
+	<bean id="redisClient" class="cn.uce.core.cache.redis.RedisClient">
+		<property name="poolConfig" ref="poolConfig"></property>
+		<property name="host" value="${redis.host.sso.main}"></property>
+		<property name="port" value="${redis.port.sso.main}"></property>
+		<property name="password" value="${redis.password.sso.main}"></property>
+	</bean>
+
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxActive" value="${redis.maxActive.sso.main}" />
+		<property name="maxIdle" value="${redis.maxIdle.sso.main}" />
+		<property name="minIdle" value="${redis.minIdle.sso.main}" />
+		<property name="testOnBorrow" value="${redis.testOnBorrow.sso.main}" />
+		<property name="testOnReturn" value="${redis.testOnReturn.sso.main}" />
+		<property name="testWhileIdle" value="${redis.testWhileIdle.sso.main}" />
+		<property name="timeBetweenEvictionRunsMillis" value="${redis.timeBetweenEvictionRunsMillis.sso.main}" />
+		<property name="numTestsPerEvictionRun" value="${redis.numTestsPerEvictionRun.sso.main}" />
+		<property name="maxWait" value="${redis.maxWait.sso.main}" />
+		<property name="minEvictableIdleTimeMillis" value="${redis.minEvictableIdleTimeMillis.sso.main}" />
+		<property name="whenExhaustedAction" value="${redis.whenExhaustedAction.sso.main}" />
+	</bean>
+
+	<bean id="jedisConnectionFactory"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		destroy-method="destroy">
+		<property name="poolConfig" ref="jedisPoolConfig" />
+		<property name="hostName" value="${redis.host.sso.main}" />
+		<property name="port" value="${redis.port.sso.main}" />
+		<property name="password" value="${redis.password.sso.main}" />
+		<property name="timeout" value="${redis.timeout.sso.main}" />
+		<property name="usePool" value="true" />
+	</bean>
+
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory" ref="jedisConnectionFactory" />
+		<property name="defaultSerializer">
+			<bean
+				class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+		</property>
+		<property name="valueSerializer">
+			<bean class="cn.uce.omg.sso.util.redis.JsonRedisSerializer" />
+		</property>
+		<property name="hashValueSerializer">
+			<bean class="cn.uce.omg.sso.util.redis.JsonRedisSerializer" />
+		</property>
+	</bean>
+	
+	<bean id="storage" class="cn.uce.core.cache.storage.RedisStorage">
+		<property name="client" ref="redisClient"></property>
+	</bean>
+</beans>

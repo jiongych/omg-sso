@@ -1,0 +1,307 @@
+*{margin:0;padding:0}
+html{
+	font-family: ΢���ź�;
+	font-size:14px;
+	height:100%;
+}
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+ul{
+    list-style-type: none;
+	margin:0;
+	padding:0;
+}
+a{
+	text-decoration: none;
+	cursor: pointer;
+	color:#464c5b;
+}
+em,i{
+	display: inline-block;
+	font-style: normal;
+}
+a:focus { outline:0; }
+/*clearfix*/
+.clearfix:before,
+.clearfix:after {
+  content: "";
+  display: table;
+}
+.clearfix:after {
+  clear: both;
+  overflow: hidden;
+}
+.main-color{
+	color: #6a54ba;
+}
+.fl{
+	float: left;
+}
+.fr{
+	float: right;
+}
+.iconp {
+	width: 1em;
+	height: 1em;
+	vertical-align: -0.15em;
+	fill: currentColor;
+	overflow: hidden;
+  }
+.file-layout{
+	width:100%;
+	padding: 20px 20px 0px 20px;
+	box-sizing: border-box;
+}
+.file-layout .el-col {
+	border-radius: 4px;
+}
+.file-layout .bg-purple {
+	background: #fff;
+}
+.file-layout .grid-content {
+	border-radius: 4px;
+	min-height: 36px;
+	border:1px solid rgba(228, 228, 228, 1);
+}
+.file-layout .grid-content .header{
+	background: #f5f5f5;
+	height: 40px;
+	line-height: 40px;
+	padding-left: 20px;
+}
+.file-layout .grid-content .header span{
+	font-size:16px;
+	font-weight: 700;
+	color: #666666;
+}
+.file-layout .grid-content .el-tree{
+	padding:15px 0;
+}
+.file-layout .file-box .header .iconp{
+	font-size: 24px;
+    vertical-align: -0.25em;
+}
+.file-layout .file-box .file-list{
+	padding:5px 10px;
+	box-sizing: border-box;
+    height: 500px;
+    overflow-x: overlay;
+    overflow-y: scroll;
+}
+.file-layout .file-box .file-list .el-loading-mask{
+	background: rgba(0,0,0,0.1)
+}
+.file-layout .file-box .file-list li{
+	border-bottom: 1px solid rgba(228, 228, 228, 1);
+	padding:0 8px;
+	cursor: pointer;
+}
+.file-layout .file-box .file-list li:hover{
+	background: #f2f2f2;
+}
+.file-layout .file-box .file-list li .file-name{
+	padding:10px 0 20px;
+	font-weight: 700;
+	cursor: default;
+}
+.file-layout .file-box .file-list li .file-info{
+	color: #999999;
+	margin-bottom: 10px;
+	font-size:12px;
+}
+.file-layout .file-box .file-list li .file-info span{
+	margin-left: 20px;
+}
+.file-layout .file-box .file-list li .file-info span:first-of-type{
+	margin-left: 0;
+}
+.file-layout .file-box .file-list li .view-flag{
+	color: #999999;
+}
+.file-layout .file-box .file-list li .file-fl{
+	float: left;
+}
+.file-layout .file-box .file-list li .file-fl{
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap:break-word;
+  max-width:95%;
+  box-sizing: border-box;
+}
+.file-layout .file-box .file-list li .collect{
+	width:auto;
+	padding-right: 0;
+}
+.file-layout .file-box .file-list li .collect .iconp{
+	font-size:24px;
+	margin-top: -4px;
+}
+.c-99{
+	color: #999999;
+	font-size:14px;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+}
+.block .el-pagination{
+	padding:10px 18px;
+}
+.file-layout .collect-list{
+	box-shadow: 1px 1px 7px #ddd;
+}
+.file-layout .collect-list .header .iconp{
+	color: #6a54ba;
+}
+.file-layout .collect-list .header span{
+	font-size:14px;
+}
+.file-layout .collect-list .spot{
+	width:5px;
+	height:5px;
+	background: #333333;
+	border-radius: 50%;
+	float: left;
+    margin-right: 10px;
+    margin-top: 18px;
+}
+.file-layout .collect-list .view-flag{
+	background: #999999;
+}
+.file-layout .collect-list .file-list li{
+	border-bottom: none;
+	padding:0 10px;
+}
+.file-layout .collect-list .file-list li .file-name{
+	padding:0;
+	height: 40px;
+	line-height: 40px;
+	font-weight: normal;
+	color: #333333;
+}
+.file-layout .collect-list .file-list li .file-name:hover{
+	color: #6a54ba
+}
+.file-layout .collect-list .file-list li:hover{
+	background: none
+}
+.file-layout .collect-list .file-list li .file-fl{
+	max-width: 79%;
+	position: relative;
+}
+.file-layout .collect-list .file-list li .delect-flag .file-fl span:after{
+	position: absolute;
+	right:2px;
+	bottom:10px;
+	z-index: 10;
+	content: "已失效";
+	color: #666666;
+	border:1px solid #666666;
+	transform:rotate(20deg);
+	-ms-transform:rotate(20deg); /* Internet Explorer */
+	-moz-transform:rotate(20deg); /* Firefox */
+	-webkit-transform:rotate(20deg); /* Safari 和 Chrome */
+	-o-transform:rotate(20deg); /* Opera */
+	display: inline-block;
+	width:50px;
+	height: 20px;
+	line-height: 20px;
+	text-align: center;
+	border-radius: 3px;
+}
+.file-layout .collect-list .file-list li .delect-flag{
+	color: #999999;
+}
+.file-layout .collect-list .delect-flag .spot{
+	background: #999999;
+}
+.file-layout .collect-list .file-list li .delect-flag:hover{
+	color: #999999;
+}
+.file-layout .collect-list .file-list li .collect{
+	float: right;
+}
+.file-layout .collect-list .file-list li .collect .iconp{
+	color: #6a54ba
+}
+.file-layout .collect-list .file-list{
+	height: 410px;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+.file-layout .collect-list .el-carousel{
+	height: 410px;
+	overflow: hidden;
+}
+.page{
+	height: 30px;
+	line-height: 30px;
+	padding:0 5px;
+}
+.page .fr .iconp{
+	font-size:20px;
+	cursor: pointer;
+	color: #3b0af1;
+}
+.page .fr .active{
+	color: #999999
+}
+.search-ipt .el-input--suffix .el-input__inner{
+	width:300px;
+}
+.select-type .el-input--suffix .el-input__inner{
+	width:150px;
+}
+.search-ipt .el-form-item__content{
+	width:100%;
+}
+.file-layout .el-form--inline  .search-btn{
+	margin-right: 0;
+	float: right;
+}
+.file-layout .el-tree-node__children .el-tree-node__content:hover .el-tree-node__label{
+	border-bottom: 1px solid #6a54ba;
+	color: #6a54ba;
+}
+.file-layout  .el-tree-node.is-current > .el-tree-node__content .el-tree-node__label{
+	color: #6a54ba;
+}
+.file-layout .grid-content .header .red,.red{
+	color: #f00;
+}
+#empty{
+	line-height: inherit;
+    overflow: hidden;
+    height: auto;
+}
+#empty img{
+	width:80px;
+}
+.file-layout .el-button--primary{
+	background: #6a54ba;
+	border:1px solid #6a54ba;
+}
+.file-layout .el-button--primary:hover{
+	background: #7747ab;
+	border:1px solid #7747ab;
+}
+
+.file-layout .el-select .el-input__inner:focus,.file-layout .el-input__inner:focus,.el-input__inner:hover{
+	border-color:#6a54ba !important;
+}
+.el-select-dropdown__item.selected{
+	color:#6a54ba;
+}
+.file-layout .el-pager li.active{
+	color:#6a54ba;
+}
+.el-message{
+	top:60px!important;	
+}

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/context 
+			http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+	default-lazy-init="true">
+
+	<!-- 默认数据转换器定义 -->
+	<bean id="defaultXmlConverter" class="cn.uce.omg.main.converter.XStreamConverter" />
+	<bean id="defaultJsonConverter" class="cn.uce.omg.main.converter.XStreamConverter">
+		<constructor-arg value="json" />
+	</bean>
+
+	<!-- 登录信息 -->
+	<bean id="loginVoXmlConverter" class="cn.uce.omg.main.sso.converter.LoginVoConverter" />
+	<bean id="loginVoJsonConverter" class="cn.uce.omg.main.sso.converter.LoginVoConverter">
+		<constructor-arg value="json"></constructor-arg>
+	</bean>
+	
+	<!-- 退出信息 -->
+	<bean id="logoutVoXmlConverter" class="cn.uce.omg.main.sso.converter.LogoutVoConverter" />
+	<bean id="logoutVoJsonConverter" class="cn.uce.omg.main.sso.converter.LogoutVoConverter">
+		<constructor-arg value="json"></constructor-arg>
+	</bean>
+	
+	<!-- 修改密码信息 -->
+	<bean id="updPwdVoXmlConverter" class="cn.uce.omg.main.sso.converter.UpdPwdVoConverter" />
+	<bean id="updPwdVoJsonConverter" class="cn.uce.omg.main.sso.converter.UpdPwdVoConverter">
+		<constructor-arg value="json"></constructor-arg>
+	</bean>
+	
+	<!-- 找回密码信息 -->
+	<bean id="resetPwdVoXmlConverter" class="cn.uce.omg.main.sso.converter.ResetPwdVoConverter" />
+	<bean id="resetPwdVoJsonConverter" class="cn.uce.omg.main.sso.converter.ResetPwdVoConverter">
+		<constructor-arg value="json"></constructor-arg>
+	</bean>
+	
+	<!-- 验证码信息 -->
+	<bean id="expCodeVoXmlConverter" class="cn.uce.omg.main.sso.converter.ExpCodeVoConverter" />
+	<bean id="expCodeVoJsonConverter" class="cn.uce.omg.main.sso.converter.ExpCodeVoConverter">
+		<constructor-arg value="json"></constructor-arg>
+	</bean>
+
+	<!-- 认证信息 -->
+	<bean id="authResultVoXmlConverter" class="cn.uce.omg.main.sso.converter.AuthResultVoConverter" />
+	<bean id="authResultVoJsonConverter" class="cn.uce.omg.main.sso.converter.AuthResultVoConverter">
+		<constructor-arg value="json"></constructor-arg>
+	</bean>
+	
+	<!-- 认证信息 -->
+	<bean id="authCheckVoXmlConverter" class="cn.uce.omg.main.sso.converter.AuthCheckVoConverter" />
+	<bean id="authCheckVoJsonConverter" class="cn.uce.omg.main.sso.converter.AuthCheckVoConverter">
+		<constructor-arg value="json"></constructor-arg>
+	</bean>
+	
+	<!-- 用户查询角色 -->
+	<bean id="findUsrRoleVoXmlConverter" class="cn.uce.omg.main.sso.converter.UserSearchVoConverter" />
+	<bean id="findUsrRoleVoJsonConverter" class="cn.uce.omg.main.sso.converter.UserSearchVoConverter">
+		<constructor-arg value="json"></constructor-arg>
+	</bean>
+	
+	<!-- 查询用户接口 -->
+	<bean id="findUserVoXmlConverter" class="cn.uce.omg.main.sso.converter.UserInfoVoConverter" />
+	<bean id="findUserVoJsonConverter" class="cn.uce.omg.main.sso.converter.UserInfoVoConverter">
+		<constructor-arg value="json"></constructor-arg>
+	</bean>
+	
+	<!-- 查询角色信息 -->
+	<bean id="findRoleVoXmlConverter" class="cn.uce.omg.main.sso.converter.UserRoleVoConverter" />
+	<bean id="findRoleVoJsonConverter" class="cn.uce.omg.main.sso.converter.UserRoleVoConverter">
+		<constructor-arg value="json"></constructor-arg>
+	</bean>
+
+	<!-- 返回结果信息 -->
+	<bean id="returnResultVoXmlConverter" class="cn.uce.omg.main.sso.converter.ReturnResultVoConverter" />
+	<bean id="returnResultVoJsonConverter" class="cn.uce.omg.main.sso.converter.ReturnResultVoConverter">
+		<constructor-arg value="json"></constructor-arg>
+	</bean>
+
+	<!-- XML=>Object转换器映射 -->
+	<bean id="xmlToObjectConverterMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="login" value-ref="loginVoXmlConverter" />
+				<entry key="logout" value-ref="logoutVoXmlConverter" />
+				<entry key="upd_pwd" value-ref="updPwdVoXmlConverter" />
+				<entry key="get_code" value-ref="expCodeVoXmlConverter" />
+				<entry key="check_code" value-ref="expCodeVoXmlConverter" />
+				<entry key="reset_pwd" value-ref="resetPwdVoXmlConverter" />
+				<entry key="auth_check" value-ref="authCheckVoXmlConverter" />
+				<entry key="auth_result" value-ref="authResultVoXmlConverter" />
+				<entry key="find_user_role" value-ref="findUsrRoleVoXmlConverter" />
+				<entry key="find_user" value-ref="findUsrRoleVoXmlConverter" />
+				<entry key="find_role" value-ref="findUsrRoleVoXmlConverter" />
+				<entry key="find_role_rel" value-ref="findUsrRoleVoXmlConverter" />
+				<entry key="send_code" value-ref="expCodeVoXmlConverter" />
+				<entry key="check_ver_code" value-ref="expCodeVoXmlConverter" />
+				<entry key="reset_password" value-ref="resetPwdVoXmlConverter" />
+			</map>
+		</constructor-arg>
+	</bean>
+
+	<!-- Object=>XML转换器映射 -->
+	<bean id="toXmlConverterMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="cn.uce.omg.sso.vo.LoginVo" value-ref="loginVoXmlConverter" />
+				<entry key="cn.uce.omg.sso.vo.LogoutVo" value-ref="logoutVoXmlConverter" />
+				<entry key="cn.uce.omg.sso.vo.UpdPwdVo" value-ref="updPwdVoXmlConverter" />
+				<entry key="cn.uce.omg.sso.vo.ResetPwdVo" value-ref="resetPwdVoXmlConverter" />
+				<entry key="cn.uce.omg.sso.vo.ExpCodeVo" value-ref="expCodeVoXmlConverter" />
+				<entry key="cn.uce.omg.sso.vo.AuthResultVo" value-ref="authResultVoXmlConverter" />
+				<entry key="cn.uce.omg.sso.vo.UserInfoVo" value-ref="findUserVoXmlConverter" />
+				<entry key="cn.uce.omg.sso.vo.ResultRoleVo" value-ref="findRoleVoXmlConverter" />
+				<entry key="cn.uce.omg.sso.vo.ReturnResultVo" value-ref="returnResultVoXmlConverter" />
+			</map>
+		</constructor-arg>
+	</bean>
+
+	<!-- JSON=>Object转换器映射 -->
+	<bean id="jsonToObjectConverterMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="login" value-ref="loginVoJsonConverter" />
+				<entry key="logout" value-ref="logoutVoJsonConverter" />
+				<entry key="upd_pwd" value-ref="updPwdVoJsonConverter" />
+				<entry key="reset_pwd" value-ref="resetPwdVoJsonConverter" />
+				<entry key="get_code" value-ref="expCodeVoJsonConverter" />
+				<entry key="check_code" value-ref="expCodeVoXmlConverter" />
+				<entry key="auth_check" value-ref="authCheckVoJsonConverter" />
+				<entry key="auth_result" value-ref="authResultVoJsonConverter" />
+				<entry key="find_user_role" value-ref="findUsrRoleVoJsonConverter" />
+				<entry key="find_user" value-ref="findUsrRoleVoJsonConverter" />
+				<entry key="find_role" value-ref="findUsrRoleVoJsonConverter" />
+				<entry key="find_role_rel" value-ref="findUsrRoleVoJsonConverter" />
+				<entry key="send_code" value-ref="expCodeVoXmlConverter"/>
+				<entry key="check_ver_code" value-ref="expCodeVoXmlConverter"/>
+				<entry key="reset_password" value-ref="resetPwdVoJsonConverter" />
+			</map>
+		</constructor-arg>
+	</bean>
+
+	<!-- Object=>JSON转换器映射 -->
+	<bean id="toJsonConverterMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map key-type="java.lang.String">
+				<entry key="cn.uce.omg.sso.vo.LoginVo" value-ref="loginVoJsonConverter" />
+				<entry key="cn.uce.omg.sso.vo.LogoutVo" value-ref="logoutVoJsonConverter" />
+				<entry key="cn.uce.omg.sso.vo.UpdPwdVo" value-ref="updPwdVoJsonConverter" />
+				<entry key="cn.uce.omg.sso.vo.ResetPwdVo" value-ref="resetPwdVoJsonConverter" />
+				<entry key="cn.uce.omg.sso.vo.ExpCodeVo" value-ref="expCodeVoJsonConverter" />
+				<entry key="cn.uce.omg.sso.vo.AuthResultVo" value-ref="authResultVoJsonConverter" />
+				<entry key="cn.uce.omg.sso.vo.UserInfoVo" value-ref="findUserVoJsonConverter" />
+				<entry key="cn.uce.omg.sso.vo.ResultRoleVo" value-ref="findRoleVoJsonConverter" />
+				<entry key="cn.uce.omg.sso.vo.ReturnResultVo" value-ref="returnResultVoJsonConverter" />
+			</map>
+		</constructor-arg>
+	</bean>
+
+	<!-- content_type与converter映射关系 -->
+	<bean id="toStringConverterMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="xml" value-ref="toXmlConverterMap" />
+				<entry key="json" value-ref="toJsonConverterMap" />
+			</map>
+		</constructor-arg>
+	</bean>
+	<bean id="toObjectConverterMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="xml" value-ref="xmlToObjectConverterMap" />
+				<entry key="json" value-ref="jsonToObjectConverterMap" />
+			</map>
+		</constructor-arg>
+	</bean>
+
+
+	<!-- 数据转换工厂对象 -->
+	<bean id="converterFactory" class="cn.uce.omg.main.converter.ConverterFactory"
+		scope="singleton">
+		<property name="toStringConverterMap" ref="toStringConverterMap" />
+		<property name="toObjectConverterMap" ref="toObjectConverterMap" />
+	</bean>
+
+</beans>

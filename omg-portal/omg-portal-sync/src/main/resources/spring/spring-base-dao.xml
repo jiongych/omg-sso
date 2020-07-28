@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+           http://www.springframework.org/schema/context/spring-context.xsd  
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+        http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+	<context:annotation-config />  
+	<context:component-scan base-package="cn.uce">	
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />   
+	</context:component-scan>  
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy">
+        <property name="targetDataSource">
+			<bean id="dataSourceTarget" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		       <property name="driverClassName" value="${db.driver}" />  
+		       <property name="url" value="${db.url}" />  
+		       <property name="username" value="${db.username}" />  
+		       <property name="password" value="${db.password}" />  
+		       <property name="initialSize" value="${db.initialSize}" />
+		      <property name="minIdle" value="${db.minIdle}" /> 
+		      <property name="maxActive" value="${db.maxActive}" />
+		       <!-- 配置获取连接等待超时的时间 -->
+     		  <property name="maxWait" value="${db.maxWait}" />
+	          <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		      <property name="timeBetweenEvictionRunsMillis" value="${db.timeBetweenEvictionRunsMillis}" />
+		      <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		      <property name="minEvictableIdleTimeMillis" value="${db.minEvictableIdleTimeMillis}" />
+		      <property name="defaultAutoCommit" value="false"/>
+	        <!-- 打开PSCache，如果用Oracle，则把poolPreparedStatements配置为true，mysql可以配置为false。分库分表较多的数据库，建议配置为false -->
+     		 <property name="poolPreparedStatements" value="false" />
+		    </bean>  
+		</property>
+    </bean> 
+   
+    <bean id="sqlSessionFactory" class="cn.uce.core.db.spring.DaoFactoryBean">  
+       <property name="dataSource" ref="dataSource" />  
+       	<property name="mapperLocations" value="classpath*:mapper/*.xml"></property>
+       <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>  
+    
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="cn.uce.*.*.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	
+	<!-- 定义事务管理器（声明式的事务） -->
+  	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	    <property name="dataSource" ref="dataSource" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />  
+	
+</beans>

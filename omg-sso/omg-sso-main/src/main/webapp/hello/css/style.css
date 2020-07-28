@@ -1,0 +1,77 @@
+.main{
+    background: #F5F5F5;
+    min-height: 100%;
+    color: #333333;
+}
+.main header .line{
+    font-size:16px;
+    overflow: hidden;
+    padding:0 15px;
+    margin-top: 10px;
+}
+.main header .line  span{
+    float: left;
+    display: inline-block;
+    position: relative;
+    z-index: 1
+}
+.main header .line .line-lt{ 
+    width:36%;
+    height: 1px;
+    background: #999999;
+    margin-top: 12px;
+}
+.main header .line .line-lt:first-of-type::after,
+.main header .line .line-lt:last-of-type::after{
+    content: "";
+    position: absolute;
+    z-index: 2;
+    width:5px;
+    height: 5px;
+    background: #666666;
+    right: 0;
+    top: -2px;
+    border-radius: 50%;
+}
+.main header .line .line-lt:last-of-type::after{
+    right: auto;
+    left: 0;
+}
+.main header .line .title{
+    width: 28%;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 17px;
+    font-weight: bold;
+}
+.main .con{
+    padding:0 10px 20px;
+    margin-top:10px;
+    line-height: 21px;
+}
+.main .con p{
+    text-indent: 2em;
+    margin-bottom: 5px;
+}
+.main .con img{
+    padding:0 5px 5px;
+    box-sizing: border-box;
+}
+.main .con ul, .main .con li{
+    list-style: disc;
+    
+}
+.main .con ul{
+    padding-left: 48px;
+    margin-bottom: 5px;
+}
+.main .con .red{
+    color: #f00
+}
+.main .con p a{
+    color: blue;
+}
+.main .con .center{
+    width:100%;
+    text-align: center;
+}

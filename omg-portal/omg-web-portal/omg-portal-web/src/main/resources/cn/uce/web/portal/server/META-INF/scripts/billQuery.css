@@ -1,0 +1,115 @@
+/*È«¾Ö*/
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td
+	{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-family: inherit;
+}
+
+ul,ol,li {
+	list-style: none;
+}
+
+input,button,select,textarea {
+	outline: none;
+}
+
+textarea {
+	resize: none;
+}
+
+body {
+	font-family: "Microsoft Yahei", Tahoma, arial;
+	font-size: 12px;
+	background: #f5f5f5;
+	color: #000000;
+	position: relative;
+}
+/*ÄÚÈÝ*/
+.warp {
+	margin: 20px;
+}
+
+.yundan_news,.fafang_record,.genzong_record,.wenti_record,.Modify_record,.Client_search_record
+	{
+	background: #fff;
+	position: relative;
+}
+
+.yundantable {
+	width: 100%;
+}
+
+.yundantable thead tr th {
+	background: #EFEFEF;
+	text-align: center;
+	font-size: 12px;
+	padding: 5px;
+	line-height: 15px;
+	font-weight: bold;
+}
+
+.yundantable tbody tr td {
+	text-align: center;
+	line-height: 20px;
+	padding: 5px;
+}
+
+.yundantable tbody tr td em {
+	color: #FF3300;
+	font-style: normal;
+}
+
+.yundantable tbody tr:nth-of-type(2n) {
+	background: #F7F7F7;
+}
+
+.text_overflow {
+	color: #4C8DC7;
+}
+
+.fafang_record,.genzong_record,.wenti_record,.Modify_record,.Client_search_record {
+	margin-top: 20px;
+}
+
+.re_title {
+	line-height: 25px;
+	height: 25px;
+	font-size: 14px;
+	font-weight: bold;
+	text-indent: 10px;
+}
+
+.jia,.jian {
+	padding-right: 20px;
+	cursor: pointer;
+}
+
+.jia {
+	background: url(../portal/images/jia.gif) no-repeat right center;
+}
+.jian {
+	background: url(../portal/images/jian.gif) no-repeat right center;
+}
+.none {
+	display: none;
+}
+
+.tooltip {
+	color: #FF3300;
+	padding: 5px;
+	border: 1px solid #ccc;
+	line-height: 20px;
+	position: absolute;
+	background: #fff;
+	z-index: 9999999;
+}
+
+.childTips {
+	font-size: 14px;
+	color: BLUE;
+}

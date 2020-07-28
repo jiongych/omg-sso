@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IPortalMenuDao">
+
+	<select id="findPortalMenuForZtree" parameterType="cn.uce.omg.portal.vo.PermissionVo" resultType="cn.uce.omg.portal.vo.PermissionVo">
+	SELECT p.id,
+	       p.permission_code,
+	       IFNULL(m.PERMISSION_ALIAS_NAME,p.permission_name) as permission_name,
+	       m.system_code,
+	       m.PARENT_PERMISSION,
+	       p.SYSTEM_CODE,
+	       p.PERMISSION_URL
+	from omg_portal_menu m
+	INNER JOIN omg_portal_permission p on m.PERMISSION_CODE = p.PERMISSION_CODE and m.SYSTEM_CODE = p.SYSTEM_CODE and p.delete_flag=0
+	order by m.SORT
+	</select>
+	
+	<select id="findBaseMenuForZtree" parameterType="cn.uce.omg.portal.vo.PermissionVo" resultType="cn.uce.omg.portal.vo.PermissionVo">
+		SELECT *
+		from OMG_PORTAL_PERMISSION p 
+		LEFT JOIN omg_portal_menu m on p.SYSTEM_CODE = m.SYSTEM_CODE and p.PERMISSION_CODE = m.PERMISSION_CODE 
+		where p.DELETE_FLAG <![CDATA[ <> ]]> 1 and p.SYSTEM_CODE <![CDATA[ <> ]]> ${SystemCode.portalMenu} and p.CONTROL_TYPE=${ControlType.menu} <!-- and m.PERMISSION_CODE is null -->
+		<if test="systemCode != null and systemCode != ''">
+		    AND P.SYSTEM_CODE = #{systemCode}
+		</if>
+		order by p.sort
+	</select>
+	
+	<delete id="deleteByUniqueKey" parameterType="cn.uce.omg.portal.entity.PortalMenu">
+		delete from omg_portal_menu where SYSTEM_CODE = #{systemCode} and PERMISSION_CODE = #{permissionCode}
+	</delete>
+	
+	<update id="updateSortByUniqueKey" parameterType="cn.uce.omg.portal.entity.PortalMenu">
+		UPDATE omg_portal_menu
+		SET 
+            <if test="sort != null">
+            	SORT = #{sort},
+            </if>
+			UPDATE_EMP=#{updateEmp},
+			UPDATE_ORG=#{updateOrg},
+			UPDATE_TIME=#{updateTime}
+		where SYSTEM_CODE = #{systemCode} and PERMISSION_CODE = #{permissionCode}
+	</update>
+	
+	<update id="updateByUniqueKey" parameterType="cn.uce.omg.portal.entity.PortalMenu">
+		UPDATE omg_portal_menu
+		SET 
+            <if test="permissionAliasName != null and permissionAliasName != ''">
+            	PERMISSION_ALIAS_NAME = #{permissionAliasName},
+            </if>
+            PARENT_PERMISSION = #{parentPermission},
+			UPDATE_EMP=#{updateEmp},
+			UPDATE_ORG=#{updateOrg},
+			UPDATE_TIME=#{updateTime}
+		where SYSTEM_CODE = #{systemCode} and PERMISSION_CODE = #{permissionCode}
+	</update>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">  
+	
+	<!-- dubbo服务发布 -->
+	<dubbo:provider timeout="5000" registry="omgRegistry"/>
+	<dubbo:service interface="cn.uce.omg.sso.api.IAuthApi" ref="authBiz" version="1.0" timeout="20000"/>
+	<dubbo:service interface="cn.uce.omg.sso.api.IAuthRoleApi" ref="authRoleBiz" version="1.0" timeout="20000"/>
+	<dubbo:service interface="cn.uce.omg.sso.api.IPasswordResetApi" ref="passwordResetBiz" version="1.0" timeout="20000"/>
+</beans>

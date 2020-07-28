@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.ICmsOrgDetailDao">
+	<sql id="baseColumnList">
+		BASE_ORG_CODE, CMS_ORG_ID, O.COMPANY_NAME, O.ALIAS_NAME, O.COUNTRY, O.PROVINCE, O.CITY, 
+		O.COUNTY, O.PRINCIPAL, O.PRINCIPAL_MOBILE, O.TEL, O.FAX, O.ADDRESS, 
+		O.MAX_GP, O.MAX_VIP_GP, O.GP_LIMIT, O.LONGITUDE, O.LATITUDE, O.PUBLISHED, 
+		O.CUSTOM_AREA, O.REMARK, O.DELETE_FLAG, O.VERSION, O.CREATE_EMP, 
+		O.CREATE_ORG, O.CREATE_TIME, O.UPDATE_EMP, O.UPDATE_ORG, O.UPDATE_TIME,O.SITE_TYPE,O.DOUBLE_SEGMENT_CODE
+	</sql>
+	<!-- 20180416 huangting add begin -->
+	<sql id="cmsdetail_base_column">
+		DETAIL.BASE_ORG_CODE AS DETAIL_BASE_ORG_CODE , DETAIL.CMS_ORG_ID AS DETAIL_CMS_ORG_ID, DETAIL.COMPANY_NAME AS DETAIL_COMPANY_NAME, DETAIL.ALIAS_NAME AS DETAIL_ALIAS_NAME, DETAIL.COUNTRY AS DETAIL_COUNTRY, DETAIL.PROVINCE AS DETAIL_PROVINCE, DETAIL.CITY AS DETAIL_CITY, 
+		DETAIL.COUNTY AS DETAIL_COUNTY, DETAIL.PRINCIPAL AS DETAIL_PRINCIPAL, DETAIL.PRINCIPAL_MOBILE AS DETAIL_PRINCIPAL_MOBILE, DETAIL.TEL AS DETAIL_TEL, DETAIL.FAX AS DETAIL_FAX, DETAIL.ADDRESS AS DETAIL_ADDRESS, 
+		DETAIL.MAX_GP AS DETAIL_MAX_GP, DETAIL.MAX_VIP_GP AS DETAIL_MAX_VIP_GP, DETAIL.GP_LIMIT AS DETAIL_GP_LIMIT, DETAIL.LONGITUDE AS DETAIL_LONGITUDE, DETAIL.LATITUDE AS DETAIL_LATITUDE, DETAIL.PUBLISHED AS DETAIL_PUBLISHED, 
+		DETAIL.CUSTOM_AREA AS DETAIL_CUSTOM_AREA, DETAIL.REMARK AS DETAIL_REMARK, DETAIL.DELETE_FLAG AS DETAIL_DELETE_FLAG, DETAIL.VERSION AS DETAIL_VERSION, DETAIL.CREATE_EMP AS DETAIL_CREATE_EMP, 
+		DETAIL.CREATE_ORG AS DETAIL_CREATE_ORG, DETAIL.CREATE_TIME AS DETAIL_CREATE_TIME, DETAIL.UPDATE_EMP AS DETAIL_UPDATE_EMP, DETAIL.UPDATE_ORG AS DETAIL_UPDATE_ORG, DETAIL.UPDATE_TIME  AS DETAIL_UPDATE_TIME,DETAIL.SERVICE_RANGE AS DETAIL_SERVICE_RANGE,DETAIL.SITE_TYPE AS DETAIL_SITE_TYPE,DETAIL.DOUBLE_SEGMENT_CODE AS DETAIL_DOUBLE_SEGMENT_CODE
+	</sql>
+    <resultMap id="CmsOrgDetailMap" type="cmsOrgDetailVo">
+		<result column="BASE_ORG_CODE" jdbcType="VARCHAR" property="baseOrgCode" />     
+    	<result column="CMS_ORG_ID" jdbcType="INTEGER" property="cmsOrgId" />
+    	<result column="COMPANY_NAME" jdbcType="VARCHAR" property="companyName" />
+    	<result column="ALIAS_NAME" jdbcType="VARCHAR" property="aliasName" />
+    	<result column="COUNTRY" jdbcType="VARCHAR" property="country" />
+    	<result column="PROVINCE" jdbcType="VARCHAR" property="province" />
+    	<result column="CITY" jdbcType="VARCHAR" property="city" />
+    	<result column="COUNTY" jdbcType="VARCHAR" property="county" />
+    	<result column="PRINCIPAL" jdbcType="VARCHAR" property="principal" />
+    	<result column="PRINCIPAL_MOBILE" jdbcType="VARCHAR" property="principalMobile" />
+    	<result column="TEL" jdbcType="VARCHAR" property="tel" />
+    	<result column="FAX" jdbcType="VARCHAR" property="fax" />
+    	<result column="ADDRESS" jdbcType="VARCHAR" property="address" />
+    	<result column="MAX_GP" jdbcType="INTEGER" property="maxGp" />
+    	<result column="MAX_VIP_GP" jdbcType="INTEGER" property="maxVipGp" />
+    	<result column="GP_LIMIT" jdbcType="INTEGER" property="gpLimit" />
+    	<result column="LONGITUDE" jdbcType="INTEGER" property="longitude" />
+    	<result column="LATITUDE" jdbcType="INTEGER" property="latitude" />
+    	<result column="PUBLISHED" jdbcType="BIT" property="published" />
+    	<result column="CUSTOM_AREA" jdbcType="INTEGER" property="customArea" />
+        <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    	<result column="DELETE_FLAG" jdbcType="BIT" property="deleteFlag" />   	
+        <result column="CREATE_EMP" jdbcType="VARCHAR" property="createEmp" />
+    	<result column="CREATE_ORG" jdbcType="INTEGER" property="createOrg" />
+    	<result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    	<result column="UPDATE_EMP" jdbcType="VARCHAR" property="updateEmp" />
+    	<result column="UPDATE_ORG" jdbcType="INTEGER" property="updateOrg" />
+    	<result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" /> 
+    	<result column="SERVICE_RANGE" jdbcType="BLOB" property="serviceRange" /> 
+    	<result column="OUT_OF_SERVICE" jdbcType="BLOB" property="outOfService" /> 
+    	<result column="SITE_TYPE" jdbcType="DECIMAL" property="siteType" /> 
+		<result column="DOUBLE_SEGMENT_CODE" jdbcType="VARCHAR" property="doubleSegmentCode" /> 
+  	</resultMap>
+	<!-- 20180416 huangting add end -->
+	
+	<select id="findOrgDetailById" parameterType="cmsOrgDetailVo" resultType="cmsOrgDetailVo">
+		SELECT <include refid="baseColumnList"/> FROM OMG_CMS_ORG_DETAIL O
+		WHERE CMS_ORG_ID = #{cmsOrgId} AND DELETE_FLAG = 0
+	</select>
+
+	<select id="findOrgDetailByUnique" parameterType="cmsOrgDetailVo" resultType="cmsOrgDetailVo">
+		SELECT <include refid="baseColumnList"/> FROM OMG_CMS_ORG_DETAIL O
+		<where>
+			<if test="cmsOrgId != null">
+				AND CMS_ORG_ID = #{cmsOrgId} AND DELETE_FLAG = 0
+			</if>
+			<if test="baseOrgCode != null">
+				AND BASE_ORG_CODE = #{baseOrgCode} AND DELETE_FLAG = 0
+			</if>			
+		</where>
+	</select>
+
+	<select id="findOrgDetailByCondition" parameterType="cmsOrgDetailVo" resultType="cmsOrgDetailVo">
+		SELECT <include refid="baseColumnList"/> FROM OMG_CMS_ORG_DETAIL O
+		<where>
+			<if test="cmsOrgId != null">
+				AND CMS_ORG_ID = #{cmsOrgId} AND DELETE_FLAG = 0
+			</if>
+			<if test="baseOrgCode != null">
+				AND BASE_ORG_CODE = #{baseOrgCode}
+			</if>					
+			<if test="beginUpdateTime !=null">
+				AND UPDATE_TIME >= #{beginUpdateTime}
+			</if>
+			<if test="endUpdateTime !=null">
+				AND UPDATE_TIME <![CDATA[<]]> #{endUpdateTime}
+			</if>
+		</where>
+	</select>
+
+</mapper>

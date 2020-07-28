@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context.xsd  ">
+
+	<!-- biz -->
+	<bean id="systemInfoBiz" class="cn.uce.omg.sso.biz.impl.SystemInfoBiz">
+		<property name="systemInfoService" ref="systemInfoService" />
+	</bean>
+	<bean id="sysTypeBiz" class="cn.uce.omg.sso.biz.impl.SysTypeBiz">
+		<!-- add by zhangRb 20180905 支持手机号登录需求 -->
+		<property name="fspDictDataService" ref="fspDictDataService" />
+    </bean>
+    <bean id="empBiz" class="cn.uce.omg.sso.biz.impl.EmpBiz">
+    	<property name="empService" ref="empService"></property>
+    	<property name="otherEmpRelationService" ref="otherEmpRelationService"></property>
+    </bean>
+    <bean id="userBiz" class="cn.uce.omg.sso.biz.impl.UserBiz">
+    	<property name="updPwdItemService" ref="updPwdItemService"></property>
+    	<property name="loginItemService" ref="loginItemService"></property>
+    	<property name="userService" ref="userService"></property>
+    	<property name="pushService" ref="pushService"></property>
+    	<property name="loginLogoutTemplate" ref="loginLogoutTemplate"></property>
+    </bean>
+    <bean id="orgBiz" class="cn.uce.omg.sso.biz.impl.OrgBiz">
+    	<property name="orgService" ref="orgService"></property>
+    </bean>
+    <bean id="roleBiz" class="cn.uce.omg.sso.biz.impl.RoleBiz">
+    	<property name="roleService" ref="roleService"></property>
+    </bean>
+    
+	<!-- service -->
+    <bean id="empService" class="cn.uce.omg.sso.service.EmpService">
+        <property name="empDao" ref="empDao"/>
+    </bean>
+    <bean id="orgService" class="cn.uce.omg.sso.service.OrgService">
+        <property name="orgDao" ref="orgDao"/>
+    </bean>
+    <bean id="otherEmpRelationService" class="cn.uce.omg.sso.service.OtherEmpRelationService">
+        <property name="otherEmpRelationDao" ref="otherEmpRelationDao"/>
+    </bean>
+    <bean id="updPwdItemService" class="cn.uce.omg.sso.service.UpdPwdItemService">
+    	<property name="updPwdItemDao" ref="updPwdItemDao"/>
+    </bean>
+    <bean id="roleService" class="cn.uce.omg.sso.service.RoleService">
+    	<property name="roleDao" ref="roleDao"/>
+    	<property name="userRoleRelDao" ref="userRoleRelDao"/>
+    </bean>
+	<bean id="systemInfoService" class="cn.uce.omg.sso.service.SystemInfoService">
+		<property name="systemInfoDao" ref="systemInfoDao" />
+	</bean>
+	<bean id="loginItemService" class="cn.uce.omg.sso.service.LoginItemService">
+		<property name="loginItemDao" ref="loginItemDao" />
+	</bean>
+	<bean id="userService" class="cn.uce.omg.sso.service.UserService">
+		<property name="userDao" ref="userDao" />
+		<property name="userCache" ref="userCache"></property>
+	</bean>
+	<!-- add by zhangRb 20180905 支持手机号登录需求 -->
+	<bean id="fspDictDataService" class="cn.uce.omg.sso.service.FspDictDataService">
+		<property name="fspDictDataDao" ref="fspDictDataDao" />
+	</bean>
+
+	<!-- dao -->
+	<bean id="systemInfoDao" parent="baseDao">
+		<property name="mapperInterface" value="cn.uce.omg.sso.dao.ISystemInfoDao" />
+	</bean>
+	<bean id="loginItemDao" parent="baseDao">  
+	    <property name="mapperInterface" value="cn.uce.omg.sso.dao.ILoginItemDao" />  
+	</bean>
+    <bean id="empDao" parent="baseDao">  
+       <property name="mapperInterface" value="cn.uce.omg.sso.dao.IEmpDao" />  
+    </bean>
+    <bean id="otherEmpRelationDao" parent="baseDao">  
+       <property name="mapperInterface" value="cn.uce.omg.sso.dao.IOtherEmpRelationDao" />  
+    </bean>
+    <bean id="userDao" parent="baseDao">  
+       <property name="mapperInterface" value="cn.uce.omg.sso.dao.IUserDao" />  
+    </bean>
+    <bean id="orgDao" parent="baseDao">  
+       <property name="mapperInterface" value="cn.uce.omg.sso.dao.IOrgDao" />  
+    </bean>
+    <bean id="updPwdItemDao" parent="baseDao">  
+       <property name="mapperInterface" value="cn.uce.omg.sso.dao.IUpdPwdItemDao" />  
+    </bean>
+    <bean id="roleDao" parent="baseDao">  
+       <property name="mapperInterface" value="cn.uce.omg.sso.dao.IRoleDao" />  
+    </bean>
+    <bean id="userRoleRelDao" parent="baseDao">  
+       <property name="mapperInterface" value="cn.uce.omg.sso.dao.IUserRoleRelDao" />  
+    </bean>
+    <!-- add by zhangRb 20180905 支持手机号登录需求 -->
+	<bean id="fspDictDataDao" parent="baseDao">  
+       <property name="mapperInterface" value="cn.uce.omg.sso.dao.IFspDictDataDao" />  
+    </bean>
+</beans>

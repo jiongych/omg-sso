@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>cn.uce.omg</groupId>
+		<artifactId>omg-portal</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>omg-portal-job</artifactId>
+	<packaging>war</packaging>
+	<name>omg-portal-job Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+		<dependency>
+			<groupId>cn.uce.framework</groupId>
+			<artifactId>uce-base</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>cn.uce.framework</groupId>
+			<artifactId>uce-core-mq-rocket</artifactId>
+			<version>${portal-framework-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>cn.uce.framework</groupId>
+			<artifactId>uce-elastic-job</artifactId>
+			<version>${portal-framework-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
+			<version>3.4.6</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+	<build>
+		 <!-- 产生的构件的文件名，默认值是${artifactId}-${version}。 -->
+         <finalName>${project.artifactId}</finalName>
+	</build>
+</project>

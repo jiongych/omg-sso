@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+           http://www.springframework.org/schema/context/spring-context.xsd">
+           
+       <!-- 消息生产模板示例 实际使用时请删掉 -->
+     <!--   <bean id="g7Template" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+           	连接工厂
+           	<property name="factory" ref="mqFactory" />
+           	生产者ID
+           	<property name="producerId" value="PID_G7ORDER" />
+           	主题名称
+           	<property name="topicName" value="g7order" />
+       </bean> -->
+       <!-- 缓存更新消息通知 -->
+    <!--  <bean id="fspCacheDataChangedTemplate" class="cn.uce.core.mq.rocket.RocketTemplate" init-method="start" destroy-method="shutdown">
+         	连接工厂
+         	<property name="factory" ref="mqFactory" />
+         	生产者ID
+         	<property name="producerId" value="PID_FSP_DATA_CHANGED_PUSH" />
+         	主题名称
+         	<property name="topicName" value="fspCacheDataChanged" />
+      </bean> -->
+</beans>

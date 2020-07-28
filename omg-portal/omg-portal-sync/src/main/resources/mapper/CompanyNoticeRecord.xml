@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.portal.sync.dao.ICompanyNoticeRecordDao">
+
+	<!-- 根据条件查询数量 -->
+	<select id="findNoticeRecord" parameterType="cn.uce.portal.sync.entity.PortalCompanyNoticeRecord" resultType="java.lang.Integer">
+		SELECT count(1) FROM OMG_PORTAL_COMPANY_NOTICE_RECORD
+		<where>
+			<if test="noticeId != null and noticeId != ''">
+				AND NOTICE_ID = #{noticeId}
+			</if>
+			<if test="viewUser != null and viewUser != ''">
+				AND VIEW_USER = #{viewUser}
+			</if>
+		</where>
+	</select>
+</mapper>

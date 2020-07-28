@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.IOtherEmpRelationDao">
+	<sql id="base_column_list">
+		ID,ORG_ID,EMP_ID,SYSTEM_ID,OTHER_ORG_ID,OTHER_EMP_ID,OTHER_EMP_CODE,OTHER_EMP_NAME,REMARK,CREATE_TIME,UPDATE_EMP,UPDATE_ORG,UPDATE_TIME
+	</sql>
+	<!-- BUG #659 add by zhangRb 20170713 -->
+	<sql id="query_base_column_list">
+		ID,ORG_ID,EMP_ID,SYSTEM_ID,OTHER_ORG_ID,OTHER_EMP_ID,OTHER_EMP_CODE,OTHER_EMP_NAME,CREATE_TIME,UPDATE_ORG,UPDATE_TIME
+	</sql>
+	<sql id="oer_base_column">
+		OER.ID AS OER_ID,OER.ORG_ID AS OER_ORG_ID,OER.EMP_ID AS OER_EMP_ID,OER.SYSTEM_ID AS OER_SYSTEM_ID,OER.OTHER_ORG_ID AS OER_OTHER_ORG_ID,OER.OTHER_EMP_ID AS OER_OTHER_EMP_ID,OER.OTHER_EMP_CODE AS OER_OTHER_EMP_CODE,OER.OTHER_EMP_NAME AS OER_OTHER_EMP_NAME,OER.REMARK AS OER_REMARK,OER.CREATE_TIME AS OER_CREATE_TIME,OER.UPDATE_EMP AS OER_UPDATE_EMP,OER.UPDATE_ORG AS OER_UPDATE_ORG,OER.UPDATE_TIME AS OER_UPDATE_TIME
+	</sql>
+	<resultMap id="OtherEmpRelationMap" type="OtherEmpRelationVo">
+    	<id column="ID" jdbcType="BIGINT" property="id" />
+		<result column="ORG_ID" jdbcType="INTEGER" property="orgId" />
+    	<result column="EMP_ID" jdbcType="INTEGER" property="empId" />
+    	<result column="SYSTEM_ID" jdbcType="SMALLINT" property="systemId" />
+    	<result column="OTHER_ORG_ID" jdbcType="INTEGER" property="otherOrgId" />
+    	<result column="OTHER_EMP_ID" jdbcType="INTEGER" property="otherEmpId" />
+    	<result column="OTHER_EMP_CODE" jdbcType="VARCHAR" property="otherEmpCode" />
+    	<result column="OTHER_EMP_NAME" jdbcType="VARCHAR" property="otherEmpName" />
+    	<result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    	<result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    	<result column="UPDATE_EMP" jdbcType="VARCHAR" property="updateEmp" />
+    	<result column="UPDATE_ORG" jdbcType="INTEGER" property="updateOrg" />
+    	<result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />  
+  	</resultMap>
+	<select id="findOtherEmpRelationByCondition" parameterType="OtherEmpRelationVo"
+		resultType="OtherEmpRelationVo">
+		SELECT
+		<include refid="base_column_list" />
+		FROM OMG_OTHER_EMP_RELATION
+		<where>
+			<if test="id != null">
+				AND ID = #{id}
+			</if>
+			<if test="orgId != null">
+				AND ORG_ID = #{orgId}
+			</if>
+			<if test=" empId != null">
+				AND EMP_ID = #{empId}
+			</if>
+			<if test=" systemId != null">
+				AND SYSTEM_ID = #{systemId}
+			</if>
+			<if test="otherOrgId != null">
+				AND OTHER_ORG_ID = #{otherOrgId}
+			</if>
+			<if test="otherEmpId != null">
+				AND OTHER_EMP_ID = #{otherEmpId}
+			</if>
+			<if test="otherEmpCode != null">
+				AND OTHER_EMP_CODE = #{otherEmpCode}
+			</if>
+			<if test="beginUpdateTime !=null">
+				AND UPDATE_TIME >= #{beginUpdateTime}
+			</if>
+			<if test="endUpdateTime !=null">
+				AND UPDATE_TIME <![CDATA[<]]> #{endUpdateTime}
+			</if>		
+			<!-- 20170829 huangting add begin -->
+			<if test="empIdList != null">
+				AND EMP_ID IN
+				<foreach collection="empIdList" item="empId" index="index" open="(" separator="," close=")">
+						#{empId}
+				</foreach>
+			</if>		
+			<!-- 20170829 huangting add end -->
+			<!-- add by zhangRb 20180427 查询指定机构下的绑定关系 -->
+			<if test="orgIdList != null">
+			    AND ORG_ID in 
+		    	<foreach collection="orgIdList" item="orgId" open="(" close=")" separator=",">
+					#{orgId}
+				</foreach>
+			</if>
+		</where>
+		<!-- 20180308 BaoJingyu add begin -->
+		<if test="currentPage != null and pageSize != null">
+			LIMIT #{currentPage},#{pageSize}
+		</if>
+		<!-- 20180308 BaoJingyu add end -->
+	</select>
+	
+	<select id="findOtherEmpRelationByUpdateTime" parameterType="OtherEmpRelationVo" resultType="OtherEmpRelationVo">
+		SELECT OE.EMP_CODE,OER.ID,OER.ORG_ID,OER.EMP_ID,OER.SYSTEM_ID,OER.OTHER_ORG_ID,OER.OTHER_EMP_ID,OER.OTHER_EMP_CODE,
+		OER.OTHER_EMP_NAME,OER.REMARK,OER.CREATE_TIME,OER.UPDATE_EMP,OER.UPDATE_ORG,OER.UPDATE_TIME
+		FROM OMG_OTHER_EMP_RELATION OER
+		LEFT JOIN OMG_EMP OE ON OER.EMP_ID = OE.EMP_ID
+		<where>
+			<if test="beginUpdateTime !=null">
+				AND OER.UPDATE_TIME >= #{beginUpdateTime}
+			</if>
+			<if test="endUpdateTime !=null">
+				AND OER.UPDATE_TIME <![CDATA[<]]> #{endUpdateTime}
+			</if>				
+		</where>
+		order by OER.UPDATE_TIME desc
+	</select>
+	
+
+	<select id="findOtherEmpRelationByUnique" parameterType="OtherEmpRelationVo"
+		resultType="OtherEmpRelationVo">
+		SELECT
+		<include refid="base_column_list" />
+		FROM OMG_OTHER_EMP_RELATION
+		<where>
+			<if test="empId != null">
+				AND EMP_ID = #{empId}
+			</if>
+			<if test="orgId != null">
+				AND ORG_ID = #{orgId}
+			</if>
+			<if test=" systemId != null">
+				AND SYSTEM_ID = #{systemId}
+			</if>
+			<if test="otherEmpId != null">
+				AND OTHER_EMP_ID = #{otherEmpId}
+			</if>
+		</where>
+	</select>
+	<!-- BUG #659 add by zhangRb 20170713 Start-->
+	<select id="findOtherEmpRelationForHttp" parameterType="OtherEmpRelationVo"
+		resultType="OtherEmpRelationVo">
+		SELECT
+		<include refid="query_base_column_list" />
+		FROM OMG_OTHER_EMP_RELATION
+		<where>
+			<if test="empId != null">
+				AND EMP_ID = #{empId}
+			</if>
+			<if test="orgId != null">
+				AND ORG_ID = #{orgId}
+			</if>
+			<if test=" systemId != null">
+				AND SYSTEM_ID = #{systemId}
+			</if>
+			<if test="otherEmpId != null">
+				AND OTHER_EMP_ID = #{otherEmpId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findOtherEmpRelationsForHttp" parameterType="OtherEmpRelationVo"
+		resultType="OtherEmpRelationVo">
+		SELECT
+		<include refid="query_base_column_list" />
+		FROM OMG_OTHER_EMP_RELATION
+		<where>
+			<if test="id != null">
+				AND ID = #{id}
+			</if>
+			<if test="orgId != null">
+				AND ORG_ID = #{orgId}
+			</if>
+			<if test=" empId != null">
+				AND EMP_ID = #{empId}
+			</if>
+			<if test=" systemId != null">
+				AND SYSTEM_ID = #{systemId}
+			</if>
+			<if test="otherOrgId != null">
+				AND OTHER_ORG_ID = #{otherOrgId}
+			</if>
+			<if test="otherEmpId != null">
+				AND OTHER_EMP_ID = #{otherEmpId}
+			</if>
+			<if test="otherEmpCode != null">
+				AND OTHER_EMP_CODE = #{otherEmpCode}
+			</if>
+			<if test="beginUpdateTime !=null">
+				AND UPDATE_TIME >= #{beginUpdateTime}
+			</if>
+			<if test="endUpdateTime !=null">
+				AND UPDATE_TIME <![CDATA[<]]> #{endUpdateTime}
+			</if>				
+		</where>
+	</select>
+	<!-- BUG #659 add by zhangRb 20170713 End-->
+	
+	<insert id="insert" parameterType="OtherEmpRelationVo"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO
+		OMG_OTHER_EMP_RELATION(EMP_ID,ORG_ID,SYSTEM_ID,OTHER_EMP_ID,OTHER_ORG_ID,
+		OTHER_EMP_CODE,OTHER_EMP_NAME,REMARK,CREATE_TIME,UPDATE_EMP,UPDATE_ORG,UPDATE_TIME,DATA_SOURCE)
+		VALUES(#{empId},#{orgId},#{systemId},#{otherEmpId},#{otherOrgId},#{otherEmpCode},#{otherEmpName},#{remark},#{createTime},#{updateEmp},#{updateOrg},#{updateTime},#{dataSource})
+	</insert>
+	
+	<update id="updateByEmpId" parameterType="OtherEmpRelationVo">
+		UPDATE OMG_OTHER_EMP_RELATION
+		<set>
+			<if test="otherEmpCode != null">
+				OTHER_EMP_CODE = #{otherEmpCode},
+			</if>
+			<if test="otherOrgId != null">
+				OTHER_ORG_ID = #{otherOrgId},
+			</if>
+			<if test="orgId != null">
+				ORG_ID = #{orgId},
+			</if>
+			<if test="updateEmp != null">
+				UPDATE_EMP = #{updateEmp},
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME = #{updateTime}
+			</if>
+		</set>
+		WHERE EMP_ID = #{empId}
+	</update>
+	
+	<!-- add by zhangRb 20180413 更新绑定关系中的乾坤员工信息 -->
+	<update id="updateOtherEmpInfo" parameterType="otherEmpRelationVo">
+	    UPDATE OMG_OTHER_EMP_RELATION
+		<set>
+			<if test="otherEmpCode != null">
+				OTHER_EMP_CODE = #{otherEmpCode},
+			</if>
+			<if test="otherEmpName != null">
+				OTHER_EMP_NAME = #{otherEmpName},
+			</if>
+			<if test="updateEmp != null">
+				UPDATE_EMP = #{updateEmp},
+			</if>
+			<if test="updateOrg != null">
+				UPDATE_ORG = #{updateOrg},
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME = #{updateTime}
+			</if>
+		</set>
+		<where>
+			SYSTEM_ID = #{systemId}
+			<if test="otherEmpId != null">
+				AND OTHER_EMP_ID = #{otherEmpId}
+			</if>
+			<if test="otherOrgId != null">
+				AND OTHER_ORG_ID = #{otherOrgId}
+			</if>
+			<if test="empId != null">
+				AND EMP_ID = #{empId}
+			</if>
+			<if test="orgId != null">
+				AND ORG_ID = #{orgId}
+			</if>
+			<if test="id != null">
+				AND ID = #{id}
+			</if>
+		</where>
+   </update>
+	
+	<delete id="delete" parameterType="OtherEmpRelationVo">
+		DELETE FROM OMG_OTHER_EMP_RELATION
+		<where>
+			EMP_ID = #{empId}
+			<if test=" systemId != null">
+				AND SYSTEM_ID = #{systemId}
+			</if>
+			<if test="otherEmpId != null">
+				AND OTHER_EMP_ID = #{otherEmpId}
+			</if>
+		</where>
+	</delete>
+	
+ 	<!--    查询第三方机构绑定 -->
+    <select id="findEmpRelationCountByCondition" parameterType="otherEmpRelationVo" resultType="java.lang.Integer">
+	    SELECT COUNT(1) FROM OMG_OTHER_EMP_RELATION 
+	    <where>
+		    <if test="empId!=null">
+		   		AND EMP_ID = #{empId}
+		    </if>
+		    <if test="orgId != null">
+				AND ORG_ID = #{orgId}
+			</if>
+		     <if test="otherOrgId!=null">
+		    	AND OTHER_ORG_ID = #{otherOrgId}
+		    </if>
+		    <if test="otherEmpId != null">
+		    	AND OTHER_EMP_ID = #{otherEmpId}
+		    </if>
+		    <if test="systemId!=null">
+		     	AND SYSTEM_ID = #{systemId}
+		    </if>
+			<if test="beginUpdateTime !=null">
+				AND UPDATE_TIME >= #{beginUpdateTime}
+			</if>
+			<if test="endUpdateTime !=null">
+				AND UPDATE_TIME <![CDATA[<]]> #{endUpdateTime}
+			</if>			    
+    	</where>
+    </select>
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+           http://www.springframework.org/schema/context/spring-context.xsd">
+             
+       <!-- 消费者示例  实际使用时可删掉-->
+      <!--  <bean id="wbmsBillInfoListener" class="cn.uce.ord.mq.consumer.WbmsBillInfoListener">
+             <property name="logisticsTrackBiz" ref="logisticsTrackBiz" />
+             <property name="orderBiz" ref="orderBiz" />
+       </bean>
+       <bean id="wbmsBillInfoListenerContainer" class="cn.uce.core.mq.rocket.listener.RocketMessageListenerContainer" lazy-init="false" init-method="start" destroy-method="shutdown">
+           <property name="consumerId" value="CID_WBMSBILLINFO" />
+       		<property name="consumeThreadNums" value="20" />
+       		<property name="factory" ref="mqFactory" />
+       		<property name="subscriptions"> 
+       		    <map>
+       		       <entry value-ref="wbmsBillInfoListener">
+       		           <key>
+       		              <bean class="cn.uce.core.mq.listener.Subscription">
+       		                  <property name="topicName" value="wbmsBillInfo"/>
+       		              </bean>
+       		           </key>
+       		       </entry>
+       		    </map>
+       		</property>
+       </bean> -->
+</beans>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+           http://www.springframework.org/schema/context/spring-context.xsd">  
+
+	<bean id="quartzScheduler1"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="removeLoginFailCacheJobTrigger" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="removeLoginFailCacheJobTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="removeLoginFailCacheJobDetail"></property>
+		<property name="cronExpression" value="59 59 23 * * ?"></property>
+	</bean>
+
+	<bean id="removeLoginFailCacheJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="removeLoginFailCacheJob" />
+		</property>
+		<property name="targetMethod">
+			<!-- 要执行的方法名称 -->
+			<value>execute</value>
+		</property>
+		<property name="concurrent">  
+        	<value>false</value> 
+        </property>
+	</bean>
+	 
+	<bean id="removeLoginFailCacheJob" class="cn.uce.omg.sso.processor.RemoveLoginFailCacheJob">
+		<property name="loginFailCache" ref="loginFailCache" />
+		<!-- add by zhangRb 20170713 清除数据库中用户锁定状态 -->
+		<property name="userBiz" ref="userBiz" />
+		<property name="pushService" ref="pushService" />
+	</bean>
+	 
+</beans>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.IRoleDao">
+	<sql id="base_column_list">
+		ID,ROLE_CODE,ROLE_NAME,DELETE_FLAG,REMARK,CREATE_EMP,CREATE_ORG,CREATE_TIME,UPDATE_EMP,UPDATE_ORG,UPDATE_TIME
+	</sql>
+	
+	<select id="findAllAvailableRole" parameterType="RoleVo" resultType="RoleVo">
+		SELECT <include refid="base_column_list"/> FROM FSP_ROLE WHERE DELETE_FLAG = 0
+	</select>
+	
+	<select id="findRoleByCondition" parameterType="RoleVo" resultType="RoleVo">
+		SELECT <include refid="base_column_list"/> FROM FSP_ROLE
+		<where>
+			<if test="roleCode != null">
+				AND ROLE_CODE = #{roleCode}
+			</if>
+			<if test="empCode != null">
+				AND ROLE_CODE IN (SELECT URR.ROLE_CODE FROM FSP_USER_ROLE_REL URR WHERE URR.EMP_CODE = #{empCode})
+			</if>
+			<if test="deleteFlag != null">
+				AND DELETE_FLAG = #{deleteFlag}
+			</if>
+			<if test="roleName != null">
+				AND ROLE_NAME like concat("%", #{roleName},"%")
+			</if>
+			<if test="beginUpdateTime != null">
+				AND UPDATE_TIME >= #{beginUpdateTime}
+			</if>
+			<if test="endUpdateTime != null">
+				AND UPDATE_TIME <![CDATA[<]]> #{endUpdateTime}
+			</if>
+		</where>
+		<!-- 20180308 BaoJingyu add begin -->
+		<if test="currentPage != null and pageSize != null">
+			LIMIT #{currentPage},#{pageSize}
+		</if>
+		<!-- 20180308 BaoJingyu add end -->
+	</select>
+	
+	<select id="findRoleByCode" parameterType="RoleVo" resultType="RoleVo">
+		SELECT <include refid="base_column_list"/> FROM FSP_ROLE
+		WHERE ROLE_CODE = #{roleCode}
+	</select>
+	
+	<select id="findRoleByCodes" resultType="RoleVo">
+		SELECT <include refid="base_column_list"/> FROM FSP_ROLE
+		<where>
+			<if test="_parameter != null">
+				AND ROLE_CODE IN
+				<foreach collection="_parameter" item="roleCode" open="(" close=")" separator=",">
+					#{roleCode}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	
+	<select id="findRoleByEmpCode" resultType="RoleVo">
+		SELECT <include refid="base_column_list"/> FROM FSP_ROLE WHERE ROLE_CODE IN (SELECT URR.ROLE_CODE FROM FSP_USER_ROLE_REL URR WHERE URR.EMP_CODE = #{empCode})
+	</select>
+</mapper>

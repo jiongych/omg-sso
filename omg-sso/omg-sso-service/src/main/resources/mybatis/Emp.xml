@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.IEmpDao">
+    <sql id="base_column_list">
+		EMP_ID,EMP_CODE,EMP_NAME,ORG_ID,PRINCIPAL_FLAG,SEX,IMMEDIATE_SUPERIOR,POSITION_LEVEL,TELEPHONE,MOBILE,EMAIL
+		,ENABLED,STATUS,REMARK,DELETE_FLAG,VERSION,CREATE_EMP,CREATE_ORG,CREATE_TIME,UPDATE_EMP,UPDATE_ORG,UPDATE_TIME
+	</sql>
+    <sql id="e_base_column_list">
+		E.EMP_ID,E.EMP_CODE,E.EMP_NAME,E.ORG_ID,E.PRINCIPAL_FLAG,E.SEX,E.IMMEDIATE_SUPERIOR,E.POSITION_LEVEL,E.TELEPHONE,E.MOBILE,E.EMAIL,E.ENABLED,E.STATUS,E.REMARK,E.DELETE_FLAG,E.VERSION,E.CREATE_EMP,E.CREATE_ORG,E.CREATE_TIME,E.UPDATE_EMP,E.UPDATE_ORG,E.UPDATE_TIME,E.YM_EMP_CODE
+	</sql>
+    <sql id="immdEmp_base_column">
+		IMMDEMP.EMP_ID AS IMMDEMP_EMP_ID,IMMDEMP.EMP_CODE AS IMMDEMP_EMP_CODE,IMMDEMP.EMP_NAME AS IMMDEMP_EMP_NAME,IMMDEMP.ORG_ID AS IMMDEMP_ORG_ID,IMMDEMP.PRINCIPAL_FLAG AS IMMDEMP_PRINCIPAL_FLAG,IMMDEMP.SEX AS IMMDEMP_SEX,IMMDEMP.IMMEDIATE_SUPERIOR AS IMMDEMP_IMMEDIATE_SUPERIOR,IMMDEMP.POSITION_LEVEL AS IMMDEMP_POSITION_LEVEL,IMMDEMP.TELEPHONE AS IMMDEMP_TELEPHONE,IMMDEMP.MOBILE AS IMMDEMP_MOBILE,IMMDEMP.EMAIL AS IMMDEMP_EMAIL,IMMDEMP.ENABLED AS IMMDEMP_ENABLED,IMMDEMP.STATUS AS IMMDEMP_STATUS,IMMDEMP.REMARK AS IMMDEMP_REMARK,IMMDEMP.DELETE_FLAG AS IMMDEMP_DELETE_FLAG,IMMDEMP.VERSION AS IMMDEMP_VERSION,IMMDEMP.CREATE_EMP AS IMMDEMP_CREATE_EMP,IMMDEMP.CREATE_ORG AS IMMDEMP_CREATE_ORG,IMMDEMP.CREATE_TIME AS IMMDEMP_CREATE_TIME,IMMDEMP.UPDATE_EMP AS IMMDEMP_UPDATE_EMP,IMMDEMP.UPDATE_ORG AS IMMDEMP_UPDATE_ORG,IMMDEMP.UPDATE_TIME AS IMMDEMP_UPDATE_TIME
+	</sql>
+    <sql id="e_base_column">
+		E.EMP_ID AS E_EMP_ID,E.EMP_CODE AS E_EMP_CODE,E.EMP_NAME AS E_EMP_NAME,E.ORG_ID AS E_ORG_ID,E.PRINCIPAL_FLAG AS E_PRINCIPAL_FLAG,E.SEX AS E_SEX,E.IMMEDIATE_SUPERIOR AS E_IMMEDIATE_SUPERIOR,E.POSITION_LEVEL AS E_POSITION_LEVEL,E.TELEPHONE AS E_TELEPHONE,E.MOBILE AS E_MOBILE,E.EMAIL AS E_EMAIL,E.ENABLED AS E_ENABLED,E.STATUS AS E_STATUS,E.REMARK AS E_REMARK,E.DELETE_FLAG AS E_DELETE_FLAG,E.VERSION AS E_VERSION,E.CREATE_EMP AS E_CREATE_EMP,E.CREATE_ORG AS E_CREATE_ORG,E.CREATE_TIME AS E_CREATE_TIME,E.UPDATE_EMP AS E_UPDATE_EMP,E.UPDATE_ORG AS E_UPDATE_ORG,E.UPDATE_TIME AS E_UPDATE_TIME
+	</sql>
+    <sql id="e_detail_column"><!-- modify by zhangRb 20180426 添加固定电话字段 -->
+		E.EMP_ID AS E_EMP_ID,E.EMP_CODE AS E_EMP_CODE,E.EMP_NAME AS E_EMP_NAME,E.ORG_ID AS E_ORG_ID,E.PRINCIPAL_FLAG AS E_PRINCIPAL_FLAG,E.SEX AS E_SEX,E.IMMEDIATE_SUPERIOR AS E_IMMEDIATE_SUPERIOR,E.POSITION_LEVEL AS E_POSITION_LEVEL,E.MOBILE AS E_MOBILE,E.TELEPHONE AS E_TELEPHONE,E.EMAIL AS E_EMAIL,E.ENABLED AS E_ENABLED,E.STATUS AS E_STATUS,E.DELETE_FLAG AS E_DELETE_FLAG,E.VERSION AS E_VERSION,E.CREATE_TIME AS E_CREATE_TIME,E.UPDATE_TIME AS E_UPDATE_TIME
+	</sql>
+    <sql id="cp_base_column">
+		CP.EMP_ID AS CP_EMP_ID,CP.EMP_CODE AS CP_EMP_CODE,CP.EMP_NAME AS CP_EMP_NAME,CP.ORG_ID AS CP_ORG_ID,CP.PRINCIPAL_FLAG AS CP_PRINCIPAL_FLAG,CP.SEX AS CP_SEX,CP.IMMEDIATE_SUPERIOR AS CP_IMMEDIATE_SUPERIOR,CP.POSITION_LEVEL AS CP_POSITION_LEVEL,CP.TELEPHONE AS CP_TELEPHONE,CP.MOBILE AS CP_MOBILE,CP.EMAIL AS CP_EMAIL,CP.ENABLED AS CP_ENABLED,CP.STATUS AS CP_STATUS,CP.REMARK AS CP_REMARK,CP.DELETE_FLAG AS CP_DELETE_FLAG,CP.VERSION AS CP_VERSION,CP.CREATE_EMP AS CP_CREATE_EMP,CP.CREATE_ORG AS CP_CREATE_ORG,CP.CREATE_TIME AS CP_CREATE_TIME,CP.UPDATE_EMP AS CP_UPDATE_EMP,CP.UPDATE_ORG AS CP_UPDATE_ORG,CP.UPDATE_TIME AS CP_UPDATE_TIME
+	</sql>
+    <resultMap type="EmpVo" id="EmpDetailResultMap">
+        <id column="E_EMP_ID" jdbcType="INTEGER" property="empId"/>
+        <result column="E_EMP_CODE" jdbcType="VARCHAR" property="empCode"/>
+        <result column="E_EMP_NAME" jdbcType="VARCHAR" property="empName"/>
+        <result column="E_ORG_ID" jdbcType="INTEGER" property="orgId"/>
+        <result column="E_PRINCIPAL_FLAG" jdbcType="BIT" property="principalFlag"/>
+        <result column="E_SEX" jdbcType="SMALLINT" property="sex"/>
+        <result column="E_IMMEDIATE_SUPERIOR" jdbcType="INTEGER" property="immediateSuperior"/>
+        <result column="E_POSITION_LEVEL" jdbcType="SMALLINT" property="positionLevel"/>
+        <result column="E_TELEPHONE" jdbcType="VARCHAR" property="telephone"/>
+        <result column="E_MOBILE" jdbcType="VARCHAR" property="mobile"/>
+        <result column="E_EMAIL" jdbcType="VARCHAR" property="email"/>
+        <result column="E_ENABLED" jdbcType="BIT" property="enabled"/>
+        <result column="E_STATUS" jdbcType="SMALLINT" property="status"/>
+        <result column="E_REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="E_DELETE_FLAG" jdbcType="BIT" property="deleteFlag"/>
+        <result column="E_VERSION" jdbcType="INTEGER" property="version"/>
+        <result column="E_CREATE_EMP" jdbcType="VARCHAR" property="createEmp"/>
+        <result column="E_CREATE_ORG" jdbcType="INTEGER" property="createOrg"/>
+        <result column="E_CREATE_TIME" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="E_UPDATE_EMP" jdbcType="VARCHAR" property="updateEmp"/>
+        <result column="E_UPDATE_ORG" jdbcType="INTEGER" property="updateOrg"/>
+        <result column="E_UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime"/>
+        <!-- add by zhangRb 20180412 钉钉查询用户信息新增实名认证信息 start -->
+        <result column="E_STAFF_CARD_TYPE" jdbcType="SMALLINT" property="staffCardType"/>
+        <result column="E_STAFF_CARD_ID" jdbcType="VARCHAR" property="staffCardId"/>
+        <result column="E_STAFF_CARD_TYPE_TEXT" jdbcType="VARCHAR" property="staffCardTypeText"/>
+        <!-- add by zhangRb 20180412 钉钉查询用户信息新增实名认证信息 End -->
+        <association property="immediateSuperiorEmpVo" javaType="EmpVo" resultMap="EmpMap" columnPrefix="IMMDEMP_"/>
+        <association property="orgVo" javaType="OrgVo" resultMap="cn.uce.omg.sso.dao.IOrgDao.OrgMap" columnPrefix="ORG_"/>
+        <collection property="empOrgPositionList" ofType="EmpOrgPositionVo"
+                    resultMap="cn.uce.omg.sso.dao.IEmpOrgPositionDao.EmpOrgPositionMap" columnPrefix="EOP_"/>
+        <collection property="otherEmpRelationList" ofType="OtherEmpRelationVo"
+                    resultMap="cn.uce.omg.sso.dao.IOtherEmpRelationDao.OtherEmpRelationMap" columnPrefix="OER_"/>
+    </resultMap>
+    <resultMap id="EmpMap" type="EmpVo">
+        <id column="EMP_ID" jdbcType="INTEGER" property="empId"/>
+        <!-- <result column="DING_USER_ID1" jdbcType="VARCHAR" property="dingUserId1" /> -->
+        <result column="EMP_CODE" jdbcType="VARCHAR" property="empCode"/>
+        <result column="EMP_NAME" jdbcType="VARCHAR" property="empName"/>
+        <result column="ORG_ID" jdbcType="INTEGER" property="orgId"/>
+        <result column="PRINCIPAL_FLAG" jdbcType="BIT" property="principalFlag"/>
+        <result column="SEX" jdbcType="SMALLINT" property="sex"/>
+        <result column="IMMEDIATE_SUPERIOR" jdbcType="INTEGER" property="immediateSuperior"/>
+        <result column="POSITION_LEVEL" jdbcType="SMALLINT" property="positionLevel"/>
+        <result column="TELEPHONE" jdbcType="VARCHAR" property="telephone"/>
+        <result column="MOBILE" jdbcType="VARCHAR" property="mobile"/>
+        <result column="EMAIL" jdbcType="VARCHAR" property="email"/>
+        <result column="ENABLED" jdbcType="BIT" property="enabled"/>
+        <result column="STATUS" jdbcType="SMALLINT" property="status"/>
+        <result column="REMARK" jdbcType="VARCHAR" property="remark"/>
+        <result column="DELETE_FLAG" jdbcType="BIT" property="deleteFlag"/>
+        <result column="VERSION" jdbcType="INTEGER" property="version"/>
+        <result column="CREATE_EMP" jdbcType="VARCHAR" property="createEmp"/>
+        <result column="CREATE_ORG" jdbcType="INTEGER" property="createOrg"/>
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="UPDATE_EMP" jdbcType="VARCHAR" property="updateEmp"/>
+        <result column="UPDATE_ORG" jdbcType="INTEGER" property="updateOrg"/>
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+
+    <select id="findAll" resultType="EmpVo">
+        SELECT
+        <include refid="base_column_list"/>
+        FROM OMG_EMP
+    </select>
+
+    <select id="findOneEmpByCondition" resultType="EmpVo">
+        SELECT
+        <include refid="e_base_column_list"/>
+        FROM OMG_EMP E
+        <where>
+            <if test="empId != null">
+                AND E.EMP_ID = #{empId}
+            </if>
+            <if test="empCode!= null">
+                AND E.EMP_CODE = #{empCode}
+            </if>
+            <if test="mobile != null">
+                AND E.MOBILE = #{mobile}
+            </if>
+            <if test="email != null">
+                AND E.EMAIL = #{email}
+            </if>
+            <if test="deleteFlag != null">
+                AND E.DELETE_FLAG = #{deleteFlag}
+            </if>
+        </where>
+    </select>
+
+    <select id="findChildEmpByOrgId" resultType="EmpVo">
+        SELECT
+        <include refid="e_base_column_list"/>
+        FROM OMG_EMP E WHERE E.ORG_ID IN (SELECT ORG_ID FROM OMG_ORG WHERE ORG_FULL_ID LIKE CONCAT(
+        (SELECT ORG_FULL_ID FROM OMG_ORG O WHERE O.ORG_ID = #{orgId}),'%'))
+    </select>
+
+    <select id="findEmpByIds" resultType="EmpVo">
+        SELECT
+        <include refid="e_base_column_list"/>
+        FROM OMG_EMP E
+        <where>
+            E.EMP_ID IN
+            <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+    <sql id="empByConditionWhere">
+        <if test="empId != null">
+            AND E.EMP_ID = #{empId}
+        </if>
+        <if test="empCode!= null">
+            AND E.EMP_CODE = #{empCode}
+        </if>
+        <if test="empName != null">
+            AND E.EMP_NAME LIKE CONCAT('%',#{empName},'%')
+        </if>
+        <if test="mobile != null">
+            AND E.MOBILE = #{mobile}
+        </if>
+        <if test="deleteFlag != null">
+            AND E.DELETE_FLAG = #{deleteFlag}
+        </if>
+        <if test="email != null">
+            AND E.EMAIL = #{email}
+        </if>
+        <if test="status != null">
+            AND E.STATUS = #{status}
+        </if>
+        <if test="orgId != null">
+            AND E.ORG_ID = #{orgId}
+        </if>
+        <if test="principalFlag != null">
+            AND E.PRINCIPAL_FLAG = #{principalFlag}
+        </if>
+        <if test="immediateSuperior != null">
+            AND E.IMMEDIATE_SUPERIOR = #{immediateSuperior}
+        </if>
+        <if test="positionLevel != null">
+            AND E.POSITION_LEVEL = #{positionLevel}
+        </if>
+        <if test="empCodeList != null">
+            AND E.EMP_CODE IN
+            <foreach collection="empCodeList" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="mobileList != null">
+            AND E.MOBILE IN
+            <foreach collection="mobileList" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="empPositionOrgId != null">
+            AND E.EMP_ID IN (SELECT EOP.EMP_ID FROM
+            OMG_EMP_ORG_POSITION EOP WHERE EOP.ORG_ID = #{empPositionOrgId})
+        </if>
+        <if test="orgIdList != null">
+            AND E.OGR_ID IN
+            <foreach collection="orgIdList" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="beginUpdateTime !=null">
+            AND E.UPDATE_TIME >= #{beginUpdateTime}
+        </if>
+        <if test="endUpdateTime !=null">
+            AND E.UPDATE_TIME <![CDATA[<]]> #{endUpdateTime}
+        </if>
+    </sql>
+
+    <sql id="empByCondition">
+        <if test="empId != null">
+            AND E.EMP_ID = #{empId}
+        </if>
+        <if test="empCode!= null">
+            AND E.EMP_CODE = #{empCode}
+        </if>
+        <if test="empName != null">
+            AND E.EMP_NAME LIKE CONCAT('%',#{empName},'%')
+        </if>
+        <if test="mobile != null">
+            AND E.MOBILE = #{mobile}
+        </if>
+        <if test="deleteFlag != null">
+            AND E.DELETE_FLAG = #{deleteFlag}
+        </if>
+        <if test="email != null">
+            AND E.EMAIL = #{email}
+        </if>
+        <!-- 查询员工列表过滤离职状态 wangGh 20170612 -->
+        <if test="status == null">
+            AND E.STATUS <![CDATA[ <> ]]> 1
+        </if>
+        <!-- 查询员工列表过滤离职状态 wangGh 20170612 -->
+        <if test="status != null">
+            AND E.STATUS = #{status}
+        </if>
+        <if test="orgId != null">
+            AND E.ORG_ID = #{orgId}
+        </if>
+        <if test="principalFlag != null">
+            AND E.PRINCIPAL_FLAG = #{principalFlag}
+        </if>
+        <if test="immediateSuperior != null">
+            AND E.IMMEDIATE_SUPERIOR = #{immediateSuperior}
+        </if>
+        <if test="positionLevel != null">
+            AND E.POSITION_LEVEL = #{positionLevel}
+        </if>
+        <if test="empCodeList != null">
+            AND E.EMP_CODE IN
+            <foreach collection="empCodeList" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="mobileList != null">
+            AND E.MOBILE IN
+            <foreach collection="mobileList" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="empPositionOrgId != null">
+            AND E.EMP_ID IN (SELECT EOP.EMP_ID FROM
+            OMG_EMP_ORG_POSITION EOP WHERE EOP.ORG_ID = #{empPositionOrgId})
+        </if>
+        <if test="orgIdList != null">
+            AND E.OGR_ID IN
+            <foreach collection="orgIdList" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="beginUpdateTime !=null">
+            AND E.UPDATE_TIME >= #{beginUpdateTime}
+        </if>
+        <if test="endUpdateTime !=null">
+            AND E.UPDATE_TIME <![CDATA[<]]> #{endUpdateTime}
+        </if>
+    </sql>
+
+    <select id="findEmpByCondition" parameterType="EmpVo" resultType="EmpVo">
+        SELECT
+        <include refid="e_base_column_list"/>
+        FROM OMG_EMP E
+        <where>
+            <include refid="empByConditionWhere"/>
+        </where>
+        ORDER BY E.UPDATE_TIME DESC
+        <!-- 20180308 BaoJingyu add begin -->
+        <if test="currentPage != null and pageSize != null">
+            LIMIT #{currentPage},#{pageSize}
+        </if>
+        <!-- 20180308 BaoJingyu add end -->
+    </select>
+
+    <select id="findEmpAndPositionByCondition" parameterType="EmpVo" resultMap="EmpDetailResultMap">
+        SELECT<include refid="e_base_column"/>,
+        <include refid="cn.uce.omg.sso.dao.IEmpOrgPositionDao.eop_base_column"/>
+        FROM OMG_EMP E
+        LEFT JOIN OMG_EMP_ORG_POSITION EOP ON EOP.EMP_ID = E.EMP_ID
+        <where>
+            <include refid="empByConditionWhere"/>
+        </where>
+        ORDER BY E.UPDATE_TIME DESC
+    </select>
+
+    <select id="findEmpDetailByCondition" parameterType="EmpVo" resultMap="EmpDetailResultMap">
+        SELECT<include refid="e_detail_column"/>,
+        <include refid="cn.uce.omg.sso.dao.IEmpOrgPositionDao.eop_base_column"/>,
+        <include refid="cn.uce.omg.sso.dao.IOtherEmpRelationDao.oer_base_column"/>,
+        <include refid="cn.uce.omg.sso.dao.IOrgDao.org_base_column"/>,
+        <include refid="immdEmp_base_column"/>,
+        <!-- 机构名和岗位名关联机构表和系统类型表，这里单独拿出来,在员工机构岗位表的EmpOrgPositionMap映射到对应的属性上-->
+        EPO.ORG_NAME AS EOP_ORG_NAME,SYSTYPE.TYPE_NAME AS EOP_POSITION_NAME,
+        OEE.STAFF_CARD_TYPE AS E_STAFF_CARD_TYPE,OEE.STAFF_CARD_ID AS E_STAFF_CARD_ID,
+        SYSTYPE2.TYPE_NAME AS E_STAFF_CARD_TYPE_TEXT
+        <if test="dingUserId != null">
+            FROM OMG_OTHER_EMP_RELATION OER
+            INNER JOIN OMG_EMP E ON OER.EMP_ID = E.EMP_ID AND E.DELETE_FLAG = 0 AND OER.SYSTEM_ID = ${OMGSystemId.ding}
+            AND OER.OTHER_EMP_CODE = #{dingUserId}
+            LEFT JOIN OMG_EMP_ORG_POSITION EOP ON EOP.EMP_ID = E.EMP_ID
+            LEFT JOIN OMG_ORG EPO ON EPO.ORG_ID = EOP.ORG_ID
+            LEFT JOIN OMG_FSP_DICT_DATA SYSTYPE ON SYSTYPE.TYPE_ID = EOP.POSITION_ID AND SYSTYPE.TYPE_CLASS_CODE =
+            '${OMGSysTypeConstants.POSITION}'
+            LEFT JOIN OMG_ORG ORG ON ORG.ORG_ID = E.ORG_ID
+            LEFT JOIN OMG_EMP IMMDEMP ON IMMDEMP.EMP_ID = E.IMMEDIATE_SUPERIOR
+            LEFT JOIN OMG_EMP_EXT OEE ON OEE.EMP_ID = E.EMP_ID
+            LEFT JOIN OMG_FSP_DICT_DATA SYSTYPE2 ON SYSTYPE2.TYPE_ID = OEE.STAFF_CARD_TYPE AND SYSTYPE2.TYPE_CLASS_CODE =
+            '${OMGSysTypeConstants.STAFFCARDTYPE}'
+            <where>
+                <!-- 查询员工列表过滤离职状态 wangGh 20170612 -->
+                <include refid="empByCondition"/>
+                <!-- 查询员工列表过滤离职状态 wangGh 20170612 -->
+            </where>
+            ORDER BY E.UPDATE_TIME DESC
+        </if>
+        <if test="dingUserId == null">
+            <!-- 机构查询性能优化，emp表数据量较大，作为left join主表执行速度慢，所以把where条件放到子查询做 -->
+            FROM (SELECT E.* FROM OMG_EMP E
+            <where>
+                <!-- 查询员工列表过滤离职状态 wangGh 20170612 -->
+                <include refid="empByCondition"/>
+                <!-- 查询员工列表过滤离职状态 wangGh 20170612 -->
+            </where>
+            ORDER BY E.UPDATE_TIME DESC ) E
+            LEFT JOIN OMG_EMP_ORG_POSITION EOP ON EOP.EMP_ID = E.EMP_ID
+            LEFT JOIN OMG_ORG EPO ON EPO.ORG_ID = EOP.ORG_ID
+            LEFT JOIN OMG_FSP_DICT_DATA SYSTYPE ON SYSTYPE.TYPE_ID = EOP.POSITION_ID AND SYSTYPE.TYPE_CLASS_CODE =
+            '${OMGSysTypeConstants.POSITION}'
+            LEFT JOIN OMG_OTHER_EMP_RELATION OER ON OER.EMP_ID = E.EMP_ID
+            LEFT JOIN OMG_ORG ORG ON ORG.ORG_ID = E.ORG_ID
+            LEFT JOIN OMG_EMP IMMDEMP ON IMMDEMP.EMP_ID = E.IMMEDIATE_SUPERIOR
+            LEFT JOIN OMG_EMP_EXT OEE ON OEE.EMP_ID = E.EMP_ID
+            LEFT JOIN OMG_FSP_DICT_DATA SYSTYPE2 ON SYSTYPE2.TYPE_ID = OEE.STAFF_CARD_TYPE AND SYSTYPE2.TYPE_CLASS_CODE =
+            '${OMGSysTypeConstants.STAFFCARDTYPE}'
+        </if>
+
+    </select>
+
+    <update id="updateEmpById" parameterType="EmpVo">
+        UPDATE OMG_EMP
+        <set>
+            <if test="empName!=null">
+                EMP_NAME=#{empName},
+            </if>
+            <if test="email!=null">
+                EMAIL=#{email},
+            </if>
+            <if test="deleteFlag!=null">
+                DELETE_FLAG = #{deleteFlag},
+            </if>
+            <if test="status!=null">
+                STATUS=#{status},
+            </if>
+            <if test="mobile!=null">
+                MOBILE=#{mobile},
+            </if>
+            <if test="telephone!=null">
+                telephone=#{telephone},
+            </if>
+            <if test="sex!=null">
+                sex=#{sex},
+            </if>
+            <if test="orgId!=null">
+                ORG_ID=#{orgId},
+            </if>
+            <if test="immediateSuperior!=null">
+                IMMEDIATE_SUPERIOR=#{immediateSuperior},
+            </if>
+            <if test="positionLevel!=null">
+                POSITION_LEVEL=#{positionLevel},
+            </if>
+            <if test="enabled!=null">
+                ENABLED=#{enabled},
+            </if>
+            <if test="remark!=null">
+                REMARK=#{remark},
+            </if>
+            <if test="updateEmp!=null">
+                UPDATE_EMP=#{updateEmp},
+            </if>
+            <if test="updateOrg!=null">
+                UPDATE_ORG=#{updateOrg},
+            </if>
+            <if test="updateTime!=null">
+                UPDATE_TIME=#{updateTime},
+            </if>
+        </set>
+        <where>
+            EMP_ID=#{empId}
+        </where>
+    </update>
+
+    <insert id="createEmp" parameterType="EmpVo" useGeneratedKeys="true" keyProperty="empId">
+        INSERT INTO
+        OMG_EMP(EMP_CODE,EMP_NAME,EMAIL,STATUS,MOBILE,TELEPHONE,SEX,ORG_ID,IMMEDIATE_SUPERIOR,PRINCIPAL_FLAG,POSITION_LEVEL,ENABLED
+        ,REMARK,DELETE_FLAG,VERSION,CREATE_EMP,CREATE_ORG,CREATE_TIME,UPDATE_EMP,UPDATE_ORG,UPDATE_TIME)
+        VALUES(
+        <if test="orgType != null and orgType >= 30">
+            right(concat('00000000',nextval('seq_omg_emp_site')),8),
+        </if>
+        <if test="orgType != null and 30 > orgType ">
+            right(concat('000000',nextval('seq_omg_emp_center')),6),
+        </if>
+        #{empName},#{email},#{status},#{mobile},#{telephone},#{sex},#{orgId},#{immediateSuperior},#{principalFlag},#{positionLevel},#{enabled},#{remark},#{deleteFlag},#{version},#{createEmp},#{createOrg},#{createTime},#{updateEmp},#{updateOrg},#{updateTime})
+    </insert>
+
+    <select id="findEmpCountByCondition" parameterType="EmpVo" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM OMG_EMP EMP
+        <where>
+            <if test="empId != null">
+                AND EMP.EMP_ID = #{empId}
+            </if>
+            <if test="empCode != null">
+                AND EMP.EMP_CODE = #{empCode}
+            </if>
+            <if test="mobile != null">
+                AND EMP.MOBILE = #{mobile}
+            </if>
+            <if test="deleteFlag != null">
+                AND EMP.DELETE_FLAG = #{deleteFlag}
+            </if>
+            <!-- 查询员工数据过滤离职状态员工 wangGh 20170612 -->
+            <if test="status == null">
+                AND EMP.STATUS <![CDATA[ <> ]]> 1
+            </if>
+            <!-- 查询员工数据过滤离职状态员工 wangGh 20170612 -->
+            <if test="empPositionOrgId != null">
+                <if test="isContainChildOrg != null and isContainChildOrg == 1">
+                    AND EMP_ID IN (SELECT EOP.EMP_ID FROM OMG_EMP_ORG_POSITION EOP WHERE EOP.ORG_ID IN (SELECT ORG_ID
+                    FROM OMG_ORG WHERE ORG_FULL_ID LIKE CONCAT(
+                    (SELECT ORG_FULL_ID FROM OMG_ORG O WHERE O.ORG_ID = #{empPositionOrgId}),'%')))
+                </if>
+                <if test="isContainChildOrg == null or isContainChildOrg == 0">
+                    AND EMP_ID IN (SELECT EOP.EMP_ID FROM
+                    OMG_EMP_ORG_POSITION EOP WHERE EOP.ORG_ID = #{empPositionOrgId})
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!--根据机构ID查询机构下所有员工信息-->
+    <select id="findChildEmpByCondition" resultType="cn.uce.omg.vo.EmpAllVo">
+        SELECT
+        E.EMP_ID,
+        E.EMP_CODE,
+        E.EMP_NAME,
+        E.ORG_ID,
+        E.SEX,
+        E.TELEPHONE,
+        E.MOBILE,
+        E.EMAIL,
+        E.STATUS,
+        E.DELETE_FLAG,
+        E.UPDATE_TIME,
+        OORG.ORG_FULL_NAME  AS orgFullName,
+        OORG.ORG_FULL_ID    AS orgFullId
+        FROM
+        OMG_EMP E
+        LEFT JOIN OMG_ORG OORG ON E.ORG_ID = OORG.ORG_ID
+        WHERE
+        (
+            E.ORG_ID IN
+            (
+                SELECT ORG_ID
+                FROM
+                OMG_ORG
+                WHERE
+                ORG_FULL_ID LIKE CONCAT
+                (
+                    (
+                        SELECT ORG_FULL_ID
+                        FROM
+                        OMG_ORG O
+                        WHERE
+                        O.ORG_ID = #{orgId}
+                    ),'%'
+                )
+            )
+        )
+        <if test="deleteFlag != null">
+            AND E.DELETE_FLAG = #{deleteFlag}
+        </if>
+        <if test="status != null">
+            AND E.STATUS = #{status}
+        </if>
+        <if test="beginUpdateTime != null">
+            AND E.UPDATE_TIME >= #{beginUpdateTime}
+        </if>
+        <if test="endUpdateTime != null">
+            AND E.UPDATE_TIME <![CDATA[<]]> #{endUpdateTime}
+        </if>
+        ORDER BY
+        E.UPDATE_TIME DESC
+    </select>
+    
+    <!-- 根据条件查询员工管理机构范围 -->
+    <select id="findEmpOrgPermission" parameterType="EmpVo" resultType="java.lang.Integer">
+    	SELECT OEOP.ORG_ID FROM OMG_EMP_ORG_POSITION OEOP
+    	INNER JOIN OMG_EMP OE ON OE.EMP_ID = OEOP.EMP_ID AND OE.DELETE_FLAG = 0
+    	<if test="empCode != null">
+    		AND OE.EMP_CODE = #{empCode}
+    	</if>
+    	WHERE OEOP.POSITION_ID = ${OMGOrgPermission.POSITION}
+    </select>
+    
+    <!-- 根据机构ID查询员工 -->
+	<select id="findAllEmpByOrgId"  parameterType="EmpVo" resultType="EmpVo">
+		SELECT * FROM OMG_EMP OE 
+		WHERE OE.ORG_ID IN (
+		  SELECT ORG_ID FROM OMG_ORG WHERE 
+		  <foreach item="oid" index="index" collection="orgIdList" separator="or">  
+		   ORG_FULL_ID LIKE CONCAT((SELECT ORG_FULL_ID FROM OMG_ORG O WHERE O.ORG_ID = ${oid}),'%')
+		 </foreach>
+		) 
+		<if test="empId != null">
+			AND OE.EMP_ID = #{empId}
+		</if>
+		<if test="empCode != null">
+			AND OE.EMP_CODE = #{empCode}
+		</if>
+		AND OE.DELETE_FLAG = 0
+	</select>
+	
+	<!-- 更新员工编号生成自增序列 -->
+   <update id="updateEmpCodeSequence" parameterType="EmpVo">
+		UPDATE SEQUENCE SET CURRENT_VAL = CURRENT_VAL + 1 
+		WHERE 
+		<if test="orgType != null and orgType >= 30">
+			SEQ_NAME = 'seq_omg_emp_site'
+		</if>
+		<if test="orgType != null and 30 > orgType ">
+			SEQ_NAME = 'seq_omg_emp_center'
+		</if>
+   </update>
+   
+   <!-- 根据手机号查询员工 -->
+   <select id="findEmpByMobile" parameterType="java.lang.String" resultType="EmpVo">
+   		SELECT * FROM OMG_EMP
+   		WHERE MOBILE = #{mobile} AND DELETE_FLAG = 0
+   </select>
+   
+   <!-- 根据员工编号查询员工姓名、所属机构、所属机构名称 -->
+   <select id="findEmpAndOrgByEmpCode" parameterType="java.lang.String" resultType="cn.uce.omg.sso.vo.EmpOrgInfoVo">
+	   	SELECT 
+	   		o.`EMP_CODE`, o.`EMP_NAME`, m.`ORG_ID`, m.`ORG_NAME` 
+	   	FROM omg_emp o 
+	   	LEFT JOIN omg_org m ON o.`ORG_ID` = m.`ORG_ID` 
+	   	WHERE o.`EMP_CODE` = #{empCode}
+   </select>
+</mapper>

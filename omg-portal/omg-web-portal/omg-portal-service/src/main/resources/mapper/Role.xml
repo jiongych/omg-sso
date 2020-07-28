@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IRoleDao">
+
+	<sql id="base_column_list">
+		ID, ROLE_CODE, ROLE_NAME, CATEGORY, ASSIGNS_ORG_TYPE, DELETE_FLAG, CREATE_EMP, CREATE_ORG,CREATE_TIME, VERSION, REMARK, UPDATE_EMP, UPDATE_ORG, UPDATE_TIME
+	</sql>
+	<!-- 分页查询角色信息 -->
+	<select id="findRoleByPage" resultType="cn.uce.omg.portal.vo.RoleVo">
+		SELECT
+		THE.ID,
+		THE.ROLE_CODE,
+		THE.ROLE_NAME,
+		THE.ROLE_LEVEL,
+		THE.CATEGORY,
+		THE.CREATE_TIME,
+		THE.REMARK,
+		THE.ASSIGNS_ORG_TYPE,
+		THE.ROLE_SCOPE AS roleScope,
+		RS.ORG_NAME AS roleScopeName,
+		
+		THE.CREATE_EMP AS createEmp,
+		CE.EMP_NAME AS createEmpName,
+		
+		THE.CREATE_ORG AS createOrg,
+		CO.ORG_NAME AS createOrgName
+		
+		FROM
+		(SELECT 
+			OMG_PORTAL_ROLE.ID,
+			OMG_PORTAL_ROLE.ROLE_CODE,
+			OMG_PORTAL_ROLE.ROLE_NAME,
+			OMG_PORTAL_ROLE.ROLE_LEVEL,
+			OMG_PORTAL_ROLE.ROLE_SCOPE,
+			OMG_PORTAL_ROLE.CATEGORY,
+			OMG_PORTAL_ROLE.ASSIGNS_ORG_TYPE,
+			OMG_PORTAL_ROLE.CREATE_EMP,
+			OMG_PORTAL_ROLE.CREATE_ORG,
+			OMG_PORTAL_ROLE.CREATE_TIME,
+			OMG_PORTAL_ROLE.REMARK
+			FROM OMG_PORTAL_ROLE
+			WHERE 
+			OMG_PORTAL_ROLE.DELETE_FLAG <![CDATA[ <> ]]> 1 
+			<if test="roleVo != null and roleVo.roleLevel != null">
+			AND OMG_PORTAL_ROLE.ROLE_LEVEL = #{roleVo.roleLevel}
+			</if>
+			<if test="roleVo != null and roleVo.containRoleLevel != null">
+			AND OMG_PORTAL_ROLE.ROLE_LEVEL <![CDATA[ >= ]]> #{roleVo.containRoleLevel}
+			</if>
+			<if test="roleVo != null and roleVo.category != null and roleVo.category != ''">
+			AND OMG_PORTAL_ROLE.CATEGORY = #{roleVo.category} 
+			</if>
+			<if test="roleVo != null and roleVo.roleScope != null">
+			AND FIND_IN_SET(OMG_PORTAL_ROLE.ROLE_SCOPE,(SELECT OMG_CMS_ORG.ORG_FULL_CODE FROM OMG_CMS_ORG WHERE OMG_CMS_ORG.BASE_ORG_CODE = #{roleVo.roleScope} AND OMG_CMS_ORG.`DELETE_FLAG` = 0)) 
+			</if>
+			<if test="roleVo != null and roleVo.roleCode != null and roleVo.roleCode != ''">
+				AND OMG_PORTAL_ROLE.ROLE_CODE like concat("%", #{roleVo.roleCode},"%")
+			</if>
+			<if test="roleVo != null and roleVo.roleName != null and roleVo.roleName != ''">
+				AND OMG_PORTAL_ROLE.ROLE_NAME like concat("%", #{roleVo.roleName},"%")
+			</if>
+			<if test="roleVo != null and roleVo.permissionCodeList != null and roleVo.systemCodeList != null">
+				<foreach collection="roleVo.permissionCodeList" item="eachPermissionCode" index="permissionCodeIndex">
+						<foreach collection="roleVo.systemCodeList" item="eachSystemCode" index="systemCodeIndex">
+							<if test="permissionCodeIndex==systemCodeIndex">
+								AND EXISTS (
+										SELECT
+											1
+										FROM
+											omg_portal_role_permission_rel rp
+										WHERE
+											(rp.SYSTEM_CODE,rp.permission_code) = (#{eachSystemCode}, #{eachPermissionCode})
+										AND rp.ROLE_CODE = OMG_PORTAL_ROLE.ROLE_CODE
+								)
+							</if>
+						</foreach>
+				</foreach>
+			</if>
+			) THE
+		LEFT JOIN OMG_CMS_ORG RS ON RS.BASE_ORG_CODE = THE.ROLE_SCOPE AND RS.DELETE_FLAG = 0
+		LEFT JOIN OMG_EMP CE ON THE.CREATE_EMP = CE.EMP_CODE AND CE.DELETE_FLAG = 0
+		LEFT JOIN OMG_CMS_ORG CO ON THE.CREATE_ORG = CO.CMS_ORG_ID AND CO.DELETE_FLAG = 0
+		LIMIT #{startIndex}, #{pageSize}
+	</select>
+	
+	<!-- 分页查询角色信息 -->
+	<select id="findRoleCountByPage" resultType="java.lang.Integer">
+		SELECT 
+		COUNT(NUM.ID)
+		FROM
+		(SELECT
+		THE.ID
+		FROM
+		(SELECT 
+			OMG_PORTAL_ROLE.ID,
+			OMG_PORTAL_ROLE.ROLE_CODE,
+			OMG_PORTAL_ROLE.ROLE_NAME,
+			OMG_PORTAL_ROLE.ROLE_LEVEL,
+			OMG_PORTAL_ROLE.ROLE_SCOPE,
+			OMG_PORTAL_ROLE.CREATE_EMP,
+			OMG_PORTAL_ROLE.CREATE_ORG,
+			OMG_PORTAL_ROLE.CREATE_TIME,
+			OMG_PORTAL_ROLE.REMARK
+			FROM OMG_PORTAL_ROLE
+			WHERE 
+			OMG_PORTAL_ROLE.DELETE_FLAG <![CDATA[ <> ]]> 1 
+			<if test="roleVo != null and roleVo.roleLevel != null">
+			AND OMG_PORTAL_ROLE.ROLE_LEVEL = #{roleVo.roleLevel}
+			</if>
+			<if test="roleVo != null and roleVo.containRoleLevel != null">
+			AND OMG_PORTAL_ROLE.ROLE_LEVEL <![CDATA[ >= ]]> #{roleVo.containRoleLevel}
+			</if>
+			<if test="roleVo != null and roleVo.category != null and roleVo.category != ''">
+			AND OMG_PORTAL_ROLE.CATEGORY = #{roleVo.category} 
+			</if>
+			<if test="roleVo != null and roleVo.roleScope != null">
+			AND FIND_IN_SET(OMG_PORTAL_ROLE.ROLE_SCOPE,(SELECT OMG_CMS_ORG.ORG_FULL_CODE FROM OMG_CMS_ORG WHERE OMG_CMS_ORG.BASE_ORG_CODE = #{roleVo.roleScope} AND OMG_CMS_ORG.`DELETE_FLAG` = 0)) 
+			</if>
+			<if test="roleVo != null and roleVo.roleCode != null and roleVo.roleCode != ''">
+				AND OMG_PORTAL_ROLE.ROLE_CODE like concat("%", #{roleVo.roleCode},"%")
+			</if>
+			<if test="roleVo != null and roleVo.roleName != null and roleVo.roleName != ''">
+				AND OMG_PORTAL_ROLE.ROLE_NAME like concat("%", #{roleVo.roleName},"%")
+			</if>
+			<if test="roleVo != null and roleVo.permissionCodeList != null and roleVo.systemCodeList != null">
+				<foreach collection="roleVo.permissionCodeList" item="eachPermissionCode" index="permissionCodeIndex">
+						<foreach collection="roleVo.systemCodeList" item="eachSystemCode" index="systemCodeIndex">
+							<if test="permissionCodeIndex==systemCodeIndex">
+								AND EXISTS (
+										SELECT
+											1
+										FROM
+											omg_portal_role_permission_rel rp
+										WHERE
+											(rp.SYSTEM_CODE,rp.permission_code) = (#{eachSystemCode}, #{eachPermissionCode})
+										AND rp.ROLE_CODE = OMG_PORTAL_ROLE.ROLE_CODE
+								)
+							</if>
+						</foreach>
+				</foreach>
+			</if>
+			) THE
+			LEFT JOIN OMG_CMS_ORG RS ON RS.BASE_ORG_CODE = THE.ROLE_SCOPE AND RS.DELETE_FLAG = 0
+			LEFT JOIN OMG_EMP CE ON THE.CREATE_EMP = CE.EMP_CODE AND CE.DELETE_FLAG = 0
+			LEFT JOIN OMG_CMS_ORG CO ON THE.CREATE_ORG = CO.CMS_ORG_ID AND CO.DELETE_FLAG = 0) NUM
+	</select>
+	
+	<!-- 根据角色码查询角色 -->
+	<select id="findRoleByCode" parameterType="java.lang.String" resultType="cn.uce.omg.portal.vo.RoleVo">
+		SELECT <include refid="base_column_list"/> FROM OMG_PORTAL_ROLE
+		WHERE DELETE_FLAG <![CDATA[ <> ]]> 1 AND ROLE_CODE = #{roleCode} 
+	</select>
+	
+		<!-- 根据角色码查询角色 -->
+	<select id="findRoleSyncByCode" parameterType="java.lang.String" resultType="cn.uce.omg.portal.vo.RoleVo">
+		SELECT * FROM OMG_PORTAL_ROLE
+		WHERE DELETE_FLAG <![CDATA[ <> ]]> 1 AND ROLE_CODE = #{roleCode} 
+	</select>
+	
+	<!-- 根据角色码删除角色 -->
+	<delete id="deleteByRoleCode" parameterType="java.lang.String">
+		DELETE FROM OMG_PORTAL_ROLE WHERE ROLE_CODE = #{parameter}
+	</delete>
+	
+	<!-- 查询用户已分配的角色 -->
+	<select id="findRoleByUser" parameterType="java.lang.String" resultType="cn.uce.omg.portal.vo.RoleVo">
+	    SELECT 
+	    R.* 
+	    FROM 
+	    OMG_PORTAL_ROLE R
+	    WHERE 
+	    R.DELETE_FLAG <![CDATA[ <> ]]> 1 AND 
+	    EXISTS (SELECT ID FROM OMG_PORTAL_USER_ROLE_REL WHERE ROLE_CODE = R.ROLE_CODE AND EMP_CODE = #{empCode})
+	</select>
+	
+	<!-- 查询用户未分配的角色 -->
+	<select id="findNotRoleByUser" resultType="cn.uce.omg.portal.vo.RoleVo">
+	    SELECT 
+	    R.* 
+	    FROM 
+	    OMG_PORTAL_ROLE R
+	    WHERE 
+	    R.DELETE_FLAG <![CDATA[ <> ]]> 1 AND
+	    NOT EXISTS (SELECT ID FROM OMG_PORTAL_USER_ROLE_REL WHERE ROLE_CODE = R.ROLE_CODE AND EMP_CODE = #{empCode}) AND 
+	    FIND_IN_SET(R.ROLE_SCOPE,(SELECT ORG_FULL_CODE FROM OMG_CMS_ORG WHERE BASE_ORG_CODE = #{baseOrgCode} AND DELETE_FLAG = 0)) AND 
+	    (ROLE_LEVEL= #{roleLevel} OR ROLE_LEVEL = 100) AND (ASSIGNS_ORG_TYPE = #{cmsOrgType} OR ASSIGNS_ORG_TYPE IS NULL OR ASSIGNS_ORG_TYPE = '')
+	</select>
+	
+	<!-- 根据角色码更新角色 -->
+	<update id="updateRoleByCode" parameterType="cn.uce.omg.portal.vo.RoleVo" >
+		UPDATE OMG_PORTAL_ROLE SET 
+		ROLE_NAME=#{roleName},
+		CATEGORY=#{category},
+		ASSIGNS_ORG_TYPE=#{assignsOrgType},
+		UPDATE_EMP=#{updateEmp},
+		UPDATE_ORG=#{updateOrg},
+		UPDATE_TIME=#{updateTime},
+		REMARK=#{remark}
+		WHERE 
+		ROLE_CODE=#{roleCode}
+	</update>
+	
+	<select id="findRoleByDate" parameterType="cn.uce.omg.portal.vo.PortalDataPushVo" resultType="java.lang.String">
+	    SELECT ROLE_CODE FROM OMG_PORTAL_ROLE p
+		WHERE (p.CREATE_TIME <![CDATA[ >= ]]> #{startTime} AND p.CREATE_TIME <![CDATA[ <= ]]> #{endTime})
+		OR (p.UPDATE_TIME <![CDATA[ >= ]]> #{startTime} AND p.UPDATE_TIME <![CDATA[ <= ]]> #{endTime})
+	</select>
+</mapper>

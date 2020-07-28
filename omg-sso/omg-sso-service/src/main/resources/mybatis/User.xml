@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.IUserDao">
+	<sql id="base_column_list">
+		ID,EMP_ID,EMP_CODE,PASSWORD,LAST_LOGIN_TIME,PWD_UPDATE_TIME,ROLE_ORG_GROUP,ENABLED,VERSION,REMARK,CREATE_EMP,CREATE_ORG,CREATE_TIME,UPDATE_TIME,UPDATE_ORG,UPDATE_EMP
+	</sql>
+	<sql id="u_base_column_list">
+		U.ID,U.EMP_ID,U.EMP_CODE,U.PASSWORD,U.LAST_LOGIN_TIME,U.PWD_UPDATE_TIME,U.ROLE_ORG_GROUP,U.ENABLED,U.VERSION,U.REMARK,U.CREATE_EMP,U.CREATE_ORG,U.CREATE_TIME,U.UPDATE_TIME,U.UPDATE_ORG,U.UPDATE_EMP,U.HR_EMP_CODE,U.YH_EMP_CODE,U.COMP_CODE
+	</sql>
+	<sql id="u_base_column">
+		U.ID AS U_ID,U.EMP_CODE AS U_EMP_CODE,U.EMP_ID AS U_EMP_ID,U.PASSWORD AS U_PASSWORD,U.LAST_LOGIN_TIME AS U_LAST_LOGIN_TIME,
+		U.PWD_UPDATE_TIME AS U_PWD_UPDATE_TIME,U.ROLE_ORG_GROUP AS U_ROLE_ORG_GROUP,U.ENABLED AS U_ENABLED,U.VERSION AS U_VERSION,U.REMARK AS U_REMARK,
+		U.CREATE_EMP AS U_CREATE_EMP,U.CREATE_ORG AS U_CREATE_ORG,U.CREATE_TIME AS U_CREATE_TIME,U.UPDATE_TIME AS U_UPDATE_TIME,U.UPDATE_ORG AS U_UPDATE_ORG,U.UPDATE_EMP AS U_UPDATE_EMP,U.LOGIN_LOCK_STATE AS U_LOGIN_LOCK_STATE
+	</sql>
+	<resultMap id="UserMap" type="UserVo">
+   	 	<id column="ID" jdbcType="BIGINT" property="id" />
+    	<result column="EMP_ID" jdbcType="INTEGER" property="empId" />
+    	<result column="EMP_CODE" jdbcType="VARCHAR" property="empCode" />
+    	<result column="PASSWORD" jdbcType="VARCHAR" property="password" />
+    	<result column="LAST_LOGIN_TIME" jdbcType="TIMESTAMP" property="lastLoginTime" />
+    	<result column="PWD_UPDATE_TIME" jdbcType="TIMESTAMP" property="pwdUpdateTime" />
+    	<result column="ENABLED" jdbcType="BIT" property="enabled" />
+    	<result column="ROLE_ORG_GROUP" jdbcType="VARCHAR" property="roleOrgGroup" />
+    	<result column="VERSION" jdbcType="INTEGER" property="version" />
+    	<result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    	<result column="CREATE_EMP" jdbcType="VARCHAR" property="createEmp" />
+    	<result column="CREATE_ORG" jdbcType="INTEGER" property="createOrg" />
+    	<result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    	<result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    	<result column="UPDATE_ORG" jdbcType="INTEGER" property="updateOrg" />
+    	<result column="UPDATE_EMP" jdbcType="VARCHAR" property="updateEmp" />
+  	</resultMap>
+	<resultMap type="UserVo" id="UserDetailResultMap">
+		<id column="U_ID" jdbcType="BIGINT" property="id" />
+    	<result column="U_EMP_ID" jdbcType="INTEGER" property="empId" />
+    	<result column="U_EMP_CODE" jdbcType="VARCHAR" property="empCode" />
+    	<result column="U_PASSWORD" jdbcType="VARCHAR" property="password" />
+    	<result column="U_LAST_LOGIN_TIME" jdbcType="TIMESTAMP" property="lastLoginTime" />
+    	<result column="U_PWD_UPDATE_TIME" jdbcType="TIMESTAMP" property="pwdUpdateTime" />
+    	<result column="U_ENABLED" jdbcType="BIT" property="enabled" />
+    	<result column="U_ROLE_ORG_GROUP" jdbcType="VARCHAR" property="roleOrgGroup" />
+    	<result column="U_VERSION" jdbcType="INTEGER" property="version" />
+    	<result column="U_REMARK" jdbcType="VARCHAR" property="remark" />
+    	<result column="U_CREATE_EMP" jdbcType="VARCHAR" property="createEmp" />
+    	<result column="U_CREATE_ORG" jdbcType="INTEGER" property="createOrg" />
+    	<result column="U_CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    	<result column="U_UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    	<result column="U_UPDATE_ORG" jdbcType="INTEGER" property="updateOrg" />
+    	<result column="U_UPDATE_EMP" jdbcType="VARCHAR" property="updateEmp" />
+    	<result column="U_LOGIN_LOCK_STATE" jdbcType="BIT" property="loginLockState"/>
+    	<association property="empVo" javaType="EmpVo" resultMap="cn.uce.omg.sso.dao.IEmpDao.EmpMap" columnPrefix="E_" />
+  	</resultMap>
+	
+    <select id="findById" resultType="User">
+		SELECT * FROM OMG_USER U 
+		WHERE ID = #{id}
+	</select>
+	
+	<select id="findUserByEmpId" parameterType="java.lang.Integer" resultMap="UserDetailResultMap">
+		SELECT <include refid="u_base_column"/> ,<include refid="cn.uce.omg.sso.dao.IEmpDao.e_base_column"/>
+		FROM OMG_USER  U LEFT JOIN OMG_EMP E ON E.EMP_ID = U.EMP_ID 
+		WHERE U.EMP_ID = #{empId}
+	</select>
+	
+	<select id="findUserByEmpCode"  resultType="UserVo">
+		SELECT <include refid="u_base_column_list"/> FROM OMG_USER U 
+		WHERE U.EMP_CODE = #{empCode}
+	</select>
+	
+	<select id="findByHrEmpCodeAndCompCode"  resultType="UserVo">
+		SELECT <include refid="u_base_column_list"/> FROM OMG_USER U 
+		inner JOIN OMG_EMP E ON E.EMP_ID = U.EMP_ID AND e.DELETE_FLAG = 0
+		WHERE U.HR_EMP_CODE = #{hrEmpCode} and u.comp_code=#{compCode}
+	</select>
+	
+	<select id="findByHrEmpCode"  resultType="UserVo">
+		SELECT <include refid="u_base_column_list"/> FROM OMG_USER U 
+		inner JOIN OMG_EMP E ON E.EMP_ID = U.EMP_ID AND e.DELETE_FLAG = 0
+		WHERE U.HR_EMP_CODE = #{hrEmpCode}
+	</select>
+
+
+	<select id="findByYmEmpCode"  resultType="UserVo">
+		SELECT <include refid="u_base_column_list"/> FROM OMG_USER U
+		inner JOIN OMG_EMP E ON E.EMP_ID = U.EMP_ID AND e.DELETE_FLAG = 0
+		WHERE E.YM_EMP_CODE = #{ymEmpCode}
+	</select>
+	
+	<select id="findUserByYhEmpCode"  resultType="UserVo">
+		SELECT <include refid="u_base_column_list"/> FROM OMG_USER U 
+		inner JOIN OMG_EMP E ON E.EMP_ID = U.EMP_ID AND e.DELETE_FLAG = 0
+		where U.YH_EMP_CODE = #{yhEmpCode} and u.comp_code=#{compCode}
+	</select>
+
+	<select id="findUserByMobile"  resultType="UserVo">
+		SELECT <include refid="u_base_column_list"/> FROM OMG_USER U 
+		LEFT JOIN OMG_EMP E ON U.EMP_ID = E.EMP_ID
+		WHERE E.MOBILE = #{mobile} AND DELETE_FLAG = 0
+	</select>
+	
+	<select id="findUserByUniqueKey"  resultType="UserVo">
+		SELECT <include refid="u_base_column_list"/> FROM OMG_USER U 
+		inner JOIN OMG_EMP E ON U.EMP_ID = E.EMP_ID AND e.DELETE_FLAG = 0
+		WHERE u.ym_emp_code=#{ymEmpCode} and u.comp_code=#{compCode} 
+	</select>
+	
+	<select id="findUserByEmail"  resultType="UserVo">
+		SELECT <include refid="u_base_column_list"/> FROM OMG_USER U 
+		LEFT JOIN OMG_EMP E ON U.EMP_ID = E.EMP_ID
+		WHERE E.EMAIL = #{email}
+	</select>
+	
+	<select id="findEmpUserByCondition"  resultMap="UserDetailResultMap">
+		SELECT <include refid="u_base_column"/> ,<include refid="cn.uce.omg.sso.dao.IEmpDao.e_base_column"/>
+		FROM OMG_USER  U LEFT JOIN OMG_EMP E ON E.EMP_ID = U.EMP_ID 
+		<where>
+			<if test="empId != null">
+				AND U.EMP_ID = #{empId}
+			</if>
+			<if test="empCode != null">
+				AND E.EMP_CODE = #{empCode}
+			</if>
+			<if test="mobile != null">
+				AND E.MOBILE = #{mobile}
+			</if>
+			<if test="email != null">
+				AND E.EMAIL = #{email}
+			</if>
+			<if test="orgId != null">
+				AND E.ORG_ID = #{orgId}
+			</if>
+			<if test="empName != null">
+				AND (E.EMP_NAME LIKE CONCAT(#{empName},',%') or E.EMP_NAME LIKE CONCAT('%,', #{empName} ,',%'))
+			</if>
+		</where>
+	</select>
+	
+	<select id="findUserByCondition"  resultType="UserVo">
+		SELECT <include refid="u_base_column_list"/>
+		FROM OMG_USER  U
+		<where>
+			<if test="empId != null">
+				AND U.EMP_ID = #{empId}
+			</if>
+			<if test="beginUpdateTime != null">
+				AND U.UPDATE_TIME >= #{beginUpdateTime}
+			</if>
+			<if test="endUpdateTime != null">
+				AND U.UPDATE_TIME <![CDATA[<]]> #{endUpdateTime}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findUserByOrgId"  resultType="UserVo">
+		SELECT <include refid="u_base_column_list"/> FROM OMG_USER U LEFT JOIN OMG_EMP E ON U.EMP_ID = E.EMP_ID
+		WHERE E.ORG_ID = #{orgId}
+	</select>
+	
+	<select id="findChildUserByOrgId"  resultType="UserVo">
+		SELECT <include refid="u_base_column_list"/>FROM OMG_USER U LEFT JOIN OMG_EMP E ON U.EMP_ID = E.EMP_ID
+		WHERE E.ORG_ID IN (SELECT ORG_ID FROM OMG_ORG WHERE ORG_FULL_ID LIKE CONCAT(
+				  (SELECT ORG_FULL_ID FROM OMG_ORG O WHERE O.ORG_ID = #{orgId}),'%'))
+	</select>
+	
+	<update id="updateByEmpId">
+		UPDATE OMG_USER
+		<set>
+			<if test="roleOrgGroup!=null">
+				ROLE_ORG_GROUP = #{roleOrgGroup},
+			</if>
+			<if test="password!=null">
+				PASSWORD = #{password},
+			</if>
+			<if test="enabled!=null">
+				ENABLED = #{enabled},
+			</if>
+			<if test="remark!=null">
+				REMARK = #{remark},
+			</if>
+			<if test="version!=null">
+				VERSION = #{version},
+			</if>
+			<if test="updateEmp!=null">
+				UPDATE_EMP=#{updateEmp},
+			</if>
+			<if test="updateOrg!=null">
+				UPDATE_ORG=#{updateOrg},
+			</if>
+			<if test="updateTime!=null">
+				UPDATE_TIME=#{updateTime},
+			</if>
+			<if test="pwdUpdateTime!=null">
+				PWD_UPDATE_TIME=#{pwdUpdateTime},
+			</if>
+		</set>
+		<where>
+		EMP_ID = #{empId}
+		</where>
+	</update>
+	
+	<update id="updateLastLoginTimeByEmpId">
+		UPDATE OMG_USER
+		<set>
+			UPDATE_TIME=#{updateTime},
+			LAST_LOGIN_TIME=#{lastLoginTime}
+		</set>
+		<where>
+		EMP_ID = #{empId} AND UPDATE_TIME <![CDATA[<]]>  #{updateTime}
+		</where>
+	</update>
+	
+	<update id="updateById">
+		UPDATE OMG_USER
+		<set>
+			<if test="roleOrgGroup!=null">
+				ROLE_ORG_GROUP = #{roleOrgGroup},
+			</if>
+			<if test="password!=null">
+				PASSWORD = #{password},
+			</if>
+			<if test="enabled!=null">
+				ENABLED = #{enabled},
+			</if>
+			<if test="remark!=null">
+				REMARK = #{remark},
+			</if>
+			<if test="version!=null">
+				VERSION = #{version},
+			</if>
+			<if test="updateEmp!=null">
+				UPDATE_EMP=#{updateEmp},
+			</if>
+			<if test="updateOrg!=null">
+				UPDATE_ORG=#{updateOrg},
+			</if>
+			<if test="updateTime!=null">
+				UPDATE_TIME=#{updateTime},
+			</if>
+			<if test="pwdUpdateTime!=null">
+				PWD_UPDATE_TIME=#{pwdUpdateTime},
+			</if>
+			<!-- add by zhangRb 20180316 修改密码同时解除账户登录锁定状态  -->
+			<if test="loginLockState != null">
+				LOGIN_LOCK_STATE=#{loginLockState}
+			</if>
+		</set>
+		<where>
+		ID = #{id}
+		</where>
+	</update>
+	
+	<delete id="deleteByEmpId"  parameterType="java.lang.Integer"  >
+	     DELETE FROM OMG_USER WHERE EMP_ID = #{empId}
+	</delete>
+	
+	<update id="updateUserLockState"  parameterType="UserVo">
+	     UPDATE OMG_USER SET LOGIN_LOCK_STATE=#{loginLockState} where emp_code = #{empCode}
+	</update>
+	<!-- add by zhangRb 创建员工同时创建用户  20170803 -->
+	<insert id="insertUser" parameterType="UserVo" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO OMG_USER(EMP_ID,EMP_CODE,ROLE_ORG_GROUP,PASSWORD,ENABLED,VERSION,REMARK,CREATE_EMP,CREATE_ORG,CREATE_TIME,UPDATE_EMP,UPDATE_ORG,UPDATE_TIME)
+		VALUES(#{empId},#{empCode},#{roleOrgGroup},#{password},#{enabled},#{version},#{remark},#{createEmp},#{createOrg},#{createTime},#{updateEmp},#{updateOrg},#{updateTime})
+	</insert>
+	
+</mapper>

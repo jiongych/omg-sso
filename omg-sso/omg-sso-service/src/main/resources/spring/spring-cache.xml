@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context.xsd  ">
+	<bean id="hashFieldExpireTimeCache" class="cn.uce.omg.sso.cache.HashFieldExpireTimeCache">
+		<property name="redisTemplate" ref="redisTemplate"></property>
+	</bean>
+	<bean id="hashFieldCache" class="cn.uce.omg.sso.cache.HashFieldCache">
+		<property name="redisTemplate" ref="redisTemplate"></property>
+	</bean>
+
+	<bean id="tokenSystemCache" class="cn.uce.omg.sso.cache.HashRedisWithFieldExpireCache">
+		<property name="hkey" value="sso-tokenSystem:hash"></property>
+		<property name="redisTemplate" ref="redisTemplate"></property>
+		<property name="hashFieldExpireTimeCache" ref="hashFieldExpireTimeCache"></property>
+	</bean>
+
+	<bean id="userTokenCache" class="cn.uce.omg.sso.util.redis.BoundHashRedisSupport">
+		<property name="hkey" value="sso-userToken:hash"></property>
+		<property name="redisTemplate" ref="redisTemplate"></property>
+	</bean>
+	<!-- add by xj -->
+	<!-- <bean id="tokenUserInfoCache" class="cn.uce.omg.sso.cache.HashRedisWithFieldExpireCache">
+		<property name="hkey" value="sso-tokenUserInfo:hash"></property>
+		<property name="redisTemplate" ref="redisTemplate"></property>
+		<property name="hashFieldExpireTimeCache" ref="hashFieldExpireTimeCache"></property>
+	</bean> -->
+	<bean id="tokenUserInfoCache" class="cn.uce.omg.sso.util.redis.BoundHashRedisSupport">
+		<property name="hkey" value="sso-tokenUserInfo:hash"></property>
+		<property name="redisTemplate" ref="redisTemplate"></property>
+	</bean>
+	<!-- add by xj -->
+	<bean id="codeCache" class="cn.uce.omg.sso.cache.HashRedisWithFieldExpireCache">
+		<property name="hkey" value="sso-code:hash"></property>
+		<property name="redisTemplate" ref="redisTemplate"></property>
+		<property name="hashFieldExpireTimeCache" ref="hashFieldExpireTimeCache"></property>
+	</bean>
+
+    <bean id="mobileCache" class="cn.uce.omg.sso.cache.HashRedisWithFieldExpireCache">
+		<property name="hkey" value="sso-mobile:hash"></property>
+		<property name="redisTemplate" ref="redisTemplate"></property>
+		<property name="hashFieldExpireTimeCache" ref="hashFieldExpireTimeCache"></property>
+	</bean>
+
+	<!-- 登录失败cache -->
+	<bean id="loginFailCache" class="cn.uce.omg.sso.cache.HashRedisWithFieldExpireCache">
+		<property name="hkey" value="sso-loginFail:hash" />
+		<property name="redisTemplate" ref="redisTemplate" />
+		<property name="hashFieldExpireTimeCache" ref="hashFieldExpireTimeCache" />
+	</bean>
+	<!-- IPcache -->
+	<bean id="startIpSectionCache" class="cn.uce.omg.sso.util.redis.BoundHashRedisSupport">
+		<property name="hkey" value="sso-startIpSection:hash" />
+		<property name="redisTemplate" ref="redisTemplate" />
+	</bean>
+	<bean id="endIpSectionCache" class="cn.uce.omg.sso.util.redis.BoundHashRedisSupport">
+		<property name="hkey" value="sso-endIpSection:hash" />
+		<property name="redisTemplate" ref="redisTemplate" />
+	</bean>
+	<bean id="ipInfoCache" class="cn.uce.omg.sso.cache.IpInfoCache">
+		<property name="hkey" value="sso-ipInfo:hash" />
+		<property name="redisTemplate" ref="redisTemplate" />
+		<property name="hashFieldCache" ref="hashFieldCache" />
+	</bean>
+
+	<!-- ip地址 -->
+	<bean id="ipAddrFlagCache" class="cn.uce.omg.sso.util.redis.BoundHashRedisSupport">
+		<property name="hkey" value="sso-ipAddrFlag:hash" />
+		<property name="redisTemplate" ref="redisTemplate" />
+	</bean>
+	<bean id="ipAddrCache" class="cn.uce.omg.sso.cache.HashRedisWithFieldExpireCache">
+		<property name="hkey" value="sso-ipAddr:hash"></property>
+		<property name="redisTemplate" ref="redisTemplate"></property>
+		<property name="hashFieldExpireTimeCache" ref="hashFieldExpireTimeCache"></property>
+	</bean>
+	
+	<!-- add by xj -->
+	<bean id="portalDictDataCache" class="cn.uce.omg.sso.cache.portal.PortalDictDataCache">
+		<!-- modify by zhangRb 20180716 由Redis缓存修改为本地缓存 -->
+		<property name="storage" ref="localStorage"></property>
+		<property name="timeOut" value="300"></property>
+		<property name="portalBiz" ref="portalBiz"></property>
+	</bean>
+	<!-- add by xj -->
+	
+	<!-- add by zhangRb 20180905 支持手机号登录需求  start-->
+	<bean id="fspDictDataCache" class="cn.uce.omg.sso.cache.FspDictDataCache">
+		<property name="storage" ref="localStorage"></property>
+		<property name="timeOut" value="300"></property>
+		<property name="sysTypeBiz" ref="sysTypeBiz"></property>
+	</bean>
+	
+	<bean id="empMobileCache" class="cn.uce.omg.sso.cache.EmpMobileCache">
+		<property name="storage" ref="localStorage"></property>
+		<property name="timeOut" value="300"></property>
+		<property name="empBiz" ref="empBiz"></property>
+	</bean>
+	<!-- add by zhangRb 20180905 支持手机号登录需求  end-->
+</beans>

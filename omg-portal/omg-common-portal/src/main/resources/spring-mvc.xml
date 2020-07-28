@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="   
+           http://www.springframework.org/schema/beans   
+           http://www.springframework.org/schema/beans/spring-beans.xsd   
+           http://www.springframework.org/schema/context   
+           http://www.springframework.org/schema/context/spring-context.xsd  
+           http://www.springframework.org/schema/mvc   
+           http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+           default-lazy-init="false" >
+           
+	<!-- 扫描所有的controller -->
+	<context:component-scan base-package="cn.uce.**.control">  
+    	<!-- 将Service注解给去掉  -->  
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>  
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>  
+    </context:component-scan>  
+    
+    <!--启动Spring MVC的注解功能完成请求和注解POJO的映射 --> 
+    <!-- <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />  
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />  -->
+    <!-- 简写方式 注册所必须的两个Bean -->
+	<mvc:annotation-driven>
+		<mvc:argument-resolvers>
+		    <!-- 注册注解自动绑定前台page与后台page -->
+			<bean class="cn.uce.portal.common.interceptor.CustomMethodArgumentsResolver" />
+		</mvc:argument-resolvers>
+	</mvc:annotation-driven>
+    
+    <!-- Default ViewResolver对模型视图名称的解析即在模型视图名称添加前后缀 -->  
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+       p:order="3"> 
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/pages/"></property> 
+        <property name="suffix" value=".jsp"></property>  
+    </bean>  
+    
+	<!-- 配置JSON视图  与 @ResponseBody 配合使用，使用该注解的方法返回值将以json格式输出返回，跳过view解析器-->
+    <bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+       <property name="supportedMediaTypes">
+           <list>
+               <value>application/json;charset=UTF-8</value>
+               <value>text/html;charset=UTF-8</value>
+           </list>
+       </property>     
+    </bean>
+    <!-- 静态资源访问 -->
+    <mvc:resources location="/easyui-themes/" mapping="/easyui-themes/**" />
+    <mvc:resources location="/images/" mapping="/images/**" />
+    <mvc:resources location="/jquery-easyui-1.5.1/" mapping="/jquery-easyui-1.5.1/**" />
+	<mvc:resources location="/scripts/" mapping="/scripts/**" />
+	<!-- 静态文件访问 -->
+	<mvc:default-servlet-handler />
+   
+   <!-- Spring 国际化使用配置 结束-->
+    <mvc:interceptors>
+        <!-- 分页对象拦截绑定 -->
+        <bean id="easyUIPageInterceptor" class="cn.uce.portal.common.interceptor.EasyUIPageInterceptor" />
+    </mvc:interceptors>
+	
+   	<!-- Spring 国际化使用配置开始 -->
+    <!--其中basename用来指定properties文件的通用名如实例中的messages_en.properties,messages_ja.properties通用名都是messages-->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <property name="basenames">  
+     	<list>  
+        	<value>classpath:cn/uce/web/authorg/server/META-INF/i18n/messages</value>
+        	<value>classpath:i18n/messages</value>  
+        </list>  
+    </property>  
+    <!-- 默认为false 将会抛出异常 -->
+    <property name="useCodeAsDefaultMessage" value="true" />
+    <!-- 刷新资源文件的周期，以秒为单位  -1表示不刷新资源文件-->
+    <property name="cacheSeconds" value="-1"/> 	
+  </bean>  
+</beans>   

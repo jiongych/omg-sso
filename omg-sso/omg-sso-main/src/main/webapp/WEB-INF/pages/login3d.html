@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Login</title>
+	<link rel="shortcut icon" href="images/favicon.ico">
+  <script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="js/three.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" type="text/css" href="//static-file.uce.cn/uce-static/iconfont/iconfont.css"/>
+  <style>
+	  /*me*/
+	  html, body {
+      position: relative;
+      height: 100%;
+    }
+    body {
+      background: #eee;
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color:#000;
+      margin: 0;
+      padding: 0;
+    }
+	 .form{
+    	width: 500px;
+	    height: 300px;
+	    position: absolute;
+	    z-index: 1000;
+	    bottom: 50%;
+	    left: calc(50% - 250px);
+	    transform: translateY(50%);
+	    border-radius: 5px;
+	    display: flex;
+	    flex-direction: row;
+	    transition: all 0.5s;
+    }
+    .logo{
+    	width: 100px;
+    	position: relative;
+    }
+    .logo img{
+    	width: 80px;
+    	position: absolute;
+    	top: 50%;
+    	left: 50%;
+    	transform: translate(-50%, -50%);
+    }
+    .user{
+    	position: relative;
+    	flex: 1;
+    	background: rgba(0, 0, 0, 0.4);
+    	border-top-left-radius: 10px;
+    	border-bottom-left-radius: 10px;
+    	padding: 30px;
+    }
+    .area-input{
+	    width: 250px;
+	    position: absolute;
+	    left: 50%;
+	    top: 50%;
+	    transform: translate(-50%, -50%);
+    }
+    .user i{
+    	color: #fff;
+    	font-size: 20px;
+    	position: absolute;
+    }
+    .user input{
+    	display: block;
+    	height: 34px;
+    	padding: 0 3px;
+    	width: 100%;
+    	background: transparent;
+    	color: #fff;
+    	outline: 0;
+    	border-width: 0 0 1px;
+    	border-style: solid;
+    	border-color: #ddd;
+    	appearance: none
+	    -webkit-appearance: none;
+	    -moz-appearance: none;
+	    margin-bottom: 25px;
+    }
+    input:hover{
+    	border-color: #5E6D82;
+    }
+    input:focus{
+    	border-width: 0 0 1px;
+    	border-style: solid;
+    	border-color: #007AFF;
+    }
+    .get-password{
+    	position: absolute;
+	    bottom: 30px;
+	    left: 90px;
+	    color: #fff;
+	    cursor: pointer;
+    }
+    
+    .login{
+    	position: relative;
+    	width: 80px;
+    	background: rgba(0, 122, 255, 0.8);
+    	border-top-right-radius: 10px;
+    	border-bottom-right-radius: 10px;
+    	cursor: pointer;
+    }
+    .login:hover{
+    	background: #2E8DED;
+    	opacity: 0.8;
+    }
+    .login:active{
+    	background: #007AFF;
+    }
+    .login i{
+	    position: absolute;
+	    top: 50%;
+	    left: 50%;
+	    font-size: 40px;
+	    color: #fff;
+	    transform: translate(-50%,-50%);
+    }
+    
+    /*----------------*/
+    .login-container {
+	    width: 100%;
+	    position: absolute;
+	    top: 0;
+	    bottom: 0;
+	    left: 0;
+	    background-color: #141a48;
+	    background-image: url('images/login-bg.png');
+	    background-repeat: no-repeat;
+	    background-size: cover;
+	    overflow: hidden;
+	  }
+  </style>
+</head>
+<body>
+  <div id="form">
+  	<div class="user">
+  		<div class="area-input">
+			<input type="text" name="username" placeholder="用户名"/>
+			<input type="password" name="password" placeholder="密码"/>
+  		</div>
+  		<div class="get-password">
+  			<span>忘记密码?</span>
+  		</div>
+  	</div>
+  	<div class="login">
+  		<a href="portal.html">
+  			<i class="iconfont uce-turnright"></i>
+  		</a>
+  	</div>
+  </div>
+  
+  <!--app-->
+  <div class="login-container">
+    <div id="loginThree"></div>
+  </div>
+  
+  <script type="text/javascript">
+  	function init3D () { // 初始化3D动画
+      var SCREEN_WIDTH = window.innerWidth;
+      var SCREEN_HEIGHT = window.innerHeight;
+      var SEPARATION = 90;
+      var AMOUNTX = 50;
+      var AMOUNTY = 50;
+      var container;
+      var particles, particle;
+      var count;
+      var camera;
+      var scene;
+      var renderer;
+      var mouseX = 0;
+      var mouseY = 0;
+      var windowHalfX = window.innerWidth / 2;
+      var windowHalfY = window.innerHeight / 2;
+      init();
+      this.interval = setInterval(loop, 1000 / 60);
+      function init() {
+        container = document.createElement( 'div' );
+        container.style.position = 'relative';
+        container.style.top = '200px';
+        document.getElementById('loginThree').appendChild( container );
+        camera = new THREE.Camera( 75, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 10000 );
+        camera.position.z = 1000;
+        scene = new THREE.Scene();
+        renderer = new THREE.CanvasRenderer();
+        renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+        particles = new Array();
+        var i = 0;
+        var material = new THREE.ParticleCircleMaterial( 0x097bdb, 1 );
+        for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
+            for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
+                particle = particles[ i ++ ] = new THREE.Particle( material );
+                particle.position.x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 );
+                particle.position.z = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
+                scene.add( particle );
+            }
+        }
+        count = 0;
+        container.appendChild( renderer.domElement );
+        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+        document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+      }
+      function onDocumentMouseMove( event ) {
+        mouseX = event.clientX - windowHalfX;
+        mouseY = event.clientY - windowHalfY;
+      }
+      function onDocumentTouchMove( event ) {
+        if ( event.touches.length == 1 ) {
+            event.preventDefault();
+            mouseX = event.touches[ 0 ].pageX - windowHalfX;
+            mouseY = event.touches[ 0 ].pageY - windowHalfY;
+        }
+      }
+      function loop() {
+          camera.position.x += ( mouseX - camera.position.x ) * .05;
+          camera.position.y = 364;
+          var i = 0;
+          for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
+              for (var iy = 0; iy < AMOUNTY; iy++) {
+                particle = particles[ i++ ];
+                particle.position.y = ( Math.sin( ( ix + count ) * 0.3 ) * 50 ) + ( Math.sin( ( iy + count ) * 0.5 ) * 50 );
+                particle.scale.x = particle.scale.y = ( Math.sin( ( ix + count ) * 0.3 ) + 1 ) * 2 + ( Math.sin( ( iy + count ) * 0.5 ) + 1 ) * 2;
+              }
+          }
+          renderer.render(scene, camera);
+          count += 0.1;
+      }
+    }
+  	
+  	init3D();
+  	
+  	window.onload = function(){
+    	$("#form").attr('class','form');
+    }
+  </script>
+</body>
+</html>

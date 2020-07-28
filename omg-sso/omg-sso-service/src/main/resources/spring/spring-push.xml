@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd ">
+
+   <bean id="pushService" class="cn.uce.omg.sso.service.PushService">
+    	<property name="gwPushApi" ref="gwPushApiProxy"/>
+    	<property name="pushConfVoMap" ref="pushConfVoMap"/>
+    </bean>
+	
+	<bean id="pushConfVoMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key ="#{T(cn.uce.omg.gateway.constant.OmgProductConstants).PARTNER_PRODUCT_CREATE_EMP}-#{T(cn.uce.omg.gateway.constant.OmgTrackConstants.PushHelperType).DINGDING.code()}"
+					value-ref="createEmpPushToDingConf" />
+				<entry key ="#{T(cn.uce.omg.gateway.constant.OmgProductConstants).PARTNER_PRODUCT_UPDATE_EMP}-#{T(cn.uce.omg.gateway.constant.OmgTrackConstants.PushHelperType).DINGDING.code()}"
+					value-ref="updateEmpPushToDingConf" />
+				<entry key ="#{T(cn.uce.omg.gateway.constant.OmgProductConstants).PARTNER_PRODUCT_DELETE_EMP}-#{T(cn.uce.omg.gateway.constant.OmgTrackConstants.PushHelperType).DINGDING.code()}"
+					value-ref="deleteEmpPushToDingConf" />
+					
+				<entry key ="#{T(cn.uce.omg.gateway.constant.OmgProductConstants).PARTNER_PRODUCT_UPDATE_OTHER_EMP_RELATION}-#{T(cn.uce.omg.gateway.constant.OmgTrackConstants.PushHelperType).BIZ_PLATFORM.code()}"
+					value-ref="updateOtherEmpRelationConf" />
+				
+				<entry key ="#{T(cn.uce.omg.gateway.constant.OmgProductConstants).PARTNER_PRODUCT_UPDATE_OTHER_ORG_RELATION}-#{T(cn.uce.omg.gateway.constant.OmgTrackConstants.PushHelperType).BIZ_PLATFORM.code()}"
+					value-ref="updateOtherOrgRelationConf" />
+					
+				<!--员工推送业务平台  -->	
+				<entry key ="#{T(cn.uce.omg.gateway.constant.OmgProductConstants).PARTNER_PRODUCT_CREATE_EMP}-#{T(cn.uce.omg.gateway.constant.OmgTrackConstants.PushHelperType).BIZ_PLATFORM.code()}"
+					value-ref="updateEmpPushBizPlatformConf" />
+				<entry key ="#{T(cn.uce.omg.gateway.constant.OmgProductConstants).PARTNER_PRODUCT_UPDATE_EMP}-#{T(cn.uce.omg.gateway.constant.OmgTrackConstants.PushHelperType).BIZ_PLATFORM.code()}"
+					value-ref="updateEmpPushBizPlatformConf" />
+				<entry key ="#{T(cn.uce.omg.gateway.constant.OmgProductConstants).PARTNER_PRODUCT_DELETE_EMP}-#{T(cn.uce.omg.gateway.constant.OmgTrackConstants.PushHelperType).BIZ_PLATFORM.code()}"
+					value-ref="updateEmpPushBizPlatformConf" />
+					
+				<entry key ="#{T(cn.uce.omg.gateway.constant.OmgProductConstants).PARTNER_PRODUCT_UPDATE_USER}-#{T(cn.uce.omg.gateway.constant.OmgTrackConstants.PushHelperType).BIZ_PLATFORM.code()}"
+					value-ref="updateUserPushBizPlatformConf" />
+				<!-- add by zhangRb 20180414 乾坤员工推送乾坤系统 -->
+				<entry key ="#{T(cn.uce.omg.gateway.constant.OmgProductConstants).PARTNER_PRODUCT_UPDATE_CMS_EMP}-#{T(cn.uce.omg.gateway.constant.OmgTrackConstants.PushHelperType).CMS.code()}"
+					value-ref="updateCmsEmpPushCmsConf" />
+			</map>
+		</constructor-arg>
+	</bean>
+	<bean id="createEmpPushToDingConf" parent="syncWithRetryPushRequestVo"></bean>
+	<bean id="updateEmpPushToDingConf" parent="syncWithRetryPushRequestVo"></bean>
+	<bean id="deleteEmpPushToDingConf" parent="asyncWithNoRetryPushRequestVo"></bean>
+	
+	<bean id="createOrgPushToDingConf" parent="asyncWithNoRetryPushRequestVo"></bean>
+	<bean id="updateOrgPushToDingConf" parent="asyncWithNoRetryPushRequestVo"></bean>
+	<bean id="deleteOrgPushToDingConf" parent="asyncWithNoRetryPushRequestVo"></bean>
+	
+	<bean id="updateOtherEmpRelationConf" parent="syncWithRetryPushRequestVo"></bean>
+	<bean id="updateOtherOrgRelationConf" parent="syncWithRetryPushRequestVo"></bean>
+	<bean id="updateEmpPushBizPlatformConf" parent="syncWithRetryPushRequestVo"></bean>
+	
+	<bean id="updateUserPushBizPlatformConf" parent="syncWithRetryPushRequestVo"/>
+	
+	<!-- add by zhangRb 20180414 乾坤员工推送乾坤系统 -->
+	<bean id="updateCmsEmpPushCmsConf" parent="syncWithRetryPushRequestVo"/>
+	
+	<bean id="syncWithRetryPushRequestVo" class="cn.uce.omg.gateway.api.vo.PushRequestVo" abstract="true">
+		<property name="syncFlag" value="true"></property>
+		<property name="retryWhenFailedInSyncMode" value="true"></property>
+	</bean>
+	
+	<bean id="syncWithNoRetryPushRequestVo" class="cn.uce.omg.gateway.api.vo.PushRequestVo" abstract="true">
+		<property name="syncFlag" value="true"></property>
+		<property name="retryWhenFailedInSyncMode" value="false"></property>
+	</bean>
+	
+	<bean id="asyncWithRetryPushRequestVo" class="cn.uce.omg.gateway.api.vo.PushRequestVo" abstract="true">
+		<property name="syncFlag" value="false"></property>
+		<property name="retryWhenFailedInSyncMode" value="true"></property>
+	</bean>
+	
+	<bean id="asyncWithNoRetryPushRequestVo" class="cn.uce.omg.gateway.api.vo.PushRequestVo" abstract="true">
+		<property name="syncFlag" value="false"></property>
+		<property name="retryWhenFailedInSyncMode" value="false"></property>
+	</bean>
+</beans>

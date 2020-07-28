@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.portal.common.dao.ICommonDao">
+	
+	<select id="findPermissionCodeByUser" resultType="java.lang.String">
+		SELECT 
+		DISTINCT
+		PERMISSION_CODE 
+		FROM 
+		OMG_PORTAL_ROLE_PERMISSION_REL RP
+		INNER JOIN
+		OMG_PORTAL_USER_ROLE_REL UR
+		ON UR.ROLE_CODE = RP.ROLE_CODE
+		WHERE
+		UR.EMP_CODE = #{empCode}
+	</select>
+	
+	<resultMap type="cn.uce.portal.common.base.CurrentUser" id="findCurrentUserResultMap">
+		<result property="empId" column="empId"/>
+		<result property="empCode" column="empCode"/>
+		<result property="empName" column="empName"/>
+		<result property="empName" column="empName"/>
+		<collection property="orgRefRel" column="otherEmpId" ofType="java.util.Map">
+			<result property="otherEmpId" column="otherEmpId"/>
+			<result property="otherEmpCode" column="otherEmpCode"/>
+			<result property="otherEmpName" column="otherEmpName"/>
+			<result property="orgId" column="orgId"/>
+			<result property="orgCode" column="orgCode"/>
+			<result property="orgType" column="orgType"/>
+			<result property="orgName" column="orgName"/>
+			<result property="otherOrgId" column="otherOrgId"/>
+			<result property="otherBaseOrgCode" column="otherBaseOrgCode"/>
+			<result property="otherOrgType" column="otherOrgType"/>
+			<result property="otherOrgName" column="otherOrgName"/>
+		</collection>
+	</resultMap>
+	
+	<!-- 查询当前登陆用户-->
+	<select id="findCurrentUser" resultMap="findCurrentUserResultMap">
+		SELECT 
+		E.EMP_ID AS empId,
+		E.EMP_CODE AS empCode,
+		E.EMP_NAME AS empName,
+		O.ORG_ID AS orgId,
+		O.ORG_CODE AS orgCode,
+		O.ORG_TYPE AS orgType,
+		O.ORG_NAME AS orgName,
+		CO.CMS_ORG_ID AS otherOrgId,
+		CO.BASE_ORG_CODE AS otherBaseOrgCode,
+		CO.ORG_TYPE AS otherOrgType,
+		CO.ORG_NAME AS otherOrgName,
+		OER.OTHER_EMP_ID AS otherEmpId,
+		OER.OTHER_EMP_CODE AS otherEmpCode,
+		OER.OTHER_EMP_NAME AS otherEmpName
+		FROM 
+		OMG_EMP E
+		INNER JOIN
+		OMG_OTHER_EMP_RELATION OER ON OER.EMP_ID = E.EMP_ID AND SYSTEM_ID = 1
+		INNER JOIN
+		OMG_ORG O
+		ON OER.ORG_ID = O.ORG_ID AND O.DELETE_FLAG = 0
+		INNER JOIN
+		OMG_CMS_ORG CO ON CO.CMS_ORG_ID = OER.OTHER_ORG_ID AND CO.DELETE_FLAG = 0
+		WHERE 
+		E.EMP_CODE = #{empCode} AND
+		E.DELETE_FLAG = 0
+	</select>
+	
+</mapper>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IDictDataDao">
+	
+	<sql id="base_column_list">
+		id,type_id, type_class_code,source_type, type_code,type_name,DELETE_FLAG, CREATE_EMP, CREATE_ORG,CREATE_TIME, VERSION, REMARK, UPDATE_EMP, UPDATE_ORG, UPDATE_TIME
+	</sql>
+	
+	<select id="findDictDataByPage" parameterType="cn.uce.omg.portal.vo.PortalDictDataVo" resultType="cn.uce.omg.portal.vo.PortalDictDataVo">
+		SELECT 
+		OMG_PORTAL_DICT_DATA.ID,
+		OMG_PORTAL_DICT_DATA.TYPE_ID,
+		OMG_PORTAL_DICT_DATA.TYPE_CLASS_CODE,
+		(SELECT OMG_PORTAL_DICT_TYPE.TYPE_CLASS_NAME FROM OMG_PORTAL_DICT_TYPE WHERE OMG_PORTAL_DICT_TYPE.TYPE_CLASS_CODE = OMG_PORTAL_DICT_DATA.TYPE_CLASS_CODE) AS typeClassName,
+		OMG_PORTAL_DICT_DATA.SOURCE_TYPE,
+		OMG_PORTAL_DICT_DATA.TYPE_CODE,
+		OMG_PORTAL_DICT_DATA.TYPE_NAME,
+		OMG_PORTAL_DICT_DATA.REMARK,
+		(SELECT OMG_EMP.EMP_NAME FROM OMG_EMP WHERE OMG_EMP.EMP_CODE=OMG_PORTAL_DICT_DATA.CREATE_EMP) AS CREATE_EMP,
+		OMG_PORTAL_DICT_DATA.CREATE_TIME,
+		(SELECT OMG_EMP.EMP_NAME FROM OMG_EMP WHERE OMG_EMP.EMP_CODE=OMG_PORTAL_DICT_DATA.UPDATE_EMP) AS UPDATE_EMP,
+		OMG_PORTAL_DICT_DATA.UPDATE_TIME
+		FROM OMG_PORTAL_DICT_DATA
+		WHERE OMG_PORTAL_DICT_DATA.DELETE_FLAG <![CDATA[ <> ]]> 1
+		<if test="typeClassCode != null and typeClassCode != ''">
+			and OMG_PORTAL_DICT_DATA.type_class_code = #{typeClassCode}
+		</if>
+		<if test="typeCode != null and typeCode != ''">
+			and OMG_PORTAL_DICT_DATA.type_code = #{typeCode}
+		</if>
+		<if test="typeId != null ">
+			and OMG_PORTAL_DICT_DATA.type_id = #{typeId}
+		</if>
+		<if test="typeName != null and typeName != ''">
+			and OMG_PORTAL_DICT_DATA.type_name like concat('%',  #{typeName} ,'%')
+		</if> 
+		<if test="sourceType != null and sourceType != ''">
+			and OMG_PORTAL_DICT_DATA.source_type = #{sourceType}
+		</if>
+		
+	</select>
+	
+	<select id="findOneByCondition" parameterType="cn.uce.omg.portal.vo.PortalDictDataVo" resultType="cn.uce.omg.portal.vo.PortalDictDataVo">
+		SELECT <include refid="base_column_list"/> from OMG_PORTAL_DICT_DATA
+		where 
+		type_class_code = #{typeClassCode} AND
+		type_id = #{typeId} AND
+		DELETE_FLAG <![CDATA[ <> ]]> 1
+	</select>
+	
+	<!-- 根据typeClassCode查询数据字典 -->
+	<select id="findListByTypeClassCode" parameterType="java.lang.String" resultType="cn.uce.omg.portal.vo.PortalDictDataVo">
+		SELECT <include refid="base_column_list"/> 
+		FROM 
+		OMG_PORTAL_DICT_DATA
+		WHERE
+		OMG_PORTAL_DICT_DATA.TYPE_CLASS_CODE=#{_parameter} AND 
+		OMG_PORTAL_DICT_DATA.DELETE_FLAG <![CDATA[ <> ]]> 1
+	</select>
+	
+	<!-- 暂时未使用 -->
+	<select id="findListByCondition" parameterType="cn.uce.omg.portal.vo.PortalDictDataVo" resultType="cn.uce.omg.portal.vo.PortalDictDataVo">
+		SELECT <include refid="base_column_list"/> from OMG_PORTAL_DICT_DATA
+		WHERE
+		DELETE_FLAG <![CDATA[ <> ]]> 1
+		<if test="typeClassCode != null and typeClassCode !=''">and OMG_PORTAL_DICT_DATA.type_class_code=#{typeClassCode}</if>
+		<if test="typeCode != null and typeCode !=''">and OMG_PORTAL_DICT_DATA.type_code=#{typeCode}</if>
+		<if test="typeId != null">and OMG_PORTAL_DICT_DATA.type_id=#{typeId}</if>
+		<if test="typeName != null and typeName !=''">and OMG_PORTAL_DICT_DATA.type_name=#{typeName}</if>
+		<if test="sourceType != null and sourceType !=''">and OMG_PORTAL_DICT_DATA.source_type=#{sourceType}</if>
+		<if test="deleteFlag != null">and OMG_PORTAL_DICT_DATA.delete_flag=#{deleteFlag}</if>
+	</select>
+	
+	<!-- 根据typeClassCode查询这个类型typeId的最大值，用于插入时max（typeId）+1 -->
+	<select id="findMaxTypeIdByTypeClassCode" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT  max(type_id) from OMG_PORTAL_DICT_DATA where OMG_PORTAL_DICT_DATA.type_class_code=#{_parameter}
+	</select>
+	
+	<!-- 查询typeCode是否存在 -->
+	<select id="findExitTypeCode" parameterType="cn.uce.omg.portal.vo.PortalDictDataVo" resultType="cn.uce.omg.portal.vo.PortalDictDataVo">
+		SELECT 
+		* 
+		FROM 
+		OMG_PORTAL_DICT_DATA 
+		WHERE 
+		OMG_PORTAL_DICT_DATA.TYPE_CLASS_CODE=#{typeClassCode} AND
+		OMG_PORTAL_DICT_DATA.TYPE_CODE=#{typeCode} AND 
+		DELETE_FLAG <![CDATA[ <> ]]> 1
+	</select>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD SQL Map 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.sso.dao.IUpdPwdItemDao">
+	<sql id="base_column_list">
+		ID,EMP_ID,USER_NAME,UPDATE_SOURCE,SYSTEM_CODE,PASSWORD,PASSWORD_STRENGTH,IP_ADDR,MACHINE_CODE,MAC_ADDR,OPERATE_EMP,OPERATE_ORG,VERSION,OPERATE_TIME,CREATE_TIME,UPDATE_TIME
+	</sql>
+	
+	<resultMap id="UpdPwdItemMap" type="UpdPwdItem">
+   	 	<id column="ID" jdbcType="BIGINT" property="id" />
+    	<result column="EMP_ID" jdbcType="INTEGER" property="empId" />
+    	<result column="USER_NAME" jdbcType="INTEGER" property="userName" />
+    	<result column="UPDATE_SOURCE" jdbcType="VARCHAR" property="updateSource" />
+    	<result column="SYSTEM_CODE" jdbcType="VARCHAR" property="systemCode" />
+    	<result column="PASSWORD" jdbcType="VARCHAR" property="password" />
+    	<result column="PASSWORD_STRENGTH" jdbcType="VARCHAR" property="passwordStrength" />
+    	<result column="IP_ADDR" jdbcType="VARCHAR" property="ipAddr" />
+    	<result column="MACHINE_CODE" jdbcType="VARCHAR" property="machineCode" />
+    	<result column="MAC_ADDR" jdbcType="VARCHAR" property="macAddr" />
+    	<result column="OPERATE_EMP" jdbcType="VARCHAR" property="operateEmp" />
+    	<result column="OPERATE_ORG" jdbcType="INTEGER" property="operateOrg" />
+    	<result column="VERSION" jdbcType="INTEGER" property="version" />
+    	<result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    	<result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    	<result column="OPERATE_TIME" jdbcType="TIMESTAMP" property="operateTime" />
+  	</resultMap>
+  	
+	<insert id="insert" parameterType="cn.uce.omg.sso.entity.UpdPwdItem" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO omg_upd_pwd_item (EMP_ID, USER_NAME, UPDATE_SOURCE, SYSTEM_CODE, PASSWORD, PASSWORD_STRENGTH, IP_ADDR, MACHINE_CODE, MAC_ADDR, OPERATE_EMP, OPERATE_ORG, VERSION, CREATE_TIME, OPERATE_TIME, UPDATE_TIME) 
+		VALUES (#{empId}, #{userName}, #{updateSource}, #{systemCode}, #{password}, #{passwordStrength},#{ipAddr},#{machineCode},#{macAddr}, #{operateEmp}, #{operateOrg}, #{version}, #{createTime},#{operateTime}, #{updateTime})
+	</insert>
+
+	<select id="findByThrDay"  resultMap="UpdPwdItemMap">
+		SELECT <include refid="base_column_list"/> FROM OMG_UPD_PWD_ITEM  
+		WHERE EMP_ID = #{empId}
+		order by CREATE_TIME desc limit 0,#{historyTotal}
+	</select>
+	
+	<select id="findLastUpdPwdDateByEmpId"  resultMap="UpdPwdItemMap">
+		SELECT <include refid="base_column_list"/> from omg_upd_pwd_item 
+		WHERE EMP_ID = #{_parameter}
+		order by CREATE_TIME desc limit 0,1
+	</select>
+	
+	
+</mapper>

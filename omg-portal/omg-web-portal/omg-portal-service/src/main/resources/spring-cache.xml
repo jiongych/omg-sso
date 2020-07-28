@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<bean id="dictDataCache" class="cn.uce.omg.portal.cache.DictDataCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="300"></property>
+	</bean>
+	
+	<bean id="permissionTreeCache" class="cn.uce.omg.portal.cache.PermissionTreeCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="300"></property>
+		<!-- <property name="lazy" value="false"></property> -->
+	</bean>
+	
+	<bean id="menuTreeCache" class="cn.uce.omg.portal.cache.MenuTreeCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="300"></property>
+	</bean>
+	
+	<bean id="expandMenuTreeCache" class="cn.uce.omg.portal.cache.ExpandMenuTreeCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="300"></property>
+	</bean>
+	
+	<bean id="exportSetCache" class="cn.uce.omg.portal.cache.ExportSetCache">
+		<property name="storage" ref="storage"></property>
+		<property name="timeOut" value="300"></property>
+	</bean>
+	
+</beans>

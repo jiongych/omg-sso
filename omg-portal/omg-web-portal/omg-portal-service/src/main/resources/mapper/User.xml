@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uce.omg.portal.dao.IUserDao">
+	
+	<resultMap type="cn.uce.omg.portal.vo.UserVo" id="findUserByPageResultMap">
+		<id property="id" column="id"/>
+		<result property="positionName" column="positionName"/>
+		<result property="empId" column="empId"/>
+		<result property="empCode" column="empCode"/>
+		<result property="empName" column="empName"/>
+		<result property="enabled" column="enabled"/>
+		<result property="lastLoginTime" column="lastLoginTime"/>
+		<result property="createTime" column="createTime" />
+		<association property="orgVo" column="mainOrgId" javaType="cn.uce.omg.portal.vo.OrgVo" >
+			<result property="orgId" column="mainOrgId"/>
+			<result property="orgCode" column="mainOrgCode"/>
+			<result property="orgType" column="mainOrgType"/>
+			<result property="orgName" column="mainOrgName"/>
+		</association>
+		<association property="createEmp" column="createEmpCode" javaType="cn.uce.omg.portal.vo.EmpVo">
+			<result property="empId" column="createEmpId"/>
+			<result property="empCode" column="createEmpCode"/>
+			<result property="empName" column="createEmpName"/>
+		</association>
+		<association property="createOrg" column="createOrgId" javaType="cn.uce.omg.portal.vo.OrgVo">
+			<result property="orgId" column="createOrgId"/>
+			<result property="orgCode" column="createOrgCode"/>
+			<result property="orgType" column="createOrgType"/>
+			<result property="orgName" column="createOrgName"/>
+		</association>
+		<collection property="otherOrgRelationList" column="moreOrgId" ofType="cn.uce.omg.portal.vo.OtherOrgRelationVo">
+			<result property="orgId" column="moreOrgId"/>
+			<result property="orgCode" column="moreOrgCode"/>
+			<result property="orgType" column="morOrgType"/>
+			<result property="orgName" column="moreOrgName"/>
+			<result property="cmsOrgId" column="moreCmsOrgId"/>
+			<result property="cmsBaseOrgCode" column="moreCmsBaseOrgCode"/>
+			<result property="cmsOrgType" column="moreCmsOrgType"/>
+			<result property="cmsOrgName" column="moreCmsOrgName"/>
+		</collection>
+	</resultMap>
+	
+	<!-- 分页查询用户员工信息 -->
+	<select id="findUserByPage" resultMap="findUserByPageResultMap" >
+		SELECT 
+		THE.ID AS id,
+		THE.LAST_LOGIN_TIME AS lastLoginTime,
+		THE.ENABLED AS enabled, 
+		THE.CREATE_TIME AS createTime,
+		THE.EMP_ID AS empId, 
+		THE.EMP_CODE AS empCode, 
+		THE.EMP_NAME AS empName,
+		
+		THE.ORG_ID AS mainOrgId,
+		THE.ORG_CODE AS mainOrgCode,
+		THE.ORG_TYPE AS mainOrgType,
+		THE.ORG_NAME AS mainOrgName,
+		
+		CE.EMP_ID AS createEmpId,
+		CE.EMP_CODE AS createEmpCode,
+		CE.EMP_NAME AS createEmpName,
+		CO.ORG_ID AS createOrgId,
+		CO.ORG_CODE AS createOrgCode,
+		CO.ORG_TYPE AS createOrgType,
+		CO.ORG_NAME AS createOrgName
+		FROM 
+		(SELECT 
+			U.ID,
+			U.LAST_LOGIN_TIME,
+			U.ENABLED,
+			U.CREATE_TIME,
+			U.CREATE_EMP,
+			U.CREATE_ORG, 
+			E.EMP_ID, 
+			E.EMP_CODE, 
+			E.EMP_NAME,
+			
+			MO.ORG_ID,
+			MO.ORG_CODE,
+			MO.ORG_TYPE,
+			MO.ORG_NAME
+			FROM 
+			OMG_USER U
+			INNER JOIN OMG_EMP E ON U.EMP_CODE = E.EMP_CODE AND E.DELETE_FLAG=0
+			INNER JOIN OMG_ORG MO ON MO.ORG_ID = E.ORG_ID AND MO.DELETE_FLAG = 0 
+			<where> 
+			<if test="userVo != null and userVo.orgVo != null and userVo.orgVo.orgId != null">
+			AND FIND_IN_SET(#{userVo.orgVo.orgId},MO.ORG_FULL_ID) 
+			</if>
+			<if test="userVo != null and userVo.orgVo != null and userVo.orgVo.orgCode != null and userVo.orgVo.orgCode != ''">
+			AND MO.ORG_CODE = #{userVo.orgVo.orgCode}
+			</if>
+			<if test="userVo != null and userVo.empCode != null and userVo.empCode != '' ">
+			AND E.EMP_CODE = #{userVo.empCode}
+			</if>
+			<if test="userVo != null and userVo.empName != null and userVo.empName != '' ">
+			AND E.EMP_NAME LIKE concat("%", #{userVo.empName},"%")
+			</if>
+			<if test="userVo != null and userVo.enabled != null">
+			AND U.ENABLED = #{userVo.enabled}
+			</if>
+			</where>
+			LIMIT #{startIndex}, #{pageSize}) THE
+		LEFT JOIN OMG_EMP CE ON THE.CREATE_EMP = CE.EMP_CODE
+		LEFT JOIN OMG_ORG CO ON THE.CREATE_ORG = CO.ORG_ID
+		
+	</select>
+	
+	
+	<select id="findUserByPageNew" resultMap="findUserByPageResultMap"   parameterType="cn.uce.omg.portal.vo.UserSearchVo">
+
+				 	SELECT 
+		THE.ID AS id,
+		THE.LAST_LOGIN_TIME AS lastLoginTime,
+		THE.ENABLED AS enabled, 
+		THE.CREATE_TIME AS createTime,
+		THE.EMP_ID AS empId, 
+		THE.EMP_CODE AS empCode, 
+		THE.EMP_NAME AS empName,
+		
+		THE.ORG_ID AS mainOrgId,
+		THE.ORG_CODE AS mainOrgCode,
+		THE.ORG_TYPE AS mainOrgType,
+		THE.ORG_NAME AS mainOrgName,
+		
+		CE.EMP_ID AS createEmpId,
+		CE.EMP_CODE AS createEmpCode,
+		CE.EMP_NAME AS createEmpName,
+		CO.ORG_ID AS createOrgId,
+		CO.ORG_CODE AS createOrgCode,
+		CO.ORG_TYPE AS createOrgType,
+		CO.ORG_NAME AS createOrgName,
+    GROUP_CONCAT(d.TYPE_NAME) as positionName
+		FROM 
+		(SELECT 
+			U.ID,
+			U.LAST_LOGIN_TIME,
+			U.ENABLED,
+			U.CREATE_TIME,
+			U.CREATE_EMP,
+			U.CREATE_ORG, 
+			E.EMP_ID, 
+			E.EMP_CODE, 
+			E.EMP_NAME,
+			
+			MO.ORG_ID,
+			MO.ORG_CODE,
+			MO.ORG_TYPE,
+			MO.ORG_NAME
+			FROM 
+			OMG_USER U
+			INNER JOIN OMG_EMP E ON U.EMP_CODE = E.EMP_CODE AND E.DELETE_FLAG=0
+			INNER JOIN OMG_ORG MO ON MO.ORG_ID = E.ORG_ID AND MO.DELETE_FLAG = 0 
+			<where> 
+			<if test="orgId != null and orgId != ''">
+			AND FIND_IN_SET(#{orgId},MO.ORG_FULL_ID) 
+			</if>
+			<if test="orgCode != null and orgCode != ''">
+			AND MO.ORG_CODE = #{orgCode}
+			</if>
+			<if test="empCode != null and empCode != '' ">
+			AND E.EMP_CODE = #{empCode}
+			</if>
+			<if test="empName != null and empName != '' ">
+			AND E.EMP_NAME LIKE concat("%", #{empName},"%")
+			</if>
+			<if test="enabled != null">
+			AND U.ENABLED = #{enabled}
+			</if>
+			<if test="idList != null and idList.size() > 0">  
+				<foreach collection="idList" index="index" item="id" open="AND (" separator=" OR " close=")">
+					 MO.ORG_FULL_ID LIKE CONCAT(CONCAT('%', #{id}), '%')
+				</foreach>
+			</if>
+			AND (E.`STATUS` != 1 OR E.`STATUS` IS NULL)
+			</where>
+			) THE
+		LEFT JOIN OMG_EMP CE ON THE.CREATE_EMP = CE.EMP_CODE
+		LEFT JOIN OMG_ORG CO ON THE.CREATE_ORG = CO.ORG_ID
+    left join omg_emp_org_position p on THE.ORG_ID = p.ORG_ID and THE.EMP_ID= p.EMP_ID
+    left join omg_fsp_dict_data d on p.POSITION_ID = d.TYPE_ID and d.TYPE_CLASS_CODE='POSITION'
+group by THE.ID ,
+		THE.LAST_LOGIN_TIME,
+		THE.ENABLED , 
+		THE.CREATE_TIME,
+		THE.EMP_ID, 
+		THE.EMP_CODE, 
+		THE.EMP_NAME ,
+		
+		THE.ORG_ID,
+		THE.ORG_CODE,
+		THE.ORG_TYPE,
+		THE.ORG_NAME,
+		
+		CE.EMP_ID,
+		CE.EMP_CODE,
+		CE.EMP_NAME,
+		CO.ORG_ID,
+		CO.ORG_CODE ,
+		CO.ORG_TYPE,
+		CO.ORG_NAME
+	</select>
+	<!-- 分页查询用户数量 -->
+	<select id="findUserCountByPage" resultType="java.lang.Integer" >
+		SELECT 
+		COUNT(THE.ID)
+		FROM 
+		(SELECT 
+			U.ID
+			FROM 
+			OMG_USER U
+			INNER JOIN OMG_EMP E ON U.EMP_CODE = E.EMP_CODE AND E.DELETE_FLAG=0
+			INNER JOIN OMG_ORG MO ON MO.ORG_ID = E.ORG_ID AND MO.DELETE_FLAG = 0 
+			<where> 
+			<if test="userVo != null and userVo.orgVo != null and userVo.orgVo.orgId != null">
+			AND FIND_IN_SET(#{userVo.orgVo.orgId},MO.ORG_FULL_ID) 
+			</if>
+			<if test="userVo != null and userVo.orgVo != null and userVo.orgVo.orgCode != null and userVo.orgVo.orgCode != ''">
+			AND MO.ORG_CODE = #{userVo.orgVo.orgCode}
+			</if>
+			<if test="userVo != null and userVo.empCode != null and userVo.empCode != '' ">
+			AND E.EMP_CODE = #{userVo.empCode}
+			</if>
+			<if test="userVo != null and userVo.empName != null and userVo.empName != '' ">
+			AND E.EMP_NAME LIKE concat("%", #{userVo.empName},"%")
+			</if>
+			<if test="userVo != null and userVo.enabled != null">
+			AND U.ENABLED = #{userVo.enabled}
+			</if>
+			</where>) THE
+	</select>
+	
+	<!-- 根据角色码查询权限 -->
+	<select id="findPermissionByRoleCodes" parameterType="java.util.List" resultType="java.lang.String">
+	SELECT DISTINCT permission_url FROM fsp_permission fp, fsp_role_permission_rel frpr
+	WHERE fp.permission_code = frpr.permission_code
+	AND (fp.permission_url IS NOT NULL AND LENGTH(fp.permission_url) > 0)
+	AND frpr.role_code IN
+	<foreach item="item" collection="list" open="(" separator="," close=")">
+	#{item}
+	</foreach>
+	</select>
+	
+	<!-- 根据用户名查询角色 -->
+	<select id="findRoleByUserName" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		OMG_PORTAL_USER_ROLE_REL.ROLE_CODE 
+		FROM 
+		OMG_PORTAL_USER_ROLE_REL
+		WHERE 
+		OMG_PORTAL_USER_ROLE_REL.EMP_CODE=#{_parameter}	
+	</select>
+	
+	<!-- 根据工号查询用户 -->
+	<select id="findUserByEmpCode" parameterType="java.lang.String" resultType="cn.uce.omg.portal.vo.UserVo">
+		SELECT * FROM OMG_USER WHERE EMP_CODE = #{_parameter}
+	</select>
+	
+	<!-- 查询用户绑定机构 -->
+	<select id="findUserBindOrg" parameterType="java.lang.String" resultType="cn.uce.omg.portal.vo.OrgVo">
+		SELECT 
+		(SELECT OMG_CMS_ORG.BASE_ORG_CODE FROM OMG_CMS_ORG WHERE OMG_CMS_ORG.CMS_ORG_ID =OMG_OTHER_EMP_RELATION.OTHER_ORG_ID AND OMG_CMS_ORG.DELETE_FLAG =0) AS orgCode,
+		(SELECT OMG_CMS_ORG.ORG_NAME FROM OMG_CMS_ORG WHERE OMG_CMS_ORG.CMS_ORG_ID =OMG_OTHER_EMP_RELATION.OTHER_ORG_ID AND OMG_CMS_ORG.DELETE_FLAG =0) as orgName 
+		FROM OMG_OTHER_EMP_RELATION WHERE SYSTEM_ID=1 AND EMP_ID=#{_parameter}
+	</select>
+	
+	<resultMap type="cn.uce.web.common.base.CurrentUser" id="findCurrentUserResultMap">
+		<result property="empId" column="empId"/>
+		<result property="empCode" column="empCode"/>
+		<result property="empName" column="empName"/>
+		<result property="empName" column="empName"/>
+		<collection property="orgRefRel" column="otherEmpId" ofType="java.util.Map">
+			<result property="otherEmpId" column="otherEmpId"/>
+			<result property="otherEmpCode" column="otherEmpCode"/>
+			<result property="otherEmpName" column="otherEmpName"/>
+			<result property="orgId" column="orgId"/>
+			<result property="orgCode" column="orgCode"/>
+			<result property="orgType" column="orgType"/>
+			<result property="orgName" column="orgName"/>
+			<result property="otherOrgId" column="otherOrgId"/>
+			<result property="otherBaseOrgCode" column="otherBaseOrgCode"/>
+			<result property="otherOrgType" column="otherOrgType"/>
+			<result property="otherOrgName" column="otherOrgName"/>
+		</collection>
+	</resultMap>
+	<!-- 查询当前登陆用户 -->
+	<select id="findCurrentUser" resultMap="findCurrentUserResultMap">
+		SELECT 
+		E.EMP_ID AS empId,
+		E.EMP_CODE AS empCode,
+		E.EMP_NAME AS empName,
+		O.ORG_ID AS orgId,
+		O.ORG_CODE AS orgCode,
+		O.ORG_TYPE AS orgType,
+		(CASE O.DEPT_FLAG WHEN 1 THEN CONCAT(O.AFFILIATED_ORG_NAME,'-',O.ORG_NAME) ELSE O.ORG_NAME END) AS orgName,
+		<!-- O.ORG_NAME AS orgName, -->
+		CO.CMS_ORG_ID AS otherOrgId,
+		CO.BASE_ORG_CODE AS otherBaseOrgCode,
+		CO.ORG_TYPE AS otherOrgType,
+		CO.ORG_NAME AS otherOrgName,
+		OER.OTHER_EMP_ID AS otherEmpId,
+		OER.OTHER_EMP_CODE AS otherEmpCode,
+		OER.OTHER_EMP_NAME AS otherEmpName
+		FROM 
+		OMG_EMP E
+		INNER JOIN
+		OMG_OTHER_EMP_RELATION OER ON OER.EMP_ID = E.EMP_ID AND SYSTEM_ID = 1
+		INNER JOIN
+		OMG_ORG O
+		ON OER.ORG_ID = O.ORG_ID AND O.DELETE_FLAG = 0
+		INNER JOIN
+		OMG_CMS_ORG CO ON CO.CMS_ORG_ID = OER.OTHER_ORG_ID AND CO.DELETE_FLAG = 0 and CO.STATUS not in(9903,1021)
+		WHERE 
+		E.EMP_CODE = #{empCode} AND
+		E.DELETE_FLAG = 0
+	</select>
+	
+	<select id="findUserByDate" parameterType="cn.uce.omg.portal.vo.PortalDataPushVo" resultType="java.lang.String">
+	    SELECT EMP_CODE FROM OMG_USER p
+		WHERE (p.CREATE_TIME <![CDATA[ >= ]]> #{startTime} AND p.CREATE_TIME <![CDATA[ <= ]]> #{endTime})
+		OR (p.UPDATE_TIME <![CDATA[ >= ]]> #{startTime} AND p.UPDATE_TIME <![CDATA[ <= ]]> #{endTime})
+	</select>
+</mapper>
